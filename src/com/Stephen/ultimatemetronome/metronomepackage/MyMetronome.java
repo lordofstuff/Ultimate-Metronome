@@ -51,19 +51,6 @@ class MyMetronome implements Runnable{
 	/** Must be between 0 and 1, those being the min and max volumes. */
 	volatile double volume;
 
-	/** contains four numbers: (simple time signatures)
-	 *  The "top" of the time signature
-	 *  The "bottom" of the time signature
-	 *  The number of the smallest unit that make a single beat.
-	 *  TODO probably get rid of this
-	 */
-	private volatile int[] timeSig;
-
-	/**
-	 * An array of boolean determining whether each smallest subdivision of a beat should be sounded.
-	 * TODO probably get rid of this
-	 */
-	private volatile boolean[] soundTick;
 
 	/**
 	 * An array of ints where each number represents the smallest subdivision of a beat. 
@@ -218,20 +205,6 @@ class MyMetronome implements Runnable{
 		else {
 			currentBeat++;
 		}
-	}
-
-
-	/**
-	 * for debugging only.
-	 * 
-	 */
-	public static void test() {
-		//create stuff to be passed in
-
-		double tempo = 120;
-		double volume = 1;
-		int[] ts = new int[] {1, 3, 2, 0, 1, 3, 2, 3};
-
 	}
 
 }
