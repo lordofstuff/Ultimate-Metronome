@@ -5,4 +5,4 @@ tmp/
 .classpath
 .settings
 project.properties
-
+*.log

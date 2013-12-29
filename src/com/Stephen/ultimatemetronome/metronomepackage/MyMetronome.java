@@ -41,6 +41,9 @@ class MyMetronome implements Runnable{
 	private final short[] secondarySoundData;
 	private final AudioTrack track;
 	boolean playing = false;
+	
+	//debug things:
+	private static final String Tag = "MyMetronome";
 
 
 	/** Measured in BPM, defined as the time between "quarter notes" in whatever time signature is being used. */
@@ -80,6 +83,7 @@ class MyMetronome implements Runnable{
 	int currentBeat;
 	Song song;
 	MetronomeController mc;
+	private boolean finishQueue;
 
 	//constructor(s)
 	/**
@@ -141,9 +145,7 @@ class MyMetronome implements Runnable{
 		int frames_since_played = interval_in_frames;
 
 		while (playing) {
-			Log.d("MyMetronome","still playing");
 			interval_in_frames = (int) (60 * SAMPLE_RATE / (tempo * beat)); // Recalculate in case tempo changed
-			//frames_since_played = interval_in_frames; //also in case tempo changes
 			
 			if (frames_since_played >= interval_in_frames) {
 				writeNextBeatOfPattern();
@@ -158,42 +160,56 @@ class MyMetronome implements Runnable{
 				frames_since_played += rest_length_in_frames;
 			}
 		}
+		//since it is cutting off early the solution is to either wait the buffer period
+		//or set up a listener that stops it when it knows it is done. 
+		if (finishQueue) {
+			try {
+				Log.v(Tag, "Finishing Queue");
+	            Thread.sleep(BUFFER_SIZE / WRITE_CHUNK_IN_FRAMES * 200);
+            } catch (InterruptedException e) {
+	            // TODO Auto-generated catch block
+	            e.printStackTrace();
+            }
+		}
+		Log.v(Tag, "Stopping AudioTrack, releasing.");
 		track.stop();
 		track.release();
 	}
 	
 	public void start() {
-	    //update(tempo, beatsOn, beatsOff);
 	    playing = true;
 
 	    new Thread(this).start();
-	    //mExecutor.execute(mClicker);
 	  }
 
 	  /**
-	   * Stops the metronome if it was running.
+	   * Stops the metronome once it finishes playing what is already queued if it was running.
 	   */
-	  public void stop() {
+	  public void finish() {
+		finishQueue = true;
 	    playing = false;
-	    //mClicker = null;
+	    
 	  }
 
 	
 	private void writeNextBeatOfPattern() {
 		if (pattern[currentBeat] == 1) {
 			track.write(primarySoundData, 0, primarySoundData.length);
+			Log.v(Tag, "write primary beat " + (currentBeat + 1) + "/" + pattern.length);
 		} 
 		else if (pattern[currentBeat] == 2 ){
 			track.write(secondarySoundData, 0, secondarySoundData.length);
+			Log.v(Tag, "write secondary beat " + (currentBeat + 1) + "/" + pattern.length);
 		}
 		// TODO add cases for 3 and 4 type beats.
 		else {
 			// Write the amount of rest that a tick or tock would normally take up
 			track.write(new short[primarySoundData.length], 0, primarySoundData.length);
+			Log.v(Tag, "write rest beat " + (currentBeat + 1) + "/" + pattern.length);
 		}
 		//currentBeat++;
 		//currentBeat %= anyTimeSig.length;
-		//adapted to allow for a pattern length that changes. count starts on 1.
+		//adapted to allow for a pattern length that changes. count starts on 0.
 		if (currentBeat + 1 >= pattern.length) {
 			currentBeat = 0; 
 			new Thread(mc).start(); //inform the controller that it has finished a measure

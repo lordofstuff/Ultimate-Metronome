@@ -105,8 +105,8 @@ public class Song implements Iterable<MetronomeEvent>{
 	public static Song testSong() {
 		Song song = new Song();
 		song.events.add(new MetronomeEvent(120, new int[] {1, 1, 1, 2, 2}, 1, 2, 2, "Event 1"));
-		//song.events.add(new MetronomeEvent(75, new int[] {0, 0, 0}, 1, 1, 1, "Event 2"));
-		song.events.add(new MetronomeEvent(60, new int[] {1, 1, 0}, .5f, 1, 6, "Event 3"));
+		song.events.add(new MetronomeEvent(75, new int[] {0, 0, 0}, 1, 1, 1, "Event 2"));
+		song.events.add(new MetronomeEvent(60, new int[] {1, 1, 2}, .5f, 2, 6, "Event 3"));
 
 		return song;
 	}
