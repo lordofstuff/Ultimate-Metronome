@@ -1,0 +1,25 @@
+file version 1
+#lines beginning with a # are comments which are ignored.
+#blank lines are also ignored 
+#Files will have the following format (version 1)
+
+#name
+#tempo
+#volume
+#pattern
+#repeats
+#beat
+
+Event 1
+120
+1.0
+1 3 2 0 1 3 2 0
+4
+4
+
+Event 2
+150
+0.5
+1
+1
+1
