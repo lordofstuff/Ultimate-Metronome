@@ -12,7 +12,7 @@
 		android:id="@+id/list"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		app:drag_enabled="true"
+		app:drag_enabled="false"
 		app:remove_enabled="true"
 		app:sort_enabled="true" />
 

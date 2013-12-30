@@ -7,3 +7,5 @@ tmp/
 project.properties
 *.log
 *.bak
+*.class
+*~

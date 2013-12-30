@@ -1,8 +1,11 @@
 package com.Stephen.ultimatemetronome;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import com.actionbarsherlock.app.SherlockActivity;
+import com.mobeta.android.dslv.DragSortListView;
+import com.mobeta.android.dslv.DragSortListView.DropListener;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +14,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -32,6 +37,7 @@ public class CreateSongActivity extends SherlockActivity {
 		setContentView(R.layout.activity_create_song);
 		ListView list = (ListView)findViewById(R.id.list);
 	    CustomArrayAdapter dataAdapter = new CustomArrayAdapter(this, R.id.tvItemTitle, EventCreateObject.defaultList());
+	    Log.d(Tag, "adapter created.");
 	    list.setAdapter(dataAdapter);
 	}
 
@@ -53,18 +59,19 @@ public class CreateSongActivity extends SherlockActivity {
 		TextView eventName;
 	}
 
-	private class CustomArrayAdapter extends ArrayAdapter<EventCreateObject>
+	private class CustomArrayAdapter extends ArrayAdapter<EventCreateObject> implements DropListener
 	{   
-		private ArrayList<EventCreateObject> list;
+		private CustomLinkedList<EventCreateObject> list;
 
 		//this custom adapter receives an ArrayList of EventCreateObject objects.
 		//EventCreateObject is my class that represents the data for a single row and could be anything.
-		public CustomArrayAdapter(Context context, int textViewResourceId, ArrayList<EventCreateObject> EventCreateObjectList) 
+		public CustomArrayAdapter(Context context, int textViewResourceId, CustomLinkedList<EventCreateObject> EventCreateObjectList) 
 		{
 			//populate the local list with data.
 			super(context, textViewResourceId, EventCreateObjectList);
-			this.list = new ArrayList<EventCreateObject>();
-			this.list.addAll(EventCreateObjectList);
+//			this.list = new CustomLinkedList<EventCreateObject>();
+//			this.list.addAll(EventCreateObjectList);
+			this.list = EventCreateObjectList;
 		}
 
 		public View getView(final int position, View convertView, ViewGroup parent)
@@ -85,6 +92,15 @@ public class CreateSongActivity extends SherlockActivity {
 			holder.eventName = (TextView) convertView.findViewById(R.id.eventName);
 			holder.eventName.setText(list.get(position).getName());
 
+			//set a click listener for the list items themselves. 
+			((DragSortListView)parent).setOnItemClickListener(new OnItemClickListener() 
+			{
+			    public void onItemClick(AdapterView<?> parent, View view,int position, long id) 
+			    {
+			        Toast.makeText(getContext(), "row " + position + " was pressed", Toast.LENGTH_LONG).show();
+			    }
+			});
+			
 			//define an onClickListener for the ImageView.
 			holder.image1.setOnClickListener(new OnClickListener() 
 			{           
@@ -132,6 +148,12 @@ public class CreateSongActivity extends SherlockActivity {
 			//return the row view.
 			return convertView;
 		}
+
+		@Override
+        public void drop(int from, int to) {
+	        // TODO Auto-generated method stub
+	        
+        }
 	}
 
 }

@@ -1,6 +1,9 @@
 package com.Stephen.ultimatemetronome;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+
+import android.util.Log;
 
 public class EventCreateObject {
 	//fields
@@ -228,12 +231,14 @@ public class EventCreateObject {
 		this.previous = previous;
 	}
 
-	public static ArrayList<EventCreateObject> defaultList() {
-	    ArrayList<EventCreateObject> list = new ArrayList<EventCreateObject>();
+	public static CustomLinkedList<EventCreateObject> defaultList() {
+	    CustomLinkedList<EventCreateObject> list = new CustomLinkedList<EventCreateObject>();
 	    list.add(new EventCreateObject());
 	    list.add(new EventCreateObject());
+	    Log.d("defaultList method", "stuff added");
 	    list.get(0).setName("First one");
 	    list.get(1).setName("second one");
+	    Log.d("defaultList method", "stuff gotten");
 	    return list;
     }
 	
