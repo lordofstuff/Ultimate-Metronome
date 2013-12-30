@@ -7,5 +7,7 @@
 	<string name="create_song">Create a new song</string>
 	<string name="title_activity_opening_menu">Ultimate Metronome</string>
 	<string name="load_song">Load a Song</string>
+	<string name="title_activity_edit_event">EditEventActivity</string>
+	<string name="hello_world">Hello world!</string>
 
 </resources>

@@ -232,6 +232,8 @@ public class EventCreateObject {
 	    ArrayList<EventCreateObject> list = new ArrayList<EventCreateObject>();
 	    list.add(new EventCreateObject());
 	    list.add(new EventCreateObject());
+	    list.get(0).setName("First one");
+	    list.get(1).setName("second one");
 	    return list;
     }
 	

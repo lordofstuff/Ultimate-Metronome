@@ -6,14 +6,12 @@
 	android:paddingLeft="@dimen/activity_horizontal_margin"
 	android:paddingRight="@dimen/activity_horizontal_margin"
 	android:paddingTop="@dimen/activity_vertical_margin"
-	tools:context=".CreateSongActivity" xmlns:app="http://schemas.android.com/apk/res/com.Stephen.ultimatemetronome">
+	tools:context=".EditEventActivity" >
 
-	<com.mobeta.android.dslv.DragSortListView
-		android:id="@+id/list"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		app:drag_enabled="true"
-		app:remove_enabled="true"
-		app:sort_enabled="true" />
+	<TextView
+		android:id="@+id/edit_event_name"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/hello_world" />
 
 </RelativeLayout>

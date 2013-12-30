@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import com.actionbarsherlock.app.SherlockActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,10 +22,13 @@ import android.view.View.OnClickListener;
 //import android.view.Menu;
 
 public class CreateSongActivity extends SherlockActivity {
+	
+	String Tag = "CreateSongActivity";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.d(Tag, "activity created");
 		setContentView(R.layout.activity_create_song);
 		ListView list = (ListView)findViewById(R.id.list);
 	    CustomArrayAdapter dataAdapter = new CustomArrayAdapter(this, R.id.tvItemTitle, EventCreateObject.defaultList());
@@ -44,7 +49,8 @@ public class CreateSongActivity extends SherlockActivity {
 	{
 		TextView title;
 		CheckBox checked;
-		ImageView changeRowStatus;
+		ImageView image1;
+		TextView eventName;
 	}
 
 	private class CustomArrayAdapter extends ArrayAdapter<EventCreateObject>
@@ -74,11 +80,13 @@ public class CreateSongActivity extends SherlockActivity {
 
 			//setting the views into the ViewHolder.
 			holder.title = (TextView) convertView.findViewById(R.id.tvItemTitle);
-			holder.changeRowStatus = (ImageView) convertView.findViewById(R.id.iStatus);
-			holder.changeRowStatus.setTag(position);
+			holder.image1 = (ImageView) convertView.findViewById(R.id.iStatus);
+			holder.image1.setTag(position);
+			holder.eventName = (TextView) convertView.findViewById(R.id.eventName);
+			holder.eventName.setText(list.get(position).getName());
 
 			//define an onClickListener for the ImageView.
-			holder.changeRowStatus.setOnClickListener(new OnClickListener() 
+			holder.image1.setOnClickListener(new OnClickListener() 
 			{           
 				@Override
 				public void onClick(View v) 
@@ -101,10 +109,25 @@ public class CreateSongActivity extends SherlockActivity {
 					Toast.makeText(getContext(), "CheckBox from row " + position + " was checked", Toast.LENGTH_LONG).show();    
 				}
 			});
+			
+			holder.eventName.setOnClickListener(new OnClickListener() {
+
+				@Override
+                public void onClick(View v) {
+	                //intent to launch new activity where you can edit all properties of this particular event
+					Intent intent = new Intent(getContext(), EditEventActivity.class);
+					//TODO PASS THE ENTIRE OBJECT, not just name
+					//will need to implement parcelable
+					intent.putExtra("EventName", list.get(position).getName());
+					startActivity(intent);	
+	                
+                }
+				
+			});
 
 			//setting data into the the ViewHolder.
 			holder.title.setText("example text");
-			//holder.checked.setChecked(EventCreateObject.isComplex());
+			holder.checked.setChecked(list.get(position).isComplex());
 
 			//return the row view.
 			return convertView;
