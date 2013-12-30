@@ -12,9 +12,29 @@
     	android:id="@+id/button1"
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
+    	android:layout_alignParentTop="true"
+    	android:layout_centerHorizontal="true"
+    	android:layout_marginTop="89dp"
+    	android:onClick="testMet"
+    	android:text="@string/test_met" />
+
+    <Button
+    	android:id="@+id/button2"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
     	android:layout_centerHorizontal="true"
     	android:layout_centerVertical="true"
-    	android:onClick="testMet"
-    	android:text="Test metronome" />
+    	android:onClick="createSong"
+    	android:text="@string/create_song" />
+
+    <Button
+    	android:id="@+id/button3"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_below="@+id/button2"
+    	android:layout_centerHorizontal="true"
+    	android:layout_marginTop="50dp"
+    	android:onClick="loadSong"
+    	android:text="@string/load_song" />
 
 </RelativeLayout>
