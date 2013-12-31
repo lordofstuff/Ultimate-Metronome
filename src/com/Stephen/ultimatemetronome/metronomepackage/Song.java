@@ -8,12 +8,15 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import android.util.Log;
+
 /**
  * A wrapper class for a linked list of MetronomeEvents, optimized for playback, not editing. 
  * @author Stephen Rodriguez
  *
  */
 public class Song implements Iterable<MetronomeEvent>{
+	private static final String Tag = "Song";
 	//fields
 	private LinkedList<MetronomeEvent> events;
 
@@ -24,7 +27,7 @@ public class Song implements Iterable<MetronomeEvent>{
 
 	//methods
 
-	static Song createFromFile(File file) throws IOException, FileNotFoundException, FileFormatException {
+	public static Song createFromFile(File file) throws IOException, FileNotFoundException, FileFormatException {
 		Song song = new Song();
 		//local variables to create the elements:
 		String name;
@@ -53,8 +56,12 @@ public class Song implements Iterable<MetronomeEvent>{
 		BufferedReader br = new BufferedReader(fr);
 		String s = br.readLine();
 		if (s.equals("file version 1")){
+			s = br.readLine();
 			while (s != null) {
-				if (s.charAt(0) != '#' && s != "") { //if not a comment or blank line
+				Log.d(Tag, "Read line: " + s);
+				if (!s.equals("") && s.charAt(0) != '#') { //if not a comment or blank line
+				
+					Log.d(Tag, "starting to read a real one");
 					name = s;
 					tempo = Double.parseDouble(br.readLine());
 					// TODO check for exceptions here
@@ -63,7 +70,13 @@ public class Song implements Iterable<MetronomeEvent>{
 					repeats = Integer.parseInt(br.readLine());
 					beat = Integer.parseInt(br.readLine());
 					song.events.add(new MetronomeEvent(tempo, pattern, volume, repeats, beat, name));
+					
+					
 				}
+				else {
+					Log.d(Tag, "Ignoring comment or blank line");
+				}
+				s = br.readLine();
 			}
 		}
 		//add further file versions here as else clauses
@@ -82,19 +95,15 @@ public class Song implements Iterable<MetronomeEvent>{
 	private static int[] toPatternArray(String numbers) {
 		//the string will be in the form of space separated whole numbers 0-4 inclusive. anything else will throw an exception
 		int[] array = new int[numbers.length()/2];
+		int i1 = 0;
 		for (int i = 0; i < numbers.length(); i++){
 			switch (numbers.charAt(i)) {
 				case '0':
-
-					break;
 				case '1':
 				case '2':
 				case '3':
 				case '4':
-					array[i] = Character.getNumericValue(numbers.charAt(i));
-					break;
-				case ' ':
-					i++;
+					array[i1++] = Character.getNumericValue(numbers.charAt(i));
 					break;
 			}
 

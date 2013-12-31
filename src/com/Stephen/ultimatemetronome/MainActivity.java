@@ -1,5 +1,9 @@
 package com.Stephen.ultimatemetronome;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import com.Stephen.ultimatemetronome.metronomepackage.*;
 import com.actionbarsherlock.app.SherlockActivity;
 
@@ -40,7 +44,25 @@ public class MainActivity extends SherlockActivity {
 	}
 	
 	public void loadSong(View view) {
-		//TODO not yet implemented
+		Song song = null;
+		//TURD this should not be hardcoded in
+		String fileName = "TheOneSongToRuleThemAll";
+		File file = new File(getBaseContext().getFilesDir(), fileName);
+		try {
+	        song = Song.createFromFile(file);
+        } catch (FileNotFoundException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        } catch (IOException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        } catch (FileFormatException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        }
+		MetronomeController mc = new MetronomeController(getApplicationContext(), song);
+		mc.startMet();
+		
 	}
 	
 }

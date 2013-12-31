@@ -3,6 +3,9 @@ package com.Stephen.ultimatemetronome;
 //import java.util.ArrayList;
 //import java.util.LinkedList;
 
+import java.io.File;
+import java.io.FileOutputStream;
+
 import com.actionbarsherlock.app.SherlockActivity;
 import com.mobeta.android.dslv.DragSortListView;
 import com.mobeta.android.dslv.DragSortListView.DropListener;
@@ -30,6 +33,10 @@ public class CreateSongActivity extends SherlockActivity {
 
 	String Tag = "CreateSongActivity";
 	CustomArrayAdapter dataAdapter;
+
+	/* TURD 1 */
+	public static EventCreateObject currentEventObject = null;
+	/* TURD 1 */
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +84,10 @@ public class CreateSongActivity extends SherlockActivity {
 			//			this.list = new CustomLinkedList<EventCreateObject>();
 			//			this.list.addAll(EventCreateObjectList);
 			this.list = EventCreateObjectList;
+		}
+
+		CustomLinkedList<EventCreateObject> getList() {
+			return list;
 		}
 
 		public void addEvent() {
@@ -158,10 +169,11 @@ public class CreateSongActivity extends SherlockActivity {
 		void launchEdit(int position) {
 			//intent to launch new activity where you can edit all properties of this particular event
 			Intent intent = new Intent(getContext(), EditEventActivity.class);
-			//TODO PASS THE ENTIRE OBJECT, not just name
-			//will need to implement parcelable
 			intent.putExtra("EventName", list.get(position).getName());
 			intent.putExtra("EventData", list.get(position));
+			// TURD 1
+			CreateSongActivity.currentEventObject = list.get(position);
+			// TURD 1 
 			startActivity(intent);
 		}
 
@@ -178,5 +190,41 @@ public class CreateSongActivity extends SherlockActivity {
 			CustomArrayAdapter.this.notifyDataSetChanged();
 		}
 	}
+
+	public void saveSong(View view) {
+		new Thread(new Runnable() { 
+
+			public void run() {
+				//TURD this should not be hardcoded in
+				String fileName = "TheOneSongToRuleThemAll";
+				File file = new File(getBaseContext().getFilesDir(), fileName);
+				FileOutputStream outputStream;
+
+				String string = "file version 1\n" +
+						"#lines beginning with a # are comments which are ignored.\n" +
+						"#blank lines are also ignored\n" +
+						"#Files will have the following format (version 1)\n\n" +
+						"#name\n#tempo\n#volume\n#pattern\n#repeats\n#beat\n\n";
+
+				try {
+					outputStream = openFileOutput(fileName, Context.MODE_PRIVATE);
+					outputStream.write(string.getBytes());
+					//outputStream.write(string.getBytes());
+					for (EventCreateObject e: dataAdapter.getList()) {
+						string = e.getName() + "\n" + e.getTempo() + "\n" + 
+								e.getVolume() + "\n" + EditEventActivity.convertFromPattern(e.getPattern()) + "\n" +
+								e.getRepeats() + "\n" + e.getBeat() + "\n\n";
+						outputStream.write(string.getBytes());
+					}
+					outputStream.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
+		//TODO display a toast when done
+		Toast.makeText(getBaseContext(), "DONE!", Toast.LENGTH_LONG).show();
+	}
+
 
 }

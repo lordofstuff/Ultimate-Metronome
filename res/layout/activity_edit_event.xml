@@ -12,20 +12,76 @@
 		android:id="@+id/edit_event_name"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="@string/hello_world" 
-		android:hint="@string/event_name_hint">
+		android:layout_alignParentRight="true"
+		android:layout_alignParentTop="true"
+		android:layout_marginTop="20dp"
+		android:ems="10"
+		android:hint="@string/event_name_hint" >
 
 		<requestFocus />
-
 	</EditText>
 
-	<Button
-		android:id="@+id/button1"
+	<TextView
+		android:id="@+id/textView1"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		android:layout_alignBaseline="@+id/edit_event_name"
 		android:layout_alignBottom="@+id/edit_event_name"
-		android:layout_toRightOf="@+id/edit_event_name"
-		android:text="@string/event_edit_save" 
-		android:onClick="saveEvent"/>
+		android:layout_alignParentLeft="true"
+		android:layout_marginLeft="14dp"
+		android:text="Name" />
+
+	<TextView
+		android:id="@+id/textView2"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignRight="@+id/textView1"
+		android:layout_below="@+id/edit_event_name"
+		android:layout_marginTop="18dp"
+		android:text="Tempo" />
+
+	<TextView
+		android:id="@+id/textView3"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignRight="@+id/textView2"
+		android:layout_below="@+id/textView2"
+		android:layout_marginTop="24dp"
+		android:text="pattern" />
+
+	<TextView
+		android:id="@+id/textView4"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignLeft="@+id/textView1"
+		android:layout_alignRight="@+id/textView3"
+		android:layout_below="@+id/textView3"
+		android:layout_marginTop="25dp"
+		android:text="beat" />
+
+	<EditText
+		android:id="@+id/tempo_edit_text"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignBaseline="@+id/textView2"
+		android:layout_alignBottom="@+id/textView2"
+		android:layout_alignLeft="@+id/edit_event_name"
+		android:ems="10" />
+
+	<EditText
+		android:id="@+id/beat_edit_text"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignLeft="@+id/pattern_edit_text"
+		android:layout_alignTop="@+id/textView4"
+		android:ems="10" />
+
+	<EditText
+		android:id="@+id/pattern_edit_text"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignLeft="@+id/tempo_edit_text"
+		android:layout_alignTop="@+id/textView3"
+		android:ems="10" />
 	
 </RelativeLayout>
