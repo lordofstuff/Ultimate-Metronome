@@ -8,10 +8,24 @@
 	android:paddingTop="@dimen/activity_vertical_margin"
 	tools:context=".EditEventActivity" >
 
-	<TextView
+	<EditText
 		android:id="@+id/edit_event_name"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="@string/hello_world" />
+		android:text="@string/hello_world" 
+		android:hint="@string/event_name_hint">
 
+		<requestFocus />
+
+	</EditText>
+
+	<Button
+		android:id="@+id/button1"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignBottom="@+id/edit_event_name"
+		android:layout_toRightOf="@+id/edit_event_name"
+		android:text="@string/event_edit_save" 
+		android:onClick="saveEvent"/>
+	
 </RelativeLayout>

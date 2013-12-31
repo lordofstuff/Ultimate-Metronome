@@ -27,20 +27,20 @@ import android.view.View.OnClickListener;
 //import android.view.Menu;
 
 public class CreateSongActivity extends SherlockActivity {
-	
+
 	String Tag = "CreateSongActivity";
 	CustomArrayAdapter dataAdapter;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d(Tag, "activity created");
 		setContentView(R.layout.activity_create_song);
 		DragSortListView list = (DragSortListView)findViewById(R.id.list);
-	    dataAdapter = new CustomArrayAdapter(this, R.id.tvItemTitle, EventCreateObject.defaultList());
-	    Log.d(Tag, "adapter created.");
-	    list.setAdapter(dataAdapter);
-	    list.setDropListener(dataAdapter);
+		dataAdapter = new CustomArrayAdapter(this, R.id.tvItemTitle, EventCreateObject.defaultList());
+		Log.d(Tag, "adapter created.");
+		list.setAdapter(dataAdapter);
+		list.setDropListener(dataAdapter);
 	}
 
 	//	@Override
@@ -49,12 +49,12 @@ public class CreateSongActivity extends SherlockActivity {
 	//		getMenuInflater().inflate(R.menu.opening_menu, menu);
 	//		return true;
 	//	}
-	
+
 	public void addEvent(View view) {
 		dataAdapter.addEvent();
 	}
-	
-	
+
+
 	//should maybe include this as part of eventcreateobject?
 	//holds views from the listview
 	static class ViewHolder 
@@ -74,15 +74,15 @@ public class CreateSongActivity extends SherlockActivity {
 		{
 			//populate the local list with data.
 			super(context, textViewResourceId, EventCreateObjectList);
-//			this.list = new CustomLinkedList<EventCreateObject>();
-//			this.list.addAll(EventCreateObjectList);
+			//			this.list = new CustomLinkedList<EventCreateObject>();
+			//			this.list.addAll(EventCreateObjectList);
 			this.list = EventCreateObjectList;
 		}
 
 		public void addEvent() {
-	        list.add(new EventCreateObject());
-	        CustomArrayAdapter.this.notifyDataSetChanged();
-        }
+			list.add(new EventCreateObject());
+			CustomArrayAdapter.this.notifyDataSetChanged();
+		}
 
 		public View getView(final int position, View convertView, ViewGroup parent)
 		{
@@ -105,18 +105,19 @@ public class CreateSongActivity extends SherlockActivity {
 			//set a click listener for the list items themselves. 
 			((DragSortListView)parent).setOnItemClickListener(new OnItemClickListener() 
 			{
-			    public void onItemClick(AdapterView<?> parent, View view,int position, long id) 
-			    {
-			        Toast.makeText(getContext(), "row " + position + " was pressed", Toast.LENGTH_LONG).show();
-			    }
+				public void onItemClick(AdapterView<?> parent, View view,int position, long id) 
+				{
+					Toast.makeText(getContext(), "row " + position + " was pressed", Toast.LENGTH_LONG).show();
+				}
 			});
-			
+
 			//define an onClickListener for the ImageView.
 			holder.image1.setOnClickListener(new OnClickListener() 
 			{           
 				@Override
 				public void onClick(View v) 
 				{
+					launchEdit(position);
 					Toast.makeText(getContext(), "Image from row " + position + " was pressed", Toast.LENGTH_LONG).show();
 				}
 			});
@@ -134,43 +135,48 @@ public class CreateSongActivity extends SherlockActivity {
 					Toast.makeText(getContext(), "CheckBox from row " + position + " was checked", Toast.LENGTH_LONG).show();    
 				}
 			});
-			
+
 			holder.eventName.setOnClickListener(new OnClickListener() {
 
 				@Override
-                public void onClick(View v) {
-	                //intent to launch new activity where you can edit all properties of this particular event
-					Intent intent = new Intent(getContext(), EditEventActivity.class);
-					//TODO PASS THE ENTIRE OBJECT, not just name
-					//will need to implement parcelable
-					intent.putExtra("EventName", list.get(position).getName());
-					startActivity(intent);	
-	                
-                }
-				
+				public void onClick(View v) {
+					launchEdit(position);
+				}
+
 			});
 
 			//setting data into the the ViewHolder.
 			holder.title.setText("example text");
 			holder.checked.setChecked(list.get(position).isComplex());
-			
+
 
 			//return the row view.
 			return convertView;
 		}
 
+
+		void launchEdit(int position) {
+			//intent to launch new activity where you can edit all properties of this particular event
+			Intent intent = new Intent(getContext(), EditEventActivity.class);
+			//TODO PASS THE ENTIRE OBJECT, not just name
+			//will need to implement parcelable
+			intent.putExtra("EventName", list.get(position).getName());
+			intent.putExtra("EventData", list.get(position));
+			startActivity(intent);
+		}
+
 		@Override
-        public void drop(final int from, final int to) {
+		public void drop(final int from, final int to) {
 			Log.d(Tag, "Moving " + from + " to " + to);
 			Thread t = new Thread(new Runnable() {
 				@Override
-                public void run() {
+				public void run() {
 					list.moveElement(from, to);
-                }
+				}
 			});
 			t.start();
 			CustomArrayAdapter.this.notifyDataSetChanged();
-        }
+		}
 	}
 
 }

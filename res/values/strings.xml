@@ -10,5 +10,7 @@
 	<string name="title_activity_edit_event">EditEventActivity</string>
 	<string name="hello_world">Hello world!</string>
 	<string name="add_event_button_text">Add</string>
+	<string name="event_name_hint">Please name this set</string>
+	<string name="event_edit_save">Save</string>
 
 </resources>

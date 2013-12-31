@@ -3,9 +3,11 @@ package com.Stephen.ultimatemetronome;
 //import java.util.ArrayList;
 //import java.util.LinkedList;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
-public class EventCreateObject {
+public class EventCreateObject implements Parcelable{
 	//fields
 	//default values
 	static final String DEFAULT_NAME = "";
@@ -16,6 +18,7 @@ public class EventCreateObject {
 	static final int DEFAULT_BEAT = 1;
 	static final int DEFAULT_TIME_SIG_TOP = 4;
 	static final int DEFAULT_TIME_SIG_BOTTOM = 4;
+	private static final String Tag = "EventCreateObject";
 	
 	//actual values
 	private String name;
@@ -35,12 +38,30 @@ public class EventCreateObject {
 	private int timeSigTop;
 	private int timeSigBottom;
 	
-	//fields used for ordering them
-	private EventCreateObject next;
-	private EventCreateObject previous;
+	//for parceling
+	public static EventCreator CREATOR = new EventCreator();
 	
 	
 	//constructors
+	/**
+	 * To be used to create an instance from a parcel.
+	 * @param source The parcel from which this object will be constructed. 
+	 */
+	private EventCreateObject(Parcel source) {
+		this();
+		name = source.readString();
+	    tempo = source.readDouble();
+	    volume = source.readFloat();
+	    repeats = source.readInt();
+	    complex = source.readByte() != 0;     //myBoolean == true if byte != 0
+	    int patternLength = source.readInt();
+	    pattern = new int[patternLength];
+	    source.readIntArray(pattern);
+	    beat = source.readInt();
+	    timeSigTop = source.readInt();
+	    timeSigBottom = source.readInt();
+	}
+	
 	/**
 	 * Creates an editable event with default values.
 	 */
@@ -203,33 +224,6 @@ public class EventCreateObject {
 	}
 
 	//other methods
-	/**
-	 * @return the next
-	 */
-	EventCreateObject getNext() {
-		return next;
-	}
-
-	/**
-	 * @param next the next to set
-	 */
-	void setNext(EventCreateObject next) {
-		this.next = next;
-	}
-
-	/**
-	 * @return the previous
-	 */
-	EventCreateObject getPrevious() {
-		return previous;
-	}
-
-	/**
-	 * @param previous the previous to set
-	 */
-	void setPrevious(EventCreateObject previous) {
-		this.previous = previous;
-	}
 
 	public static CustomLinkedList<EventCreateObject> defaultList() {
 	    CustomLinkedList<EventCreateObject> list = new CustomLinkedList<EventCreateObject>();
@@ -241,8 +235,43 @@ public class EventCreateObject {
 	    Log.d("defaultList method", "stuff gotten");
 	    return list;
     }
+
+	@Override
+    public int describeContents() {
+	    // TODO Auto-generated method stub
+	    return 0;
+    }
+
+	@Override
+    public void writeToParcel(Parcel out, int flags) {
+		Log.v(Tag, "Writing to parcel: flag " + flags);
+		out.writeString(name);
+	    out.writeDouble(tempo);
+	    out.writeFloat(volume);
+	    out.writeInt(repeats);
+	    out.writeByte((byte) (complex ? 1 : 0));     //if myBoolean == true, byte == 1
+	    out.writeInt(pattern.length);
+	    out.writeIntArray(pattern);
+	    out.writeInt(beat);
+	    out.writeInt(timeSigTop);
+	    out.writeInt(timeSigBottom);
+	    //TODO do something with flags?
+	    
+    }
 	
-	
+	public static final class EventCreator implements Parcelable.Creator<EventCreateObject> {
+
+		@Override
+        public EventCreateObject createFromParcel(Parcel source) {
+	        return new EventCreateObject(source);
+        }
+
+		@Override
+        public EventCreateObject[] newArray(int size) {
+	        return new EventCreateObject[size];
+        }
+		
+	}
 	
 	
 	
