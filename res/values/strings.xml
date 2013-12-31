@@ -9,5 +9,6 @@
 	<string name="load_song">Load a Song</string>
 	<string name="title_activity_edit_event">EditEventActivity</string>
 	<string name="hello_world">Hello world!</string>
+	<string name="add_event_button_text">Add</string>
 
 </resources>

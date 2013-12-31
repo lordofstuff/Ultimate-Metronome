@@ -1,7 +1,7 @@
 package com.Stephen.ultimatemetronome;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
+//import java.util.ArrayList;
+//import java.util.LinkedList;
 
 import android.util.Log;
 

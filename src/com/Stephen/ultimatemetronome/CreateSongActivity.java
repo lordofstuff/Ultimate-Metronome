@@ -1,7 +1,7 @@
 package com.Stephen.ultimatemetronome;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
+//import java.util.ArrayList;
+//import java.util.LinkedList;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.mobeta.android.dslv.DragSortListView;
@@ -19,7 +19,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.ListView;
+//import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.view.View.OnClickListener;
@@ -29,16 +29,18 @@ import android.view.View.OnClickListener;
 public class CreateSongActivity extends SherlockActivity {
 	
 	String Tag = "CreateSongActivity";
-
+	CustomArrayAdapter dataAdapter;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d(Tag, "activity created");
 		setContentView(R.layout.activity_create_song);
-		ListView list = (ListView)findViewById(R.id.list);
-	    CustomArrayAdapter dataAdapter = new CustomArrayAdapter(this, R.id.tvItemTitle, EventCreateObject.defaultList());
+		DragSortListView list = (DragSortListView)findViewById(R.id.list);
+	    dataAdapter = new CustomArrayAdapter(this, R.id.tvItemTitle, EventCreateObject.defaultList());
 	    Log.d(Tag, "adapter created.");
 	    list.setAdapter(dataAdapter);
+	    list.setDropListener(dataAdapter);
 	}
 
 	//	@Override
@@ -47,6 +49,10 @@ public class CreateSongActivity extends SherlockActivity {
 	//		getMenuInflater().inflate(R.menu.opening_menu, menu);
 	//		return true;
 	//	}
+	
+	public void addEvent(View view) {
+		dataAdapter.addEvent();
+	}
 	
 	
 	//should maybe include this as part of eventcreateobject?
@@ -59,8 +65,7 @@ public class CreateSongActivity extends SherlockActivity {
 		TextView eventName;
 	}
 
-	private class CustomArrayAdapter extends ArrayAdapter<EventCreateObject> implements DropListener
-	{   
+	private class CustomArrayAdapter extends ArrayAdapter<EventCreateObject> implements DropListener {   
 		private CustomLinkedList<EventCreateObject> list;
 
 		//this custom adapter receives an ArrayList of EventCreateObject objects.
@@ -73,6 +78,11 @@ public class CreateSongActivity extends SherlockActivity {
 //			this.list.addAll(EventCreateObjectList);
 			this.list = EventCreateObjectList;
 		}
+
+		public void addEvent() {
+	        list.add(new EventCreateObject());
+	        CustomArrayAdapter.this.notifyDataSetChanged();
+        }
 
 		public View getView(final int position, View convertView, ViewGroup parent)
 		{
@@ -114,8 +124,7 @@ public class CreateSongActivity extends SherlockActivity {
 			holder.checked.setTag(position);
 
 			//define an onClickListener for the CheckBox.
-			holder.checked.setOnClickListener(new OnClickListener() 
-			{       
+			holder.checked.setOnClickListener(new OnClickListener() {       
 				@Override
 				public void onClick(View v)
 				{
@@ -144,15 +153,23 @@ public class CreateSongActivity extends SherlockActivity {
 			//setting data into the the ViewHolder.
 			holder.title.setText("example text");
 			holder.checked.setChecked(list.get(position).isComplex());
+			
 
 			//return the row view.
 			return convertView;
 		}
 
 		@Override
-        public void drop(int from, int to) {
-	        // TODO Auto-generated method stub
-	        
+        public void drop(final int from, final int to) {
+			Log.d(Tag, "Moving " + from + " to " + to);
+			Thread t = new Thread(new Runnable() {
+				@Override
+                public void run() {
+					list.moveElement(from, to);
+                }
+			});
+			t.start();
+			CustomArrayAdapter.this.notifyDataSetChanged();
         }
 	}
 
