@@ -13,7 +13,7 @@
         android:id="@+id/tvItemTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="item string" />
+        android:text="Delete Set" />
     <ImageView
         android:id="@+id/iStatus"
         android:layout_width="wrap_content"

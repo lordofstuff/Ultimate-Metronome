@@ -83,5 +83,21 @@
 		android:layout_alignLeft="@+id/tempo_edit_text"
 		android:layout_alignTop="@+id/textView3"
 		android:ems="10" />
+
+	<EditText
+		android:id="@+id/repeat_edit_text"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignLeft="@+id/beat_edit_text"
+		android:layout_centerVertical="true"
+		android:ems="10" />
+
+	<TextView
+		android:id="@+id/textView5"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignBottom="@+id/repeat_edit_text"
+		android:layout_alignLeft="@+id/textView4"
+		android:text="repeats" />
 	
 </RelativeLayout>

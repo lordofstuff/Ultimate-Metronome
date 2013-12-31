@@ -44,7 +44,7 @@ public class CreateSongActivity extends SherlockActivity {
 		Log.d(Tag, "activity created");
 		setContentView(R.layout.activity_create_song);
 		DragSortListView list = (DragSortListView)findViewById(R.id.list);
-		dataAdapter = new CustomArrayAdapter(this, R.id.tvItemTitle, EventCreateObject.defaultList());
+		dataAdapter = new CustomArrayAdapter(this, R.id.tvItemTitle, new CustomLinkedList<EventCreateObject>());
 		Log.d(Tag, "adapter created.");
 		list.setAdapter(dataAdapter);
 		list.setDropListener(dataAdapter);
@@ -57,6 +57,19 @@ public class CreateSongActivity extends SherlockActivity {
 	//		return true;
 	//	}
 
+	//TURD?
+	@Override
+	public void onResume() {
+		super.onResume();
+		dataAdapter.notifyDataSetChanged();
+	}
+	
+	@Override
+	public void onRestart() {
+		super.onRestart();
+		dataAdapter.notifyDataSetChanged();
+	}
+	
 	public void addEvent(View view) {
 		dataAdapter.addEvent();
 	}
@@ -113,13 +126,24 @@ public class CreateSongActivity extends SherlockActivity {
 			holder.eventName = (TextView) convertView.findViewById(R.id.eventName);
 			holder.eventName.setText(list.get(position).getName());
 
-			//set a click listener for the list items themselves. 
-			((DragSortListView)parent).setOnItemClickListener(new OnItemClickListener() 
-			{
-				public void onItemClick(AdapterView<?> parent, View view,int position, long id) 
-				{
-					Toast.makeText(getContext(), "row " + position + " was pressed", Toast.LENGTH_LONG).show();
+			//			//set a click listener for the list items themselves. 
+			//			((DragSortListView)parent).setOnItemClickListener(new OnItemClickListener() 
+			//			{
+			//				public void onItemClick(AdapterView<?> parent, View view,int position, long id) 
+			//				{
+			//					Toast.makeText(getContext(), "row " + position + " was pressed", Toast.LENGTH_LONG).show();
+			//				}
+			//			});
+
+			//onclickListener for the text
+			holder.title.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View arg0) {
+					list.remove(position);
+					notifyDataSetChanged();
 				}
+
 			});
 
 			//define an onClickListener for the ImageView.
@@ -157,13 +181,14 @@ public class CreateSongActivity extends SherlockActivity {
 			});
 
 			//setting data into the the ViewHolder.
-			holder.title.setText("example text");
+			holder.title.setText("Delete Set");
 			holder.checked.setChecked(list.get(position).isComplex());
 
 
 			//return the row view.
 			return convertView;
 		}
+		
 
 
 		void launchEdit(int position) {
@@ -197,7 +222,7 @@ public class CreateSongActivity extends SherlockActivity {
 			public void run() {
 				//TURD this should not be hardcoded in
 				String fileName = "TheOneSongToRuleThemAll";
-				File file = new File(getBaseContext().getFilesDir(), fileName);
+				//File file = new File(getBaseContext().getFilesDir(), fileName);
 				FileOutputStream outputStream;
 
 				String string = "file version 1\n" +
