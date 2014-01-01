@@ -72,6 +72,8 @@ class MyMetronome implements Runnable{
 	MetronomeController mc;
 	private boolean finishQueue;
 	boolean updated = true;
+	//private int lastEventInterval;
+	private boolean wroteSilence = false;
 	Object metLock = new Object();
 
 	//constructor(s)
@@ -130,10 +132,12 @@ class MyMetronome implements Runnable{
 		//must run on one thread and notify the controller thread of when it finishes something so it can have values updated. 
 
 		track.play();
-		int interval_in_frames = (int) (60 * SAMPLE_RATE / (tempo * beat));
-		int frames_since_played = interval_in_frames;
+		int smallestSubdivisionInFrames = (int) (60 * SAMPLE_RATE / (tempo * beat));
+		//lastEventInterval = interval_in_frames;
+		int frames_since_played = smallestSubdivisionInFrames;
 
 		while (playing) {
+			Log.d(Tag, "starting play loop");
 			while (!updated) {
 				synchronized(metLock) {
 					try {
@@ -144,20 +148,28 @@ class MyMetronome implements Runnable{
 					}
 				}
 			}
-			interval_in_frames = (int) (60 * SAMPLE_RATE / (tempo * beat)); // Recalculate in case tempo changed
 
-			if (frames_since_played >= interval_in_frames) {
+			//maybe also recalculate here too?
+			if (wroteSilence ) {//(frames_since_played >= smallestSubdivisionInFrames) {
 				writeNextBeatOfPattern();
 				frames_since_played = primarySoundData.length;
+				wroteSilence = false;
 			} else {
-				int frames_left_to_wait = interval_in_frames - frames_since_played;
+				if (!wroteSilence && !(frames_since_played >= smallestSubdivisionInFrames)) {
+					int frames_left_to_wait = smallestSubdivisionInFrames - frames_since_played;
 
-				// Rest for a full write chunk or until the next click needs to play, whichever is less.
-				int rest_length_in_frames = Math.min(frames_left_to_wait, WRITE_CHUNK_IN_FRAMES);
-				track.write(new short[rest_length_in_frames], 0, rest_length_in_frames);
-				Log.d(Tag, "wrote silence in " + rest_length_in_frames);
-				frames_since_played += rest_length_in_frames;
+					// Rest for a full write chunk or until the next click needs to play, whichever is less.
+					//int rest_length_in_frames = Math.min(frames_left_to_wait, WRITE_CHUNK_IN_FRAMES);
+					track.write(new short[frames_left_to_wait], 0, frames_left_to_wait);
+					Log.d(Tag, "wrote silence in " + frames_left_to_wait);
+					frames_since_played += frames_left_to_wait;
+					wroteSilence = true;
+				}
+				else {
+					wroteSilence = true;
+				}
 			}
+			smallestSubdivisionInFrames = (int) (60 * SAMPLE_RATE / (tempo * beat)); // Recalculate in case tempo changed
 		}
 		//since it is cutting off early the solution is to either wait the buffer period
 		//or set up a listener that stops it when it knows it is done. 
