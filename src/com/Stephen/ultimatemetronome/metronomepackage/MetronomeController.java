@@ -51,7 +51,9 @@ public class MetronomeController implements Runnable{
 		//Log.v(Tag, "Finished measure " + measureInCurrentEvent + "/" + currentEvent.repeats);
 		//cases: it is just a new measure in the set
 		if (measureInCurrentEvent < currentEvent.repeats) {
+			Log.d(Tag, "finished measure " + measureInCurrentEvent + "//" + currentEvent.repeats);
 			measureInCurrentEvent++;
+			
 			met.updated = true;
 			synchronized(met.metLock) {
 				met.metLock.notify();
@@ -65,7 +67,6 @@ public class MetronomeController implements Runnable{
 		}
 		//it is the end of the song. 
 		else {
-
 			met.finish();
 		}
 	}
@@ -75,9 +76,9 @@ public class MetronomeController implements Runnable{
 		met.tempo = currentEvent.tempo;
 		met.pattern = currentEvent.pattern;
 		met.volume = currentEvent.volume;
-
 		met.beat = currentEvent.beat;
-		//met.currentBeat = 0;
+		
+		met.updateLengths();
 		met.updated = true;
 		synchronized(met.metLock) {
 			met.metLock.notify();

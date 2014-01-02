@@ -33,12 +33,17 @@ class MyMetronome implements Runnable{
 	static final double MAX_TEMPO = 450; //approximately
 	static final double MIN_TEMPO = 4;
 
-	//stuff borrowed from practice tools
+
 	private static final int WRITE_CHUNK_IN_FRAMES = 8820; // 200 ms
 	private static final int SAMPLE_RATE = 22050;
 	private static final int BUFFER_SIZE = 22050;
 	private final short[] primarySoundData;
 	private final short[] secondarySoundData;
+	private final short[] primaryHalfLength;
+	private final short[] secondaryHalfLength;
+	private short[] primaryData;
+	private short[] secondaryData;
+
 	private final AudioTrack track;
 	boolean playing = false;
 
@@ -73,8 +78,10 @@ class MyMetronome implements Runnable{
 	private boolean finishQueue;
 	boolean updated = true;
 	//private int lastEventInterval;
-	private boolean wroteSilence = false;
+	//private boolean wroteSilence = false;
 	Object metLock = new Object();
+	private int beatSoundLength;
+	private int smallestSubdivisionInFrames;
 
 	//constructor(s)
 	/**
@@ -94,6 +101,10 @@ class MyMetronome implements Runnable{
 		if (soundSet == Sounds.set1) {
 			primarySoundData = Utility.intToShortArray(context.getResources().getIntArray(R.array.tick_pcm));
 			secondarySoundData = Utility.intToShortArray(context.getResources().getIntArray(R.array.tock_pcm));
+			primaryHalfLength = Utility.intToShortArrayHalf(context.getResources().getIntArray(R.array.tick_pcm));
+			secondaryHalfLength = Utility.intToShortArrayHalf(context.getResources().getIntArray(R.array.tock_pcm));
+
+
 			//add other sounds to this set
 		}
 		// TODO add more possible .wav files? 
@@ -104,6 +115,8 @@ class MyMetronome implements Runnable{
 			//default to set1
 			primarySoundData = Utility.intToShortArray(context.getResources().getIntArray(R.array.tick_pcm));
 			secondarySoundData = Utility.intToShortArray(context.getResources().getIntArray(R.array.tock_pcm));
+			primaryHalfLength = Utility.intToShortArrayHalf(context.getResources().getIntArray(R.array.tick_pcm));
+			secondaryHalfLength = Utility.intToShortArrayHalf(context.getResources().getIntArray(R.array.tock_pcm));
 		}
 		track = new AudioTrack(AudioManager.STREAM_MUSIC, SAMPLE_RATE, AudioFormat.CHANNEL_OUT_MONO,
 				AudioFormat.ENCODING_PCM_16BIT, BUFFER_SIZE, AudioTrack.MODE_STREAM);
@@ -112,32 +125,23 @@ class MyMetronome implements Runnable{
 
 	//methods
 
-	/**
-	 * Converts a simple time signature to an arbitrary one. 
-	 * @return
-	 */
-	static int[][] convertSimpleToComplex() {
-
-		//TODO something with this
-		//not yet implemented
-
-
-		return new int[][] {{1}};
-	}
-
 	@Override
 	public void run() {
-		Log.d("MyMetronome","It has actually started, maybe.");
-
 		//must run on one thread and notify the controller thread of when it finishes something so it can have values updated. 
+		smallestSubdivisionInFrames = (int) (60 * SAMPLE_RATE / (tempo * beat));
+		beatSoundLength = primarySoundData.length;
+		updateLengths();
+		beatSoundLength = primaryData.length;
+		//initialize for play (the parameters are up to date to begin with). 
+		updated = true;
 
 		track.play();
-		int smallestSubdivisionInFrames = (int) (60 * SAMPLE_RATE / (tempo * beat));
-		//lastEventInterval = interval_in_frames;
-		int frames_since_played = smallestSubdivisionInFrames;
-
 		while (playing) {
 			Log.d(Tag, "starting play loop");
+			if (!updated) {
+				Log.v(Tag, "Updating");
+				new Thread(mc).start(); //inform the controller that it has finished a measure
+			}
 			while (!updated) {
 				synchronized(metLock) {
 					try {
@@ -148,28 +152,9 @@ class MyMetronome implements Runnable{
 					}
 				}
 			}
-
-			//maybe also recalculate here too?
-			if (wroteSilence ) {//(frames_since_played >= smallestSubdivisionInFrames) {
-				writeNextBeatOfPattern();
-				frames_since_played = primarySoundData.length;
-				wroteSilence = false;
-			} else {
-				if (!wroteSilence && !(frames_since_played >= smallestSubdivisionInFrames)) {
-					int frames_left_to_wait = smallestSubdivisionInFrames - frames_since_played;
-
-					// Rest for a full write chunk or until the next click needs to play, whichever is less.
-					//int rest_length_in_frames = Math.min(frames_left_to_wait, WRITE_CHUNK_IN_FRAMES);
-					track.write(new short[frames_left_to_wait], 0, frames_left_to_wait);
-					Log.d(Tag, "wrote silence in " + frames_left_to_wait);
-					frames_since_played += frames_left_to_wait;
-					wroteSilence = true;
-				}
-				else {
-					wroteSilence = true;
-				}
-			}
-			smallestSubdivisionInFrames = (int) (60 * SAMPLE_RATE / (tempo * beat)); // Recalculate in case tempo changed
+			//smallestSubdivisionInFrames = (int) (60 * SAMPLE_RATE / (tempo * beat)); // Recalculate in case tempo changed
+			writeNextBeatOfPattern();
+			writeSilence();		
 		}
 		//since it is cutting off early the solution is to either wait the buffer period
 		//or set up a listener that stops it when it knows it is done. 
@@ -187,9 +172,59 @@ class MyMetronome implements Runnable{
 		track.release();
 	}
 
+	private void writeSilence() {
+		//smallestSubdivisionInFrames = (int) (60 * SAMPLE_RATE / (tempo * beat)); // Recalculate in case tempo changed
+		if (beatSoundLength < smallestSubdivisionInFrames) {
+			int restLength = smallestSubdivisionInFrames - beatSoundLength;
+			track.write(new short[restLength], 0, restLength);
+			Log.d(Tag, "wrote silence in " + restLength);
+		}
+		else {
+			Log.d(Tag, "still too fast!");
+		}
+	}
+
+	private void writeNextBeatOfPattern() {
+		if (pattern[currentBeat] == 1) {
+			track.write(primaryData, 0, primaryData.length);
+			Log.v(Tag, "write primary beat " + (currentBeat + 1) + "/" + pattern.length);
+		} 
+		else if (pattern[currentBeat] == 2 ){
+			track.write(secondaryData, 0, secondaryData.length);
+			Log.v(Tag, "write secondary beat " + (currentBeat + 1) + "/" + pattern.length);
+		}
+		// TODO add cases for 3 and 4 type beats.
+		else {
+			// Write the amount of rest that a tick or tock would normally take up
+			track.write(new short[primaryData.length], 0, primaryData.length);
+			Log.v(Tag, "write rest beat " + (currentBeat + 1) + "/" + pattern.length);
+		}
+		//increment the beat and measure if needed. 
+		if (currentBeat + 1 >= pattern.length) {
+			currentBeat = 0; 
+			updated = false;
+		}
+		else {
+			currentBeat++;
+		}
+	}
+
+	void updateLengths() {
+		smallestSubdivisionInFrames = (int) (60 * SAMPLE_RATE / (tempo * beat)); // Recalculate in case tempo changed
+		if ((beatSoundLength <= smallestSubdivisionInFrames)) {
+			primaryData = primarySoundData;
+			secondaryData = secondarySoundData;
+		}
+		else {
+			primaryData = primaryHalfLength;
+			secondaryData = secondaryHalfLength;
+		}
+		smallestSubdivisionInFrames = (int) (60 * SAMPLE_RATE / (tempo * beat)); // Recalculate in case tempo changed
+		beatSoundLength = primaryData.length;
+	}
+
 	public void start() {
 		playing = true;
-
 		new Thread(this).start();
 	}
 
@@ -202,34 +237,5 @@ class MyMetronome implements Runnable{
 
 	}
 
-
-	private void writeNextBeatOfPattern() {
-		if (pattern[currentBeat] == 1) {
-			track.write(primarySoundData, 0, primarySoundData.length);
-			Log.v(Tag, "write primary beat " + (currentBeat + 1) + "/" + pattern.length);
-		} 
-		else if (pattern[currentBeat] == 2 ){
-			track.write(secondarySoundData, 0, secondarySoundData.length);
-			Log.v(Tag, "write secondary beat " + (currentBeat + 1) + "/" + pattern.length);
-		}
-		// TODO add cases for 3 and 4 type beats.
-		else {
-			// Write the amount of rest that a tick or tock would normally take up
-			track.write(new short[primarySoundData.length], 0, primarySoundData.length);
-			Log.v(Tag, "write rest beat " + (currentBeat + 1) + "/" + pattern.length);
-		}
-		//currentBeat++;
-		//currentBeat %= anyTimeSig.length;
-		//adapted to allow for a pattern length that changes. count starts on 0.
-		if (currentBeat + 1 >= pattern.length) {
-			currentBeat = 0; 
-			updated = false;
-			new Thread(mc).start(); //inform the controller that it has finished a measure
-		}
-
-		else {
-			currentBeat++;
-		}
-	}
 
 }

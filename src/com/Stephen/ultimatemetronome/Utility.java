@@ -37,4 +37,14 @@ public class Utility {
     }
     return value;
   }
+
+public static short[] intToShortArrayHalf(int[] int_array) {
+	short[] result = new short[(int_array.length / 2)];
+	int i2 = 0;
+    for (int i = 0; i < result.length; i++) {
+      result[i] = (short) int_array[i2++];
+      i2++;
+    }
+    return result;
+}
 }
