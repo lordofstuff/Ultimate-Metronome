@@ -30,7 +30,7 @@ class MyMetronome implements Runnable{
 	enum Sounds {set1, set2}; //currently there is only one set, and it is incomplete. TODO
 
 	//min and max legal values. may be tweaked
-	static final double MAX_TEMPO = 250;
+	static final double MAX_TEMPO = 450; //approximately
 	static final double MIN_TEMPO = 4;
 
 	//stuff borrowed from practice tools
