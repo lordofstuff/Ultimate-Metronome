@@ -5,18 +5,18 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.app.SherlockFragment;
+//import com.actionbarsherlock.app.SherlockFragment;
 
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.app.Activity;
+//import android.app.Activity;
 import android.content.Intent;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.Menu;
+//import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
+//import android.widget.TextView;
 
 public class EditEventActivity extends SherlockActivity {
 

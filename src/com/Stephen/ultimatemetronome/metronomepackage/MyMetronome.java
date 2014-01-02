@@ -34,7 +34,7 @@ class MyMetronome implements Runnable{
 	static final double MIN_TEMPO = 4;
 
 
-	private static final int WRITE_CHUNK_IN_FRAMES = 8820; // 200 ms
+	//private static final int WRITE_CHUNK_IN_FRAMES = 8820; // 200 ms
 	private static final int SAMPLE_RATE = 22050;
 	private static final int BUFFER_SIZE = 22050;
 	private final short[] primarySoundData;
@@ -82,6 +82,7 @@ class MyMetronome implements Runnable{
 	Object metLock = new Object();
 	private int beatSoundLength;
 	private int smallestSubdivisionInFrames;
+	private boolean paused;
 
 	//constructor(s)
 	/**
@@ -137,12 +138,12 @@ class MyMetronome implements Runnable{
 
 		track.play();
 		while (playing) {
-			Log.d(Tag, "starting play loop");
+			//Log.d(Tag, "starting play loop");
 			if (!updated) {
 				//Log.v(Tag, "Updating");
 				new Thread(mc).start(); //inform the controller that it has finished a measure
 			}
-			while (!updated) {
+			while (!updated || paused) {
 				synchronized(metLock) {
 					try {
 						metLock.wait();
@@ -152,24 +153,13 @@ class MyMetronome implements Runnable{
 					}
 				}
 			}
-			//smallestSubdivisionInFrames = (int) (60 * SAMPLE_RATE / (tempo * beat)); // Recalculate in case tempo changed
+			if (finishQueue) {
+				finishThenStop();
+			}
 			writeNextBeatOfPattern();
 			writeSilence();
 		}
-		//since it is cutting off early the solution is to either wait the buffer period
-		//or set up a listener that stops it when it knows it is done. 
-		if (finishQueue) {
-			try {
-				Log.v(Tag, "Finishing Queue");
-				Thread.sleep(BUFFER_SIZE / WRITE_CHUNK_IN_FRAMES * 200);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		Log.v(Tag, "Stopping AudioTrack, releasing.");
-		track.stop();
-		track.release();
+		Log.v(Tag, "Exiting Play loop");
 	}
 
 	private void writeSilence() {
@@ -209,6 +199,26 @@ class MyMetronome implements Runnable{
 		}
 	}
 
+	private void finishThenStop() {
+		//set a marker at the end of the buffered audio?
+		track.setNotificationMarkerPosition(1);
+		track.setPlaybackPositionUpdateListener(new AudioTrack.OnPlaybackPositionUpdateListener() {
+
+			@Override
+			public void onMarkerReached(AudioTrack track) {
+				Log.v(Tag, "Stopping AudioTrack, releasing.");
+				playing = false;
+				track.stop();
+				track.release();
+				nullOut();
+			}
+			@Override
+			public void onPeriodicNotification(AudioTrack arg0) {
+				// TODO Auto-generated method stub
+			}
+		});
+	}
+	
 	void updateLengths() {
 		smallestSubdivisionInFrames = (int) (60 * SAMPLE_RATE / (tempo * beat)); // Recalculate in case tempo changed
 		if ((beatSoundLength <= smallestSubdivisionInFrames)) {
@@ -233,19 +243,40 @@ class MyMetronome implements Runnable{
 	 */
 	public void finish() {
 		finishQueue = true;
-		playing = false;
-		nullOut();
 	}
-	
+
 	private void nullOut() {
-	    // TODO Auto-generated method stub
-	    //will eventually null out all values not needed to release memory after it finishes. 
-    }
+		// TODO Auto-generated method stub
+		//will eventually null out all values not needed to release memory after it finishes. 
+	}
 
 	public void stop() {
+		if (!paused) {
+			Log.v(Tag, "Stop called while track was paused.");
+			//TODO make sure there are no issues with this. 
+		}
 		track.stop();
 		finishQueue = false;
 		playing = false;
+		track.release();
+		nullOut();
+	}
+
+	public void pause() {
+		if (paused) {
+			throw new IllegalStateException("pause called while already paused.");
+		}
+		track.pause();
+		paused = true;
+	}
+
+	public void resume() {
+		if (!paused) {
+			throw new IllegalStateException("Resume called while metronome was not paused");
+		}
+		track.play();
+		paused = false;
+		metLock.notifyAll();
 	}
 
 
