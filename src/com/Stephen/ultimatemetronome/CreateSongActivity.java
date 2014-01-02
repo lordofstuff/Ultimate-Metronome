@@ -1,12 +1,12 @@
 package com.Stephen.ultimatemetronome;
 
-//import java.util.ArrayList;
-//import java.util.LinkedList;
 
-import java.io.File;
+
 import java.io.FileOutputStream;
 
-import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.mobeta.android.dslv.DragSortListView;
 import com.mobeta.android.dslv.DragSortListView.DropListener;
 
@@ -17,21 +17,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
+
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-//import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.view.View.OnClickListener;
-//import android.app.Activity;
-//import android.view.Menu;
 
-public class CreateSongActivity extends SherlockActivity {
+
+public class CreateSongActivity extends SherlockFragmentActivity {
 
 	String Tag = "CreateSongActivity";
+	DragSortListView list;// = (DragSortListView)findViewById(R.id.list);
 	CustomArrayAdapter dataAdapter;
 
 	/* TURD 1 */
@@ -41,35 +39,62 @@ public class CreateSongActivity extends SherlockActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.d(Tag, "activity created");
+		//Log.d(Tag, "activity created");
 		setContentView(R.layout.activity_create_song);
-		DragSortListView list = (DragSortListView)findViewById(R.id.list);
+		list = (DragSortListView)findViewById(R.id.list);
 		dataAdapter = new CustomArrayAdapter(this, R.id.tvItemTitle, new CustomLinkedList<EventCreateObject>());
-		Log.d(Tag, "adapter created.");
+		//Log.d(Tag, "adapter created.");
 		list.setAdapter(dataAdapter);
 		list.setDropListener(dataAdapter);
 	}
 
-	//	@Override
-	//	public boolean onCreateOptionsMenu(Menu menu) {
-	//		// Inflate the menu; this adds items to the action bar if it is present.
-	//		getMenuInflater().inflate(R.menu.opening_menu, menu);
-	//		return true;
-	//	}
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getSupportMenuInflater().inflate(R.menu.create_song_menu, menu);
+		return true;
+	}
 
-	//TURD?
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.add_event_action:
+				addEvent(null);
+				break;
+			case R.id.toggle_sort_action:
+				//TODO add visual indication that sorting is active, disable other behavior when it is.
+				
+				if (item.isChecked()) { //it was already checked; disable sorting and uncheck it
+					item.setChecked(false);
+					list.setDragEnabled(false);
+				}
+				else {
+					item.setChecked(true);
+					list.setDragEnabled(true);
+				}
+				break;
+			case R.id.save_action:
+				saveSong(null);
+				break;
+			default:
+				break;
+		}
+
+		return true;
+	} 
+
+
 	@Override
 	public void onResume() {
 		super.onResume();
 		dataAdapter.notifyDataSetChanged();
 	}
-	
+
 	@Override
 	public void onRestart() {
 		super.onRestart();
 		dataAdapter.notifyDataSetChanged();
 	}
-	
+
 	public void addEvent(View view) {
 		dataAdapter.addEvent();
 	}
@@ -98,6 +123,7 @@ public class CreateSongActivity extends SherlockActivity {
 			//			this.list.addAll(EventCreateObjectList);
 			this.list = EventCreateObjectList;
 		}
+
 
 		CustomLinkedList<EventCreateObject> getList() {
 			return list;
@@ -188,7 +214,7 @@ public class CreateSongActivity extends SherlockActivity {
 			//return the row view.
 			return convertView;
 		}
-		
+
 
 
 		void launchEdit(int position) {

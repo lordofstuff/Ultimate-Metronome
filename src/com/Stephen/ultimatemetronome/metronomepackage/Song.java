@@ -6,9 +6,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.LinkedList;
 
-import android.util.Log;
+
+import com.Stephen.ultimatemetronome.CustomLinkedList;
+import com.Stephen.ultimatemetronome.EventCreateObject;
+
+//import android.util.Log;
 
 /**
  * A wrapper class for a linked list of MetronomeEvents, optimized for playback, not editing. 
@@ -16,19 +19,50 @@ import android.util.Log;
  *
  */
 public class Song implements Iterable<MetronomeEvent>{
-	private static final String Tag = "Song";
+	//private static final String Tag = "Song";
 	//fields
-	private LinkedList<MetronomeEvent> events;
+	private CustomLinkedList<MetronomeEvent> events;
+	public static int PLAYBACK = 1;
+	public static int EDIT = 2;
 
-	//constructor
+	//constructors
 	Song() {
-		events = new LinkedList<MetronomeEvent>();
+		events = new CustomLinkedList<MetronomeEvent>();
+	}
+	
+	private Song(CustomLinkedList<MetronomeEvent> list) {
+		events = list;
 	}
 
 	//methods
 
-	public static Song createFromFile(File file) throws IOException, FileNotFoundException, FileFormatException {
-		Song song = new Song();
+	@SuppressWarnings("unchecked")
+    public static Song createFromFileForPlayback(File file) throws IOException, FileNotFoundException, FileFormatException {
+		return new Song(loadFile(file, PLAYBACK));
+	}
+	
+	/**
+	 * This method parses the given file and returns a list of events based on it. The list may contain either eventCreateObject or MetronomeEvent, depending on the flag given. 
+	 * They are both done in this one method despite type difference to avoid duplicated code for loading from a file. 
+	 * @param file The file to be loaded.
+	 * @param flag A flag indicating that this is for playback or for editing. 
+	 * @return a list of events in one form or another. 
+	 * @throws IOException
+	 * @throws FileNotFoundException
+	 * @throws FileFormatException
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+    private static CustomLinkedList loadFile(File file, int flag) throws IOException, FileNotFoundException, FileFormatException {
+		CustomLinkedList list;
+		if (flag == PLAYBACK) {
+			list = new CustomLinkedList<MetronomeEvent>();
+		}
+		else if (flag == EDIT) {
+			list = new CustomLinkedList<EventCreateObject>();
+		}
+		else {
+			throw new IllegalArgumentException();
+		}
 		//local variables to create the elements:
 		String name;
 		double tempo;
@@ -58,10 +92,10 @@ public class Song implements Iterable<MetronomeEvent>{
 		if (s.equals("file version 1")){
 			s = br.readLine();
 			while (s != null) {
-				Log.d(Tag, "Read line: " + s);
+				//Log.d(Tag, "Read line: " + s);
 				if (!s.equals("") && s.charAt(0) != '#') { //if not a comment or blank line
 				
-					Log.d(Tag, "starting to read a real one");
+					//Log.d(Tag, "starting to read a real one");
 					name = s;
 					tempo = Double.parseDouble(br.readLine());
 					// TODO check for exceptions here
@@ -69,12 +103,16 @@ public class Song implements Iterable<MetronomeEvent>{
 					pattern = toPatternArray(br.readLine()); //convert this to an array of ints
 					repeats = Integer.parseInt(br.readLine());
 					beat = Integer.parseInt(br.readLine());
-					song.events.add(new MetronomeEvent(tempo, pattern, volume, repeats, beat, name));
-					
-					
+					if (flag == PLAYBACK) {
+						list.add(new MetronomeEvent(tempo, pattern, volume, repeats, beat, name));
+					}
+					if (flag == EDIT) {
+						list.add(new EventCreateObject(s, tempo, volume, repeats, false, pattern, beat, 0, 0));
+						//TODO add new file version which stores these extras
+					}
 				}
 				else {
-					Log.d(Tag, "Ignoring comment or blank line");
+					//Log.d(Tag, "Ignoring comment or blank line");
 				}
 				s = br.readLine();
 			}
@@ -89,11 +127,11 @@ public class Song implements Iterable<MetronomeEvent>{
 		br.close();
 		fr.close();
 
-		return song;
+		return list;
 	}
 
 	private static int[] toPatternArray(String numbers) {
-		//the string will be in the form of space separated whole numbers 0-4 inclusive. anything else will throw an exception
+		//the string will be in the form of space separated whole numbers 0-4 inclusive. anything else will be ignored. 
 		int[] array = new int[numbers.length()/2];
 		int i1 = 0;
 		for (int i = 0; i < numbers.length(); i++){
@@ -116,7 +154,6 @@ public class Song implements Iterable<MetronomeEvent>{
 		song.events.add(new MetronomeEvent(120, new int[] {1, 1, 1, 2, 2}, 1, 2, 2, "Event 1"));
 		song.events.add(new MetronomeEvent(75, new int[] {0, 0, 0}, 1, 1, 1, "Event 2"));
 		song.events.add(new MetronomeEvent(60, new int[] {1, 1, 2}, .5f, 2, 6, "Event 3"));
-
 		return song;
 	}
 

@@ -12,5 +12,10 @@
 	<string name="add_event_button_text">Add</string>
 	<string name="event_name_hint">Please name this set</string>
 	<string name="event_edit_save">Save</string>
+	<string name="add_event_condensed">Add</string>
+	<string name="sort_action_title">Toggle Sorting</string>
+	<string name="sort_condensed">Sort</string>
+	<string name="save_action_title">Save Song</string>
+	<string name="save_action_condensed">Save</string>
 
 </resources>

@@ -1,0 +1,29 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+	<item
+		android:id="@+id/action_settings"
+		android:orderInCategory="100"
+		android:showAsAction="never"
+		android:title="@string/action_settings">
+	</item>
+	<item android:id="@+id/add_event_action" 
+		android:titleCondensed="@string/add_event_condensed" 
+		android:showAsAction="ifRoom" 
+		android:icon="@drawable/ic_action_new" 
+		android:title="@string/add_event_button_text" 
+		></item>
+	<item android:id="@+id/toggle_sort_action"
+		android:title="@string/sort_action_title"
+		android:titleCondensed="@string/sort_condensed"
+		android:showAsAction="ifRoom|withText"
+		android:visible="true" 
+		android:checkable="true" 
+		android:icon="@drawable/ic_action_view_as_list" 
+		android:checked="false"></item>
+	<item android:id="@+id/save_action"
+		android:visible="true"
+		android:showAsAction="ifRoom"
+		
+		android:titleCondensed="@string/save_action_condensed" android:checkable="false" android:icon="@drawable/ic_action_save" android:title="@string/save_action_title"></item>
+
+</menu>

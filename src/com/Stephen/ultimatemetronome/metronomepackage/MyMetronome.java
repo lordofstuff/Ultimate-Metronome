@@ -139,7 +139,7 @@ class MyMetronome implements Runnable{
 		while (playing) {
 			Log.d(Tag, "starting play loop");
 			if (!updated) {
-				Log.v(Tag, "Updating");
+				//Log.v(Tag, "Updating");
 				new Thread(mc).start(); //inform the controller that it has finished a measure
 			}
 			while (!updated) {
@@ -154,7 +154,7 @@ class MyMetronome implements Runnable{
 			}
 			//smallestSubdivisionInFrames = (int) (60 * SAMPLE_RATE / (tempo * beat)); // Recalculate in case tempo changed
 			writeNextBeatOfPattern();
-			writeSilence();		
+			writeSilence();
 		}
 		//since it is cutting off early the solution is to either wait the buffer period
 		//or set up a listener that stops it when it knows it is done. 
@@ -177,27 +177,27 @@ class MyMetronome implements Runnable{
 		if (beatSoundLength < smallestSubdivisionInFrames) {
 			int restLength = smallestSubdivisionInFrames - beatSoundLength;
 			track.write(new short[restLength], 0, restLength);
-			Log.d(Tag, "wrote silence in " + restLength);
+			//Log.d(Tag, "wrote silence in " + restLength);
 		}
 		else {
-			Log.d(Tag, "still too fast!");
+			Log.d(Tag, "too fast!");
 		}
 	}
 
 	private void writeNextBeatOfPattern() {
 		if (pattern[currentBeat] == 1) {
 			track.write(primaryData, 0, primaryData.length);
-			Log.v(Tag, "write primary beat " + (currentBeat + 1) + "/" + pattern.length);
+			//Log.v(Tag, "write primary beat " + (currentBeat + 1) + "/" + pattern.length);
 		} 
 		else if (pattern[currentBeat] == 2 ){
 			track.write(secondaryData, 0, secondaryData.length);
-			Log.v(Tag, "write secondary beat " + (currentBeat + 1) + "/" + pattern.length);
+			//Log.v(Tag, "write secondary beat " + (currentBeat + 1) + "/" + pattern.length);
 		}
 		// TODO add cases for 3 and 4 type beats.
 		else {
 			// Write the amount of rest that a tick or tock would normally take up
 			track.write(new short[primaryData.length], 0, primaryData.length);
-			Log.v(Tag, "write rest beat " + (currentBeat + 1) + "/" + pattern.length);
+			//Log.v(Tag, "write rest beat " + (currentBeat + 1) + "/" + pattern.length);
 		}
 		//increment the beat and measure if needed. 
 		if (currentBeat + 1 >= pattern.length) {
@@ -234,7 +234,18 @@ class MyMetronome implements Runnable{
 	public void finish() {
 		finishQueue = true;
 		playing = false;
+		nullOut();
+	}
+	
+	private void nullOut() {
+	    // TODO Auto-generated method stub
+	    //will eventually null out all values not needed to release memory after it finishes. 
+    }
 
+	public void stop() {
+		track.stop();
+		finishQueue = false;
+		playing = false;
 	}
 
 

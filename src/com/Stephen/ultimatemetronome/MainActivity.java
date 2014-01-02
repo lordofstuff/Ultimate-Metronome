@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import com.Stephen.ultimatemetronome.metronomepackage.*;
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
 
 import android.os.Bundle;
 //import android.app.Activity;
@@ -13,7 +14,6 @@ import android.content.Intent;
 import android.util.Log;
 //import android.view.Menu;
 import android.view.View;
-//import android.widget.EditText;
 
 public class MainActivity extends SherlockActivity {
 
@@ -24,12 +24,12 @@ public class MainActivity extends SherlockActivity {
 		Log.i("Main", "activity created.");
 	}
 
-//	@Override
-//	public boolean onCreateOptionsMenu(Menu menu) {
-//		// Inflate the menu; this adds items to the action bar if it is present.
-//		getMenuInflater().inflate(R.menu.main, menu);
-//		return true;
-//	}
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getSupportMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
 	
 	public void testMet(View view) {
 		Log.d("main Activity", "button click registered");
@@ -49,7 +49,7 @@ public class MainActivity extends SherlockActivity {
 		String fileName = "TheOneSongToRuleThemAll";
 		File file = new File(getBaseContext().getFilesDir(), fileName);
 		try {
-	        song = Song.createFromFile(file);
+	        song = Song.createFromFileForPlayback(file);
         } catch (FileNotFoundException e) {
 	        // TODO Auto-generated catch block
 	        e.printStackTrace();

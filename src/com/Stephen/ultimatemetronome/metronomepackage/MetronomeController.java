@@ -49,6 +49,7 @@ public class MetronomeController implements Runnable{
 		//gets called every time the metronome finishes a measure
 		//thus, it will increment the measure number and change values for a different event when needed.
 		//Log.v(Tag, "Finished measure " + measureInCurrentEvent + "/" + currentEvent.repeats);
+		
 		//cases: it is just a new measure in the set
 		if (measureInCurrentEvent < currentEvent.repeats) {
 			Log.d(Tag, "finished measure " + measureInCurrentEvent + "//" + currentEvent.repeats);
@@ -59,15 +60,22 @@ public class MetronomeController implements Runnable{
 				met.metLock.notify();
 			}
 		}
+		
 		//it is the end of an event and another follows
 		else if (it.hasNext()) {
 			currentEvent = it.next();
 			measureInCurrentEvent = 1;
 			updateMet();
 		}
+		
 		//it is the end of the song. 
 		else {
+			Log.d(Tag, "should be finishing");
 			met.finish();
+			met.updated = true;
+			synchronized(met.metLock) {
+				met.metLock.notify();
+			}
 		}
 	}
 
@@ -86,7 +94,7 @@ public class MetronomeController implements Runnable{
 	}
 
 	public void startMet() {
-		Log.d(Tag, "Starting metronome");
+		//Log.d(Tag, "Starting metronome");
 		met.start(); //FIXME
 		//new Thread(met).start();
 
