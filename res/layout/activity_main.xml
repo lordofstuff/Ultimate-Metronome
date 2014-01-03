@@ -9,17 +9,7 @@
 	tools:context=".MainActivity" >
 
     <Button
-    	android:id="@+id/button1"
-    	android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:layout_alignParentTop="true"
-    	android:layout_centerHorizontal="true"
-    	android:layout_marginTop="89dp"
-    	android:onClick="testMet"
-    	android:text="@string/test_met" />
-
-    <Button
-    	android:id="@+id/button2"
+    	android:id="@+id/button_b"
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
     	android:layout_centerHorizontal="true"
@@ -28,10 +18,10 @@
     	android:text="@string/create_song" />
 
     <Button
-    	android:id="@+id/button3"
+    	android:id="@+id/button_c"
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
-    	android:layout_below="@+id/button2"
+    	android:layout_below="@id/button_b"
     	android:layout_centerHorizontal="true"
     	android:layout_marginTop="50dp"
     	android:onClick="loadSong"

@@ -1,8 +1,8 @@
 package com.Stephen.ultimatemetronome;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+//import java.io.File;
+//import java.io.FileNotFoundException;
+//import java.io.IOException;
 
 import com.Stephen.ultimatemetronome.metronomepackage.*;
 import com.actionbarsherlock.app.SherlockActivity;
@@ -31,12 +31,12 @@ public class MainActivity extends SherlockActivity {
 		return true;
 	}
 	
-	public void testMet(View view) {
-		Log.d("main Activity", "button click registered");
-		Song song = Song.testSong();
-		MetronomeController mc = new MetronomeController(getApplicationContext(), song);
-		mc.startMet();
-	}
+//	public void testMet(View view) {
+//		Log.d("main Activity", "button click registered");
+//		Song song = Song.testSong();
+//		MetronomeController mc = new MetronomeController(getApplicationContext(), song);
+//		mc.startMet();
+//	}
 
 	public void createSong(View view) {
 		Intent intent = new Intent(this, CreateSongActivity.class);	
@@ -44,25 +44,15 @@ public class MainActivity extends SherlockActivity {
 	}
 	
 	public void loadSong(View view) {
-		Song song = null;
-		//TURD this should not be hardcoded in
-		String fileName = "TheOneSongToRuleThemAll";
-		File file = new File(getBaseContext().getFilesDir(), fileName);
-		try {
-	        song = Song.createFromFileForPlayback(file);
-        } catch (FileNotFoundException e) {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
-        } catch (IOException e) {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
-        } catch (FileFormatException e) {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
-        }
-		MetronomeController mc = new MetronomeController(getApplicationContext(), song);
-		mc.startMet();
-		
+		String fileName = promptForNameLoad();
+		Intent intent = new Intent(this, PlayMetronomeActivity.class);
+		intent.putExtra("Filename", fileName);
+		startActivity(intent);
 	}
+
+	static String promptForNameLoad() {
+	    //TODO
+	    return "TheOneSongToRuleThemAll";
+    }
 	
 }

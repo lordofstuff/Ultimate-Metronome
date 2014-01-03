@@ -17,5 +17,9 @@
 	<string name="sort_condensed">Sort</string>
 	<string name="save_action_title">Save Song</string>
 	<string name="save_action_condensed">Save</string>
+	<string name="title_activity_play_metronome_activity">Song</string>
+	<string name="play_text">Play</string>
+	<string name="pause_text">Pause</string>
+	<string name="stop_text">Stop</string>
 
 </resources>

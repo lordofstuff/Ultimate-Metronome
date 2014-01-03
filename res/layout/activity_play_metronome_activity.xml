@@ -1,0 +1,58 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:paddingBottom="@dimen/activity_vertical_margin"
+	android:paddingLeft="@dimen/activity_horizontal_margin"
+	android:paddingRight="@dimen/activity_horizontal_margin"
+	android:paddingTop="@dimen/activity_vertical_margin"
+	tools:context=".PlayMetronomeActivity" >
+
+    <Button
+    	android:id="@+id/play_pause_button"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_alignParentBottom="true"
+    	android:layout_centerHorizontal="true"
+    	android:layout_marginBottom="66dp"
+    	android:onClick="playOrPause"
+    	android:text="@string/play_text" />
+
+    <Button
+    	android:id="@+id/stop_button"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_alignBaseline="@+id/play_pause_button"
+    	android:layout_alignBottom="@+id/play_pause_button"
+    	android:layout_toRightOf="@+id/play_pause_button"
+    	android:text="@string/stop_text" />
+
+    <TextView
+    	android:id="@+id/measure_and_beat_textview"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_alignBottom="@+id/Current_event_name_textview"
+    	android:layout_alignParentLeft="true"
+    	android:layout_marginBottom="14dp"
+    	android:layout_marginLeft="40dp"
+    	android:clickable="false"
+    	android:duplicateParentState="false"
+    	android:longClickable="false"
+    	android:text="0:0"
+    	android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+    	android:id="@+id/Current_event_name_textview"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_alignParentTop="true"
+    	android:layout_alignRight="@+id/stop_button"
+    	android:layout_marginRight="35dp"
+    	android:layout_marginTop="59dp"
+    	android:clickable="false"
+    	android:duplicateParentState="false"
+    	android:focusable="false"
+    	android:focusableInTouchMode="false"
+    	android:longClickable="false" />
+
+</RelativeLayout>
