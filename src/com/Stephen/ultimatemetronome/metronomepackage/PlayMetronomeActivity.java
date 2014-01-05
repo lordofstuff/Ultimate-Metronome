@@ -33,8 +33,11 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 		setContentView(R.layout.activity_play_metronome_activity);
 		Intent intent = getIntent();
 		String fileName = intent.getStringExtra("Filename");
-		loadSong(fileName);
+		song = loadSong(fileName);
 		mc = new MetronomeController(getApplicationContext(), song);
+		mc.addMetronomeListener(this);
+		eventName = (TextView) findViewById(R.id.Current_event_name_textview);
+		
 	}
 
 	@Override
@@ -45,7 +48,7 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 	}
 
 	private Song loadSong(String fileName) {
-		song = null;
+		Song song = null;
 		File file = new File(getBaseContext().getFilesDir(), fileName);
 		try {
 			song = Song.createFromFileForPlayback(file);
@@ -79,6 +82,10 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 			}
 		}
 	}
+	
+	public void stop(View view) {
+		new Thread(mc).start();
+	}
 
 	@Override
 	public void minorBeatUpdate(int beat) {
@@ -99,9 +106,14 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 	}
 
 	@Override
-	public void EventUpdate(MetronomeEvent newEvent) {
-		// TODO Auto-generated method stub
-
+	public void EventUpdate(final MetronomeEvent newEvent) {
+		Log.v(Tag, "New Event: " + newEvent.name);
+		runOnUiThread(new Runnable() {
+			@Override
+            public void run() {
+				eventName.setText(newEvent.name);
+            }	
+		});
 	}
 
 	@Override

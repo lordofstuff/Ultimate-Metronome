@@ -52,6 +52,9 @@ public class MetronomeController implements Runnable{
 		Log.d(Tag, "Starting metronome");
 		it = song.iterator();
 		currentEvent = it.next();
+		if (listener != null) {
+			listener.EventUpdate(currentEvent);
+		}
 		measureInCurrentEvent = 1;
 		met = new MyMetronome(context, currentEvent.tempo, currentEvent.volume, currentEvent.pattern, currentEvent.beat, Sounds.set1, this);
 		state = MetronomeState.Playing;
@@ -128,12 +131,17 @@ public class MetronomeController implements Runnable{
 	}
 
 	void ChangeCurrentEvent(MetronomeEvent event) {
-		//TODO
+		//TODO get all of them working together
+		met.flush();
+		currentEvent = event;
+		updateMet();
+		met.updated = true;
 	}
 
 	void pause() {
 		state = MetronomeState.Paused;
 		met.pause();
+		ChangeCurrentEvent(currentEvent);
 	}
 
 	void resume() {
@@ -243,6 +251,16 @@ public class MetronomeController implements Runnable{
 		}
 
 		//methods
+		
+		public void flush() {
+			track.flush();
+			written = 0;
+			resetBeat();
+		}
+
+		public void resetBeat() {
+			currentBeat = 0;
+		}
 
 		@Override
 		public void run() {
@@ -263,6 +281,8 @@ public class MetronomeController implements Runnable{
 				while (paused) {
 					synchronized(metLock) {
 						Log.v(Tag, "Paused, waiting.");
+						Log.v(Tag, "Flushing");
+						flush();
 						try {
 							metLock.wait();
 						} catch (InterruptedException e) {
@@ -270,13 +290,16 @@ public class MetronomeController implements Runnable{
 						}
 					}
 				}
-				writeNextBeatOfPattern();
-				writeSilence();
+				if (!finishQueue) {
+					writeNextBeatOfPattern();
+					writeSilence();
+				}
 			}
 			Log.v(Tag, "Exiting Play loop");
 			track.setNotificationMarkerPosition(written - (smallestSubdivisionInFrames - beatSoundLength));
 			Log.v(Tag, "total written without rest " + (written - (smallestSubdivisionInFrames - beatSoundLength)));
 			Log.v(Tag, "total with rest " + written);
+			Log.v(Tag, "Current PlaybackHEad position " + track.getPlaybackHeadPosition());
 			track.setPlaybackPositionUpdateListener( new OnPlaybackPositionUpdateListener() {
 
 				@Override
@@ -299,16 +322,16 @@ public class MetronomeController implements Runnable{
 					int leftToWrite = restLength;
 					while (leftToWrite > 0) {
 						int writeLength = Math.min(leftToWrite, WriteChunk);
-						while (paused) {
-							synchronized(metLock) {
-								Log.v(Tag, "Paused, waiting.");
-								try {
-									metLock.wait();
-								} catch (InterruptedException e) {
-									Log.v(Tag, "Met was interuppted during wait.");
-								}
-							}
-						}
+//						while (paused) {
+//							synchronized(metLock) {
+//								Log.v(Tag, "Paused, waiting.");
+//								try {
+//									metLock.wait();
+//								} catch (InterruptedException e) {
+//									Log.v(Tag, "Met was interuppted during wait.");
+//								}
+//							}
+//						}
 						track.write(new short[writeLength], 0, writeLength);
 						Log.d(Tag, "wrote silence in " + writeLength);
 						written += writeLength;
@@ -379,7 +402,8 @@ public class MetronomeController implements Runnable{
 		/**
 		 * Stops the metronome once it finishes playing what is already queued if it was running.
 		 */
-		public void finish() {
+		public void finish(){
+			finishQueue = true;
 			playing = false;
 		}
 
@@ -392,24 +416,24 @@ public class MetronomeController implements Runnable{
 		}
 
 		void pause() {
-			//			if (paused) {
-			//				throw new IllegalStateException("pause called while already paused.");
-			//			}
+			if (paused) {
+				throw new IllegalStateException("pause called while already paused.");
+			}
 			if (!playing) {
 				Log.v(Tag, "Pausing after track done being written.");
 			}
 			track.pause();
 			position  = track.getPlaybackHeadPosition();
 			Log.v(Tag, "Pausing; playback Head Position " + position);
-//			synchronized(metLock) {
-//				try {
-//					metThread.wait();
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					Log.v(Tag, "Pause wait interupted.");
-//					e.printStackTrace();
-//				}
-//			}
+			//			synchronized(metLock) {
+			//				try {
+			//					metThread.wait();
+			//				} catch (InterruptedException e) {
+			//					// TODO Auto-generated catch block
+			//					Log.v(Tag, "Pause wait interupted.");
+			//					e.printStackTrace();
+			//				}
+			//			}
 			paused = true;
 		}
 
@@ -419,7 +443,7 @@ public class MetronomeController implements Runnable{
 			}
 			Log.v(Tag, "Resuming Metronome");
 			Log.v(Tag, "written " + written);
-			track.setPlaybackHeadPosition(position);
+			//track.setPlaybackHeadPosition(position);
 			if (!playing) {
 				Log.v(Tag, "resuming after all values written");
 				track.play();

@@ -25,7 +25,8 @@
     	android:layout_alignBaseline="@+id/play_pause_button"
     	android:layout_alignBottom="@+id/play_pause_button"
     	android:layout_toRightOf="@+id/play_pause_button"
-    	android:text="@string/stop_text" />
+    	android:text="@string/stop_text" 
+    	android:onClick="stop"/>
 
     <TextView
     	android:id="@+id/measure_and_beat_textview"
