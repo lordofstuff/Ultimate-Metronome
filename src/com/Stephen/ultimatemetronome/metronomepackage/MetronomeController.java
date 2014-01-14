@@ -164,7 +164,7 @@ public class MetronomeController implements Runnable{
 		static final double MIN_TEMPO = 4;
 
 		private static final int SAMPLE_RATE = 22050;
-		private static final int BUFFER_SIZE = 22050;
+		private static final int BUFFER_SIZE = 10000;//22050;
 		// Arrays representing audio for a full length beat and half length beats. 
 		private final short[] primarySoundData;
 		private final short[] secondarySoundData;
@@ -251,7 +251,7 @@ public class MetronomeController implements Runnable{
 		}
 
 		//methods
-		
+
 		public void flush() {
 			track.flush();
 			written = 0;
@@ -270,7 +270,6 @@ public class MetronomeController implements Runnable{
 			beatSoundLength = primaryData.length;
 			//initialize for play (the parameters are up to date to begin with). 
 			updated = true;
-
 			track.play();
 			while (playing) {
 				Log.d(Tag, "starting play loop");
@@ -295,24 +294,29 @@ public class MetronomeController implements Runnable{
 					writeSilence();
 				}
 			}
-			Log.v(Tag, "Exiting Play loop");
-			track.setNotificationMarkerPosition(written - (smallestSubdivisionInFrames - beatSoundLength));
-			Log.v(Tag, "total written without rest " + (written - (smallestSubdivisionInFrames - beatSoundLength)));
-			Log.v(Tag, "total with rest " + written);
-			Log.v(Tag, "Current PlaybackHEad position " + track.getPlaybackHeadPosition());
-			track.setPlaybackPositionUpdateListener( new OnPlaybackPositionUpdateListener() {
+			if (paused) {
+				//do anything? TODO
+			}
+			else {
+				Log.v(Tag, "Exiting Play loop");
+				track.setNotificationMarkerPosition(written - (smallestSubdivisionInFrames - beatSoundLength));
+				Log.v(Tag, "total written without rest " + (written - (smallestSubdivisionInFrames - beatSoundLength)));
+				Log.v(Tag, "total with rest " + written);
+				Log.v(Tag, "Current PlaybackHEad position " + track.getPlaybackHeadPosition());
+				track.setPlaybackPositionUpdateListener( new OnPlaybackPositionUpdateListener() {
 
-				@Override
-				public void onMarkerReached(AudioTrack arg0) {
-					new Thread(mc).start(); //will destroy this object, null things out. 
-				}
+					@Override
+					public void onMarkerReached(AudioTrack arg0) {
+						new Thread(mc).start(); //will destroy this object, null things out. 
+					}
 
-				@Override
-				public void onPeriodicNotification(AudioTrack arg0) {
-					// TODO Auto-generated method stub
+					@Override
+					public void onPeriodicNotification(AudioTrack arg0) {
+						// TODO Auto-generated method stub
 
-				}
-			}); 
+					}
+				}); 
+			}
 		}
 
 		private void writeSilence() {
@@ -322,20 +326,20 @@ public class MetronomeController implements Runnable{
 					int leftToWrite = restLength;
 					while (leftToWrite > 0) {
 						int writeLength = Math.min(leftToWrite, WriteChunk);
-//						while (paused) {
-//							synchronized(metLock) {
-//								Log.v(Tag, "Paused, waiting.");
-//								try {
-//									metLock.wait();
-//								} catch (InterruptedException e) {
-//									Log.v(Tag, "Met was interuppted during wait.");
-//								}
-//							}
-//						}
 						track.write(new short[writeLength], 0, writeLength);
 						Log.d(Tag, "wrote silence in " + writeLength);
 						written += writeLength;
 						leftToWrite -= writeLength;
+						while (paused) {
+							synchronized(metLock) {
+								Log.v(Tag, "Paused, waiting.");
+								try {
+									metLock.wait();
+								} catch (InterruptedException e) {
+									Log.v(Tag, "Met was interuppted during wait.");
+								}
+							}
+						}
 					}
 				}
 			}
@@ -350,7 +354,7 @@ public class MetronomeController implements Runnable{
 					track.write(primaryData, 0, primaryData.length);
 					Log.v(Tag, "write primary beat " + (currentBeat + 1) + "/" + pattern.length);
 					written += primaryData.length;
-				} 
+				}
 				else if (pattern[currentBeat] == 2 ){
 					track.write(secondaryData, 0, secondaryData.length);
 					Log.v(Tag, "write secondary beat " + (currentBeat + 1) + "/" + pattern.length);
@@ -364,6 +368,9 @@ public class MetronomeController implements Runnable{
 					written += primaryData.length;
 				}
 			}
+			if (paused) {
+				return;
+			}
 			//increment the beat and measure if needed. 
 			if (currentBeat + 1 >= pattern.length) {
 				currentBeat = 0;
@@ -373,7 +380,6 @@ public class MetronomeController implements Runnable{
 				currentBeat++;
 			}
 		}
-
 
 		void updateLengths() {
 			smallestSubdivisionInFrames = (int) (60 * SAMPLE_RATE / (tempo * beat)); // Recalculate in case tempo changed
@@ -423,6 +429,7 @@ public class MetronomeController implements Runnable{
 				Log.v(Tag, "Pausing after track done being written.");
 			}
 			track.pause();
+			flush();
 			position  = track.getPlaybackHeadPosition();
 			Log.v(Tag, "Pausing; playback Head Position " + position);
 			//			synchronized(metLock) {
@@ -449,11 +456,12 @@ public class MetronomeController implements Runnable{
 				track.play();
 			}
 			paused = false;
+			flush();
+			track.play();
 			synchronized(metLock) {
 				metLock.notifyAll();
 			}
 			Log.v(Tag, "notified to unpause.");
-			track.play();
 		}
 
 

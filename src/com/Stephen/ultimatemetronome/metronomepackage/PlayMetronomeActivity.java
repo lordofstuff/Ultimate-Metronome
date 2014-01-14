@@ -22,10 +22,13 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 	private static final String Tag = "PlayMetronomeActivity";
 	Song song;
 	MetronomeController mc;
+	Metronome met;
 	TextView measureAndBeat;
 	TextView eventName;
 	Button playPausebutton;
 	Button stopButton;
+	static enum Mode {Streaming, Static};
+	Mode mode = Mode.Streaming;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -34,10 +37,15 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 		Intent intent = getIntent();
 		String fileName = intent.getStringExtra("Filename");
 		song = loadSong(fileName);
-		mc = new MetronomeController(getApplicationContext(), song);
-		mc.addMetronomeListener(this);
+		if (mode == Mode.Streaming) {
+			mc = new MetronomeController(getApplicationContext(), song);
+			mc.addMetronomeListener(this);
+		}
+		else {
+			met = new Metronome(song, getApplicationContext());
+		}
 		eventName = (TextView) findViewById(R.id.Current_event_name_textview);
-		
+
 	}
 
 	@Override
@@ -67,24 +75,45 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 
 
 	public void playOrPause(View view) {
-		synchronized(mc) {
-			if (mc.getState() == MetronomeState.NotYetPlayed) {
+		if (mode == Mode.Streaming) {
+			synchronized(mc) {
+				if (mc.getState() == MetronomeState.NotYetPlayed) {
+					Log.v(Tag, "(re)Starting Metronome");
+					mc.startMet();
+				}
+				else if (mc.getState() == MetronomeState.Playing) {
+					Log.v(Tag, "Pausing Metronome");
+					mc.pause();
+				}
+				else if (mc.getState() == MetronomeState.Paused) {
+					Log.v(Tag, "Resuming Metronome");
+					mc.resume();
+				}
+			}
+		}
+		else { //Static mode
+			if (met.getState() == Metronome.MetronomeState.Initialized) {
 				Log.v(Tag, "(re)Starting Metronome");
-				mc.startMet();
+				met.play();
 			}
-			else if (mc.getState() == MetronomeState.Playing) {
+			else if (met.getState() == Metronome.MetronomeState.Playing) {
 				Log.v(Tag, "Pausing Metronome");
-				mc.pause();
+				met.pause();
 			}
-			else if (mc.getState() == MetronomeState.Paused) {
+			else if (met.getState() == Metronome.MetronomeState.Paused) {
 				Log.v(Tag, "Resuming Metronome");
-				mc.resume();
+				met.resume();
 			}
 		}
 	}
-	
+
 	public void stop(View view) {
-		new Thread(mc).start();
+		if (mode == Mode.Streaming) {
+			new Thread(mc).start();
+		}
+		else {
+			met.stop();
+		}
 	}
 
 	@Override
@@ -110,9 +139,9 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 		Log.v(Tag, "New Event: " + newEvent.name);
 		runOnUiThread(new Runnable() {
 			@Override
-            public void run() {
+			public void run() {
 				eventName.setText(newEvent.name);
-            }	
+			}	
 		});
 	}
 
