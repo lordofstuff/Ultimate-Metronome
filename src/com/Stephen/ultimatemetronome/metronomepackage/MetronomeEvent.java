@@ -13,7 +13,7 @@ public class MetronomeEvent {
 	final int repeats;
 	final int beat;
 	final String name;
-	int playbackPosition;
+	int playbackPosition; //used for static playback maybe
 	
 	//constructor
 	public MetronomeEvent(double tempo, int[] pattern, float volume, int repeats, int beat, String name) {
@@ -27,5 +27,7 @@ public class MetronomeEvent {
     }
 	
 	//methods
-
+	
+	
+	
 }

@@ -2,6 +2,7 @@ package com.Stephen.ultimatemetronome;
 
 import java.util.AbstractList;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 //import android.util.Log;
 
@@ -263,32 +264,60 @@ public class CustomLinkedList<T> extends AbstractList<T> {
 			return (nodePointer.getPrevious() != null);
 		}
 
+		public T current() {
+			return nodePointer.getElement();
+		}
+		
+		/**
+		 * Sets the iterator to point to the passed element. One can continue iterating from there in either direction. 
+		 * @param element the element it should point to.
+		 * @throws NoSuchElementException if this exact element (instance equality) does not exist in the list. 
+		 */
+		public void set(T element) throws NoSuchElementException {
+			//first, find the node containing this element:
+			DLNode node = getFront();
+			while (node != null) {
+				if (node.getElement() == element) {
+					//once one is found (it will take the first one it finds) it will set the iterator to point to it.
+					nodePointer = node;
+					return;
+				}
+				node = node.getNext();
+			}
+			//if it reaches this point, the element isn't in the list.
+			throw new NoSuchElementException("No such element in list.");
+		}
+		
+		/**
+		 * Not supported. Will throw an exception. 
+		 */
 		@Override
 		public void remove() {
 			//TODO possibly don't support this
-			if (nodePointer == frontPointer || nodePointer == backPointer) {
-				//next() has never been called. throw IllegalStateException
-				throw new IllegalStateException("you must call next() or previous() before calling remove()");
-			}
-			else {  //will leave nodePointer on the removed node, which still points where it should, so that next() will work correctly
-				//set the previous pointers on the next node
-				if (nodePointer.getNext() != null) {
-					nodePointer.getNext().setPrevious(nodePointer.getPrevious());
-				}
-				else { //if it is at the end
-					CustomLinkedList.this.setBack(nodePointer.getPrevious());
-					nodePointer.getPrevious().setNext(null);
-				}
-				//set the next pointers on the previous node
-				if (nodePointer.getPrevious() != null) {
-					nodePointer.getPrevious().setNext(nodePointer.getNext());
-				}
-				else { //if at front
-					CustomLinkedList.this.setFront(nodePointer.getNext());
-					nodePointer.getNext().setPrevious(null);
-				}
-				size--;
-			}  
+//			if (nodePointer == frontPointer || nodePointer == backPointer) {
+//				//next() has never been called. throw IllegalStateException
+//				throw new IllegalStateException("you must call next() or previous() before calling remove()");
+//			}
+//			else {  //will leave nodePointer on the removed node, which still points where it should, so that next() will work correctly
+//				//set the previous pointers on the next node
+//				if (nodePointer.getNext() != null) {
+//					nodePointer.getNext().setPrevious(nodePointer.getPrevious());
+//				}
+//				else { //if it is at the end
+//					CustomLinkedList.this.setBack(nodePointer.getPrevious());
+//					nodePointer.getPrevious().setNext(null);
+//				}
+//				//set the next pointers on the previous node
+//				if (nodePointer.getPrevious() != null) {
+//					nodePointer.getPrevious().setNext(nodePointer.getNext());
+//				}
+//				else { //if at front
+//					CustomLinkedList.this.setFront(nodePointer.getNext());
+//					nodePointer.getNext().setPrevious(null);
+//				}
+//				size--;
+//			}  
+			throw new UnsupportedOperationException();
 		}
 	}
 

@@ -28,23 +28,34 @@ public class MetronomeController implements Runnable{
 	private Iterator<MetronomeEvent> it;
 	private MyMetronome met = null;
 	static enum MetronomeState{NotYetPlayed, Playing, Paused, Stopping};
-	private MetronomeState state = MetronomeState.NotYetPlayed;
-	private MetronomeListener listener = null;
+	private MetronomeState state;
+	private MetronomeListener listener;
 	enum Sounds {set1, set2}; //currently there is only one set, and it is incomplete. TODO
 	Context context;
 	private Song song;
 
 
 	//constructor
+	/**
+	 * Creates a controller which will handle all Metronome operations. 
+	 * @param context The app context, needed to access sound resources.
+	 * @param song the song to be played back. 
+	 */
 	public MetronomeController(Context context, Song song) {
 		this.song = song;
 		this.context = context;
 		state = MetronomeState.NotYetPlayed;
+		listener = null;
 	}
 
 
 	//methods
-	public void startMet() {
+	/**
+	 * Starts this metronome playing for the first time or restarts it after if is stopped or finishes.
+	 * @throws IllegalStateException if it is called while playing, paused, or before it has finished destroying the old one. 
+	 */
+	public void startMet() throws IllegalStateException {
+		if (state == MetronomeState.NotYetPlayed) {
 		Log.d(Tag, "Starting metronome");
 		it = song.iterator();
 		currentEvent = it.next();
@@ -55,8 +66,16 @@ public class MetronomeController implements Runnable{
 		met = new MyMetronome(context, currentEvent.tempo, currentEvent.volume, currentEvent.pattern, currentEvent.beat, Sounds.set1, this);
 		state = MetronomeState.Playing;
 		met.start(); 
+		}
+		else {
+			throw new IllegalStateException("startMet called on Metronome that was not in an uninitialized state. (state == NotYetPlayed)");
+		}
 	}
 
+	/**
+	 * Adds a MetronomeListener, which will be notified (off of the UI Thread) when certain events happen. 
+	 * @param listener
+	 */
 	public void addMetronomeListener(MetronomeListener listener) {
 		this.listener = listener;
 	}
@@ -112,6 +131,9 @@ public class MetronomeController implements Runnable{
 		Log.v(Tag, "Cleaned up");
 	}
 
+	/**
+	 * makes sure all information for the event about to be written is current with information from the song. 
+	 */
 	private void updateMet() {
 		//Log.d(Tag, "switching events");
 		met.tempo = currentEvent.tempo;
@@ -122,10 +144,18 @@ public class MetronomeController implements Runnable{
 		met.updated = true;
 	}
 
+	/**
+	 * Gets the state of the Metronome;
+	 * @return the state of the Metronome.
+	 */
 	MetronomeState getState() {
 		return state;
 	}
 
+	/**
+	 * Changes this metronome's playback position to the beginning of the passed in event. 
+	 * @param event the event to move to. 
+	 */
 	void ChangeCurrentEvent(MetronomeEvent event) {
 		//TODO get all of them working together
 		if (state == MetronomeState.Playing) {
@@ -138,21 +168,56 @@ public class MetronomeController implements Runnable{
 		}
 		met.updated = true;
 	}
+	
+//	void nextMeasure() {
+//		if (state == MetronomeState.Playing) {
+//			met.pause();
+//		}
+//	}
 
-	void pause() {
-		state = MetronomeState.Paused;
-		//met.pause(); //duplicated in method below
-		ChangeCurrentEvent(currentEvent);
+	/**
+	 * Pauses a playing metronome and set it to the beginning of the measure it is on. 
+	 * @throws IllegalStateException if called on a metronome that is not playing currently. 
+	 */
+	void pause() throws IllegalStateException {
+		if (state == MetronomeState.Playing) {
+			ChangeCurrentEvent(currentEvent);
+			state = MetronomeState.Paused;
+		}
+		else {
+			throw new IllegalStateException("Pause called on Metronome that was not playing.");
+		}
 	}
 
-	void resume() {
-		state = MetronomeState.Playing;
-		met.resume();
+	/**
+	 * Resumes the metronome from being paused at the beginning of the measure it was on when paused. 
+	 * @throws IllegalStateException if called when the track is not already paused. 
+	 */
+	void resume() throws IllegalStateException {
+		if (state == MetronomeState.Paused) {
+			met.resume();
+			state = MetronomeState.Playing;
+		}
+		else {
+			throw new IllegalStateException("resume called on a metronome that was not paused.");
+		}
 	}
 
-	void stop() {
-		state = MetronomeState.Stopping;
-		met.stop();
+	/**
+	 * Immediately stops the metronome if it is playing or paused. 
+	 * @throws IllegalStateException if called on a metronome which is not playing or paused (has never been played or already finished).
+	 */
+	void stop() throws IllegalStateException{
+		if (state == MetronomeState.Playing || state == MetronomeState.Paused) {
+			state = MetronomeState.Stopping;
+			met.stop();
+		}
+		else if (state == MetronomeState.Stopping) {
+			//they pressed the button too fast twice in a row. ignore it. 
+		}
+		else if (state == MetronomeState.NotYetPlayed) {
+			throw new IllegalStateException("Stop called while metronome was uninitialized");
+		}
 	}
 
 	/**
