@@ -156,55 +156,78 @@ public class MetronomeController implements Runnable{
 
 	/**
 	 * Changes this metronome's playback position to the beginning of the passed in event. 
+	 * track should not be playing when it is called or it will throw an exception. 
 	 * @param event the event to move to. 
 	 */
-	void ChangeCurrentEvent(MetronomeEvent event) {
-		//TODO get all of them working together
-		if (state == MetronomeState.Playing) {
-			met.pause();
+	private void changeCurrentEvent(MetronomeEvent event) {
+		if (event == null) {
+			//stop the song.
+			stop();
 		}
-		currentEvent = event;
-		updateMet();
-		if (state == MetronomeState.Playing) {
-			met.resume();
-		}
-		met.updated = true;
-	}
-
-	void nextMeasure() {
 		if (state == MetronomeState.NotYetPlayed) {
 			//TODO figure this out
 		}
+		else if (state == MetronomeState.Paused){
+			currentEvent = event;
+			updateMet();
+			met.updated = true;
+		}
 		else {
-			if (state == MetronomeState.Playing) {
-				met.pause();
-			}
-			//should increment the measure successfully. 
-			updateMeasure();
-			if (state == MetronomeState.Playing) {
-				met.resume();
-			}
+			throw new IllegalStateException("Metronome must not be playing while event is updated.");
+		}
+	}
+
+	void nextMeasure() {
+		if (state == MetronomeState.Playing) {
+			pause();
+		}
+		//should increment the measure successfully. 
+		updateMeasure();
+		if (state == MetronomeState.Playing) {
+			resume();
 		}
 	}
 
 	void previousMeasure() {
-		if (state == MetronomeState.NotYetPlayed) {
-			//TODO as well
+
+		if (state == MetronomeState.Playing) {
+			pause();
 		}
+		//cases:
+		//it is in the middle (or last measure) of an event, just needs measure decremented
+		if (measureInCurrentEvent <= currentEvent.repeats) {
+			measureInCurrentEvent--;
+		}
+		//it is at the beginning of an event
 		else {
-			if (state == MetronomeState.Playing) {
-				met.pause();
-			}
-			//cases:
-			//it is in the middle (or last measure) of an event, just needs measure decremented
-			if (measureInCurrentEvent <= currentEvent.repeats) {
-				measureInCurrentEvent--;
-			}
-			//it is at the beginning of 
-			
-			
+			changeCurrentEvent(it.previous());
+		}
+		if (state == MetronomeState.Playing) {
+			resume();
 		}
 	}
+	
+	void nextEvent() {
+		if (state == MetronomeState.Playing) {
+			pause();
+		}
+		changeCurrentEvent(it.next());
+		if (state == MetronomeState.Playing) {
+			resume();
+		}
+	}
+	
+	void previousEvent() {
+		if (state == MetronomeState.Playing) {
+			pause();
+		}
+		changeCurrentEvent(it.previous());
+		if (state == MetronomeState.Playing) {
+			resume();
+		}
+	}
+	
+	
 
 	/**
 	 * Pauses a playing metronome and set it to the beginning of the measure it is on. 
@@ -212,7 +235,7 @@ public class MetronomeController implements Runnable{
 	 */
 	void pause() throws IllegalStateException {
 		if (state == MetronomeState.Playing) {
-			ChangeCurrentEvent(currentEvent);
+			changeCurrentEvent(currentEvent);
 			state = MetronomeState.Paused;
 		}
 		else {

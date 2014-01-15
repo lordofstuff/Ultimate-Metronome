@@ -121,6 +121,62 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 		}
 	}
 
+	public void nextMeasure(View view) {
+		if (mode == Mode.Streaming) {
+			if (mc.getState() == MetronomeState.Playing || mc.getState() == MetronomeState.Paused) {
+				mc.nextMeasure();
+			}
+			else if (mc.getState() == MetronomeState.NotYetPlayed) {
+				Log.v(Tag, "nextMeasure called on stopped track.");
+			}
+		}
+		else {
+			Log.v(Tag, "nextMeasure called on static track. not implemented. ");
+		}
+	}
+	
+	public void previousMeasure(View view) {
+		if (mode == Mode.Streaming) {
+			if (mc.getState() == MetronomeState.Playing || mc.getState() == MetronomeState.Paused) {
+				mc.previousMeasure();
+			}
+			else if (mc.getState() == MetronomeState.NotYetPlayed) {
+				Log.v(Tag, "previousMeasure called on stopped track.");
+			}
+		}
+		else {
+			Log.v(Tag, "nextMeasure called on static track. not implemented. ");
+		}
+	}
+
+	public void nextEvent(View view) {
+		if (mode == Mode.Streaming) {
+			if (mc.getState() == MetronomeState.Playing || mc.getState() == MetronomeState.Paused) {
+				mc.nextEvent();
+			}
+			else if (mc.getState() == MetronomeState.NotYetPlayed) {
+				Log.v(Tag, "nextEvent called on stopped track.");
+			}
+		}
+		else {
+			Log.v(Tag, "nextEvent called on static track. not implemented. ");
+		}
+	}
+	
+	public void previousEvent(View view) {
+		if (mode == Mode.Streaming) {
+			if (mc.getState() == MetronomeState.Playing || mc.getState() == MetronomeState.Paused) {
+				mc.previousEvent();
+			}
+			else if (mc.getState() == MetronomeState.NotYetPlayed) {
+				Log.v(Tag, "previousEvent called on stopped track.");
+			}
+		}
+		else {
+			Log.v(Tag, "previousEvent called on static track. not implemented. ");
+		}
+	}
+	
 	@Override
 	public void minorBeatUpdate(int beat) {
 		// TODO Auto-generated method stub

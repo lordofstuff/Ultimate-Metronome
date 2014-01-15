@@ -18,16 +18,6 @@
     	android:onClick="playOrPause"
     	android:text="@string/play_text" />
 
-    <Button
-    	android:id="@+id/stop_button"
-    	android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:layout_alignBaseline="@+id/play_pause_button"
-    	android:layout_alignBottom="@+id/play_pause_button"
-    	android:layout_toRightOf="@+id/play_pause_button"
-    	android:text="@string/stop_text" 
-    	android:onClick="stop"/>
-
     <TextView
     	android:id="@+id/measure_and_beat_textview"
     	android:layout_width="wrap_content"
@@ -55,5 +45,57 @@
     	android:focusable="false"
     	android:focusableInTouchMode="false"
     	android:longClickable="false" />
+
+    <Button
+    	android:id="@+id/stop_button"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_alignLeft="@+id/play_pause_button"
+    	android:layout_alignParentBottom="true"
+    	android:layout_marginBottom="20dp"
+    	android:onClick="stop"
+    	android:text="@string/stop_text" />
+
+    <Button
+    	android:id="@+id/next_measure_button"
+    	style="?android:attr/buttonStyleSmall"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_alignBaseline="@+id/play_pause_button"
+    	android:layout_alignBottom="@+id/play_pause_button"
+    	android:layout_toRightOf="@+id/play_pause_button"
+    	android:onClick="nextMeasure"
+    	android:text="next measure" />
+
+    <Button
+    	android:id="@+id/previous_measure_button"
+    	style="?android:attr/buttonStyleSmall"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_alignBaseline="@+id/play_pause_button"
+    	android:layout_alignBottom="@+id/play_pause_button"
+    	android:layout_toLeftOf="@+id/play_pause_button"
+    	android:onClick="previousMeasure"
+    	android:text="prev measure" />
+
+    <Button
+    	android:id="@+id/previous_event_button"
+    	style="?android:attr/buttonStyleSmall"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_above="@+id/previous_measure_button"
+    	android:layout_alignRight="@+id/previous_measure_button"
+    	android:onClick="previousEvent"
+    	android:text="prev set" />
+
+    <Button
+    	android:id="@+id/button2"
+    	style="?android:attr/buttonStyleSmall"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_above="@+id/next_measure_button"
+    	android:layout_alignLeft="@+id/next_measure_button"
+    	android:onClick="nextEvent"
+    	android:text="next set" />
 
 </RelativeLayout>
