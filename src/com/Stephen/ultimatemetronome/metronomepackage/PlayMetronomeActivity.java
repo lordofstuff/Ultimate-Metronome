@@ -109,7 +109,12 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 
 	public void stop(View view) {
 		if (mode == Mode.Streaming) {
-			new Thread(mc).start();
+			if (mc.getState() == MetronomeState.Playing) {
+				mc.stop();
+			}
+			else {
+				Log.v(Tag, "Stop called when it was not playing");
+			}
 		}
 		else {
 			met.stop();

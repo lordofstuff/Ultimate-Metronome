@@ -148,6 +148,11 @@ public class MetronomeController implements Runnable{
 		state = MetronomeState.Playing;
 		met.resume();
 	}
+	
+	void stop() {
+		state = MetronomeState.Stopping;
+		met.stop();
+	}
 
 	/**
 	 * @author Stephen Rodriguez
@@ -168,11 +173,11 @@ public class MetronomeController implements Runnable{
 		// Arrays representing audio for a full length beat and half length beats. 
 		private final short[] primarySoundData;
 		private final short[] secondarySoundData;
-		private final short[] primaryHalfLength;
-		private final short[] secondaryHalfLength;
+		//		private final short[] primaryHalfLength;
+		//		private final short[] secondaryHalfLength;
 		//Will actually hold the reference to the one being used
-		private short[] primaryData;
-		private short[] secondaryData;
+		//		private short[] primaryData;
+		//		private short[] secondaryData;
 
 		private AudioTrack track;
 		boolean playing = false;
@@ -214,6 +219,8 @@ public class MetronomeController implements Runnable{
 		private int written = 0;
 		private int position;
 		private Thread metThread;
+//		private int writeLength;
+		private boolean stopping = false;
 
 		//constructor(s)
 		MyMetronome(Context context, double tempo, double volume, int[] pattern, int beat, Sounds soundSet, MetronomeController mc) {
@@ -226,8 +233,8 @@ public class MetronomeController implements Runnable{
 			if (soundSet == Sounds.set1) {
 				primarySoundData = Utility.intToShortArray(context.getResources().getIntArray(R.array.tick_pcm));
 				secondarySoundData = Utility.intToShortArray(context.getResources().getIntArray(R.array.tock_pcm));
-				primaryHalfLength = Utility.intToShortArrayHalf(context.getResources().getIntArray(R.array.tick_pcm));
-				secondaryHalfLength = Utility.intToShortArrayHalf(context.getResources().getIntArray(R.array.tock_pcm));
+				//				primaryHalfLength = Utility.intToShortArrayHalf(context.getResources().getIntArray(R.array.tick_pcm));
+				//				secondaryHalfLength = Utility.intToShortArrayHalf(context.getResources().getIntArray(R.array.tock_pcm));
 
 
 				//add other sounds to this set
@@ -240,8 +247,8 @@ public class MetronomeController implements Runnable{
 				//default to set1
 				primarySoundData = Utility.intToShortArray(context.getResources().getIntArray(R.array.tick_pcm));
 				secondarySoundData = Utility.intToShortArray(context.getResources().getIntArray(R.array.tock_pcm));
-				primaryHalfLength = Utility.intToShortArrayHalf(context.getResources().getIntArray(R.array.tick_pcm));
-				secondaryHalfLength = Utility.intToShortArrayHalf(context.getResources().getIntArray(R.array.tock_pcm));
+				//				primaryHalfLength = Utility.intToShortArrayHalf(context.getResources().getIntArray(R.array.tick_pcm));
+				//				secondaryHalfLength = Utility.intToShortArrayHalf(context.getResources().getIntArray(R.array.tock_pcm));
 			}
 			track = new AudioTrack(AudioManager.STREAM_MUSIC, SAMPLE_RATE, AudioFormat.CHANNEL_OUT_MONO,
 					AudioFormat.ENCODING_PCM_16BIT, BUFFER_SIZE, AudioTrack.MODE_STREAM);
@@ -267,12 +274,15 @@ public class MetronomeController implements Runnable{
 			smallestSubdivisionInFrames = (int) (60 * SAMPLE_RATE / (tempo * beat));
 			beatSoundLength = primarySoundData.length;
 			updateLengths();
-			beatSoundLength = primaryData.length;
+			//beatSoundLength = primaryData.length;
 			//initialize for play (the parameters are up to date to begin with). 
 			updated = true;
 			track.play();
 			while (playing) {
 				Log.d(Tag, "starting play loop");
+				if (stopping) { //exit out without doing anything else
+					return;
+				}
 				if (!updated) {
 					Log.v(Tag, "Updating");
 					updateMeasure(); //inform the controller that it has finished a measure
@@ -300,23 +310,23 @@ public class MetronomeController implements Runnable{
 			}
 			else {
 				Log.v(Tag, "Exiting Play loop");
-//				track.setNotificationMarkerPosition(written - (smallestSubdivisionInFrames - beatSoundLength));
-//				Log.v(Tag, "total written without rest " + (written - (smallestSubdivisionInFrames - beatSoundLength)));
-//				Log.v(Tag, "total with rest " + written);
-//				Log.v(Tag, "Current PlaybackHead position " + track.getPlaybackHeadPosition());
-//				track.setPlaybackPositionUpdateListener( new OnPlaybackPositionUpdateListener() {
-//
-//					@Override
-//					public void onMarkerReached(AudioTrack arg0) {
-//						new Thread(mc).start(); //will destroy this object, null things out. 
-//					}
-//
-//					@Override
-//					public void onPeriodicNotification(AudioTrack arg0) {
-//						// TODO Auto-generated method stub
-//
-//					}
-//				}); 
+				//				track.setNotificationMarkerPosition(written - (smallestSubdivisionInFrames - beatSoundLength));
+				//				Log.v(Tag, "total written without rest " + (written - (smallestSubdivisionInFrames - beatSoundLength)));
+				//				Log.v(Tag, "total with rest " + written);
+				//				Log.v(Tag, "Current PlaybackHead position " + track.getPlaybackHeadPosition());
+				//				track.setPlaybackPositionUpdateListener( new OnPlaybackPositionUpdateListener() {
+				//
+				//					@Override
+				//					public void onMarkerReached(AudioTrack arg0) {
+				//						new Thread(mc).start(); //will destroy this object, null things out. 
+				//					}
+				//
+				//					@Override
+				//					public void onPeriodicNotification(AudioTrack arg0) {
+				//						// TODO Auto-generated method stub
+				//
+				//					}
+				//				}); 
 				track.stop(); //should allow it to finish all that is written to the buffer. 
 				new Thread(mc).start(); //will destroy this object, null things out. 
 			}
@@ -325,25 +335,25 @@ public class MetronomeController implements Runnable{
 		private void writeSilence() {
 			if (beatSoundLength < smallestSubdivisionInFrames) {
 				//synchronized(metLock) {
-					int restLength = smallestSubdivisionInFrames - beatSoundLength;
-					int leftToWrite = restLength;
-					while (leftToWrite > 0) {
-						int writeLength = Math.min(leftToWrite, WriteChunk);
-						track.write(new short[writeLength], 0, writeLength);
-						Log.d(Tag, "wrote silence in " + writeLength);
-						written += writeLength;
-						leftToWrite -= writeLength;
-//						while (paused) {
-//							synchronized(metLock) {
-//								Log.v(Tag, "Paused, waiting.");
-//								try {
-//									metLock.wait();
-//								} catch (InterruptedException e) {
-//									Log.v(Tag, "Met was interuppted during wait.");
-//								}
-//							}
-//						}
-					}
+				int restLength = smallestSubdivisionInFrames - beatSoundLength;
+				int leftToWrite = restLength;
+				while (leftToWrite > 0) {
+					int writeLength = Math.min(leftToWrite, WriteChunk);
+					track.write(new short[writeLength], 0, writeLength);
+					Log.d(Tag, "wrote silence in " + writeLength);
+					written += writeLength;
+					leftToWrite -= writeLength;
+					//						while (paused) {
+					//							synchronized(metLock) {
+					//								Log.v(Tag, "Paused, waiting.");
+					//								try {
+					//									metLock.wait();
+					//								} catch (InterruptedException e) {
+					//									Log.v(Tag, "Met was interuppted during wait.");
+					//								}
+					//							}
+					//						}
+				}
 				//}
 			}
 			else {
@@ -352,26 +362,27 @@ public class MetronomeController implements Runnable{
 		}
 
 		private void writeNextBeatOfPattern() {
-			//synchronized(metLock) {
-				if (pattern[currentBeat] == 1) {
-					track.write(primaryData, 0, primaryData.length);
-					Log.v(Tag, "write primary beat " + (currentBeat + 1) + "/" + pattern.length);
-					written += primaryData.length;
-				}
-				else if (pattern[currentBeat] == 2 ){
-					track.write(secondaryData, 0, secondaryData.length);
-					Log.v(Tag, "write secondary beat " + (currentBeat + 1) + "/" + pattern.length);
-					written += primaryData.length;
-				}
-				// TODO add cases for 3 and 4 type beats.
-				else {
-					// Write the amount of rest that a tick or tock would normally take up
-					track.write(new short[primaryData.length], 0, primaryData.length);
-					Log.v(Tag, "write rest beat " + (currentBeat + 1) + "/" + pattern.length);
-					written += primaryData.length;
-				}
-			//}
-			if (paused) {
+			short[] data;
+			switch(pattern[currentBeat]){				
+				case 1:
+					data = primarySoundData;
+					Log.v(Tag, "Primary");
+					break;
+				case 2:
+					data = secondarySoundData;
+					Log.v(Tag, "secondary");
+					break;
+					//case 3:
+					//case 4:
+				default:
+					data = new short[primarySoundData.length];
+					Log.v(Tag, "0 or other");
+					break;
+			}
+			int wrote = track.write(data, 0, beatSoundLength);
+			Log.v(Tag, "write beat " + (currentBeat + 1) + "/" + pattern.length);
+			written += wrote; //TODO check for errors first
+			if (paused) { //should not increment further if it is paused
 				return;
 			}
 			//increment the beat and measure if needed. 
@@ -387,15 +398,17 @@ public class MetronomeController implements Runnable{
 		void updateLengths() {
 			smallestSubdivisionInFrames = (int) (60 * SAMPLE_RATE / (tempo * beat)); // Recalculate in case tempo changed
 			if ((beatSoundLength <= smallestSubdivisionInFrames)) {
-				primaryData = primarySoundData;
-				secondaryData = secondarySoundData;
+				//				primaryData = primarySoundData;
+				//				secondaryData = secondarySoundData;
+				beatSoundLength = primarySoundData.length;
 			}
 			else {
-				primaryData = primaryHalfLength;
-				secondaryData = secondaryHalfLength;
+				//				primaryData = primaryHalfLength;
+				//				secondaryData = secondaryHalfLength;
+				beatSoundLength = smallestSubdivisionInFrames;
 			}
-			smallestSubdivisionInFrames = (int) (60 * SAMPLE_RATE / (tempo * beat)); // Recalculate in case tempo changed
-			beatSoundLength = primaryData.length;
+			//			smallestSubdivisionInFrames = (int) (60 * SAMPLE_RATE / (tempo * beat)); // Recalculate in case tempo changed
+			//			beatSoundLength = primaryData.length;
 		}
 
 		/**
@@ -421,6 +434,9 @@ public class MetronomeController implements Runnable{
 				Log.v(Tag, "Stop called while track was paused.");
 				//TODO make sure there are no issues with this. 
 			}
+			stopping  = true;
+			track.pause();
+			track.flush();
 			new Thread(mc).start();
 		}
 
