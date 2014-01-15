@@ -9,12 +9,8 @@ import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.media.AudioTrack.OnPlaybackPositionUpdateListener;
 import android.util.Log;
 
-/*
- * Note: in order to solve the pausing issues I need to make the buffer larger and then make sure it never actually gets filled by forcing th thread to wait until there is enough free space in the buffer as determined by the difference between written and position. 
- */
 
 
 /**
@@ -132,15 +128,20 @@ public class MetronomeController implements Runnable{
 
 	void ChangeCurrentEvent(MetronomeEvent event) {
 		//TODO get all of them working together
-		met.flush();
+		if (state == MetronomeState.Playing) {
+			met.pause();
+		}
 		currentEvent = event;
 		updateMet();
+		if (state == MetronomeState.Playing) {
+			met.resume();
+		}
 		met.updated = true;
 	}
 
 	void pause() {
 		state = MetronomeState.Paused;
-		met.pause();
+		//met.pause(); //duplicated in method below
 		ChangeCurrentEvent(currentEvent);
 	}
 
@@ -148,7 +149,7 @@ public class MetronomeController implements Runnable{
 		state = MetronomeState.Playing;
 		met.resume();
 	}
-	
+
 	void stop() {
 		state = MetronomeState.Stopping;
 		met.stop();
@@ -160,7 +161,7 @@ public class MetronomeController implements Runnable{
 	 * This allows for incredible freedom without creating tons of instances.  
 	 * will run in parallel with MetronomeController which will handle changing values. 
 	 */
-	private class MyMetronome implements Runnable{
+	private class MyMetronome implements Runnable {
 
 		//fields
 
@@ -170,22 +171,15 @@ public class MetronomeController implements Runnable{
 
 		private static final int SAMPLE_RATE = 22050;
 		private static final int BUFFER_SIZE = 5000;//10000;//22050; //lowered to help with performance TODO check this, experiment
-		// Arrays representing audio for a full length beat and half length beats. 
 		private final short[] primarySoundData;
 		private final short[] secondarySoundData;
-		//		private final short[] primaryHalfLength;
-		//		private final short[] secondaryHalfLength;
-		//Will actually hold the reference to the one being used
-		//		private short[] primaryData;
-		//		private short[] secondaryData;
+		private static final int WriteChunk = 4410; //100 ms
 
 		private AudioTrack track;
 		boolean playing = false;
 
 		//debug things:
 		private static final String Tag = "MyMetronome";
-		private static final int WriteChunk = 4410; //100 ms
-
 
 		/** Measured in BPM, defined as the time between "quarter notes" in whatever time signature is being used. */
 		double tempo;
@@ -219,8 +213,7 @@ public class MetronomeController implements Runnable{
 		private int written = 0;
 		private int position;
 		private Thread metThread;
-//		private int writeLength;
-		private boolean stopping = false;
+		private boolean stopping;
 
 		//constructor(s)
 		MyMetronome(Context context, double tempo, double volume, int[] pattern, int beat, Sounds soundSet, MetronomeController mc) {
@@ -233,9 +226,6 @@ public class MetronomeController implements Runnable{
 			if (soundSet == Sounds.set1) {
 				primarySoundData = Utility.intToShortArray(context.getResources().getIntArray(R.array.tick_pcm));
 				secondarySoundData = Utility.intToShortArray(context.getResources().getIntArray(R.array.tock_pcm));
-				//				primaryHalfLength = Utility.intToShortArrayHalf(context.getResources().getIntArray(R.array.tick_pcm));
-				//				secondaryHalfLength = Utility.intToShortArrayHalf(context.getResources().getIntArray(R.array.tock_pcm));
-
 
 				//add other sounds to this set
 			}
@@ -247,8 +237,6 @@ public class MetronomeController implements Runnable{
 				//default to set1
 				primarySoundData = Utility.intToShortArray(context.getResources().getIntArray(R.array.tick_pcm));
 				secondarySoundData = Utility.intToShortArray(context.getResources().getIntArray(R.array.tock_pcm));
-				//				primaryHalfLength = Utility.intToShortArrayHalf(context.getResources().getIntArray(R.array.tick_pcm));
-				//				secondaryHalfLength = Utility.intToShortArrayHalf(context.getResources().getIntArray(R.array.tock_pcm));
 			}
 			track = new AudioTrack(AudioManager.STREAM_MUSIC, SAMPLE_RATE, AudioFormat.CHANNEL_OUT_MONO,
 					AudioFormat.ENCODING_PCM_16BIT, BUFFER_SIZE, AudioTrack.MODE_STREAM);
@@ -274,8 +262,8 @@ public class MetronomeController implements Runnable{
 			smallestSubdivisionInFrames = (int) (60 * SAMPLE_RATE / (tempo * beat));
 			beatSoundLength = primarySoundData.length;
 			updateLengths();
-			//beatSoundLength = primaryData.length;
 			//initialize for play (the parameters are up to date to begin with). 
+			stopping = false;
 			updated = true;
 			track.play();
 			while (playing) {
@@ -310,23 +298,6 @@ public class MetronomeController implements Runnable{
 			}
 			else {
 				Log.v(Tag, "Exiting Play loop");
-				//				track.setNotificationMarkerPosition(written - (smallestSubdivisionInFrames - beatSoundLength));
-				//				Log.v(Tag, "total written without rest " + (written - (smallestSubdivisionInFrames - beatSoundLength)));
-				//				Log.v(Tag, "total with rest " + written);
-				//				Log.v(Tag, "Current PlaybackHead position " + track.getPlaybackHeadPosition());
-				//				track.setPlaybackPositionUpdateListener( new OnPlaybackPositionUpdateListener() {
-				//
-				//					@Override
-				//					public void onMarkerReached(AudioTrack arg0) {
-				//						new Thread(mc).start(); //will destroy this object, null things out. 
-				//					}
-				//
-				//					@Override
-				//					public void onPeriodicNotification(AudioTrack arg0) {
-				//						// TODO Auto-generated method stub
-				//
-				//					}
-				//				}); 
 				track.stop(); //should allow it to finish all that is written to the buffer. 
 				new Thread(mc).start(); //will destroy this object, null things out. 
 			}
@@ -334,7 +305,6 @@ public class MetronomeController implements Runnable{
 
 		private void writeSilence() {
 			if (beatSoundLength < smallestSubdivisionInFrames) {
-				//synchronized(metLock) {
 				int restLength = smallestSubdivisionInFrames - beatSoundLength;
 				int leftToWrite = restLength;
 				while (leftToWrite > 0) {
@@ -343,21 +313,10 @@ public class MetronomeController implements Runnable{
 					Log.d(Tag, "wrote silence in " + writeLength);
 					written += writeLength;
 					leftToWrite -= writeLength;
-					//						while (paused) {
-					//							synchronized(metLock) {
-					//								Log.v(Tag, "Paused, waiting.");
-					//								try {
-					//									metLock.wait();
-					//								} catch (InterruptedException e) {
-					//									Log.v(Tag, "Met was interuppted during wait.");
-					//								}
-					//							}
-					//						}
 				}
-				//}
 			}
 			else {
-				Log.d(Tag, "too fast!");
+				//Log.d(Tag, "too fast!");
 			}
 		}
 
@@ -398,17 +357,11 @@ public class MetronomeController implements Runnable{
 		void updateLengths() {
 			smallestSubdivisionInFrames = (int) (60 * SAMPLE_RATE / (tempo * beat)); // Recalculate in case tempo changed
 			if ((beatSoundLength <= smallestSubdivisionInFrames)) {
-				//				primaryData = primarySoundData;
-				//				secondaryData = secondarySoundData;
 				beatSoundLength = primarySoundData.length;
 			}
 			else {
-				//				primaryData = primaryHalfLength;
-				//				secondaryData = secondaryHalfLength;
 				beatSoundLength = smallestSubdivisionInFrames;
 			}
-			//			smallestSubdivisionInFrames = (int) (60 * SAMPLE_RATE / (tempo * beat)); // Recalculate in case tempo changed
-			//			beatSoundLength = primaryData.length;
 		}
 
 		/**
@@ -440,6 +393,7 @@ public class MetronomeController implements Runnable{
 			new Thread(mc).start();
 		}
 
+
 		void pause() {
 			if (paused) {
 				throw new IllegalStateException("pause called while already paused.");
@@ -449,8 +403,8 @@ public class MetronomeController implements Runnable{
 			}
 			track.pause();
 			flush();
-			position  = track.getPlaybackHeadPosition();
-			Log.v(Tag, "Pausing; playback Head Position " + position);
+			//position  = track.getPlaybackHeadPosition();
+			//Log.v(Tag, "Pausing; playback Head Position " + position);
 			paused = true;
 		}
 
@@ -463,7 +417,7 @@ public class MetronomeController implements Runnable{
 			//track.setPlaybackHeadPosition(position);
 			if (!playing) {
 				Log.v(Tag, "resuming after all values written");
-				track.play();
+				//track.play();
 			}
 			paused = false;
 			flush();
