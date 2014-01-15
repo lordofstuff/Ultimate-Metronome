@@ -76,9 +76,9 @@ public class CustomLinkedList<T> extends AbstractList<T> {
 
 	/**
 	 * Moves an element from index from to index to. Does not alter length. 
-	 * @param from
-	 * @param to
-	 * @throws IndexOutOfBoundsException
+	 * @param from the index it is moving from
+	 * @param to the index it will end up at. 
+	 * @throws IndexOutOfBoundsException if either to or from are out of the bounds of the list. 
 	 */
 	public void moveElement(int from, int to) throws IndexOutOfBoundsException {
 		if (from + 1 > size || from < 0) {
@@ -120,7 +120,7 @@ public class CustomLinkedList<T> extends AbstractList<T> {
 		}
 		else { //do it from the back
 			currentNode = getBack();
-			for(int i=0;i< size - from -1 ;i++) { //TODO check for off by one here. 
+			for(int i=0;i< size - from -1 ;i++) { 
 				currentNode = currentNode.getPrevious();
 			}
 			DLNode moveNode = currentNode;
@@ -198,7 +198,7 @@ public class CustomLinkedList<T> extends AbstractList<T> {
 
 
 
-	//private inner classes
+	//inner classes
 	/**
 	 * An inner class which is the iterator for this containing class. 
 	 * @author Stephen Rodriguez
@@ -293,7 +293,6 @@ public class CustomLinkedList<T> extends AbstractList<T> {
 		 */
 		@Override
 		public void remove() {
-			//TODO possibly don't support this
 //			if (nodePointer == frontPointer || nodePointer == backPointer) {
 //				//next() has never been called. throw IllegalStateException
 //				throw new IllegalStateException("you must call next() or previous() before calling remove()");

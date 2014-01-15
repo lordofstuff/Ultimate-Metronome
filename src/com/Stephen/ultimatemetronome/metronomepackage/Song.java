@@ -9,6 +9,7 @@ import java.util.Iterator;
 
 
 import com.Stephen.ultimatemetronome.CustomLinkedList;
+//import com.Stephen.ultimatemetronome.CustomLinkedList.DLIterator;
 import com.Stephen.ultimatemetronome.EventCreateObject;
 
 //import android.util.Log;
@@ -40,6 +41,8 @@ public class Song implements Iterable<MetronomeEvent>{
     public static Song createFromFileForPlayback(File file) throws IOException, FileNotFoundException, FileFormatException {
 		return new Song(loadFile(file, PLAYBACK));
 	}
+	
+	
 	
 	/**
 	 * This method parses the given file and returns a list of events based on it. The list may contain either eventCreateObject or MetronomeEvent, depending on the flag given. 
@@ -160,6 +163,16 @@ public class Song implements Iterable<MetronomeEvent>{
 	@Override
 	public Iterator<MetronomeEvent> iterator() {
 		return events.iterator();
+	}
+	
+	/**
+	 * A custom iterator implementation that allows movement to an arbitrary element and moving backwards as needed.
+	 * @param backwards
+	 * @return
+	 */
+	public CustomLinkedList<MetronomeEvent>.DLIterator iterator(boolean backwards) {
+		return events.iterator(backwards);
+		
 	}
 
 }

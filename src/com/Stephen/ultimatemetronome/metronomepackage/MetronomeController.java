@@ -2,6 +2,8 @@ package com.Stephen.ultimatemetronome.metronomepackage;
 
 import java.util.Iterator;
 
+import com.Stephen.ultimatemetronome.CustomLinkedList;
+import com.Stephen.ultimatemetronome.CustomLinkedList.DLIterator;
 import com.Stephen.ultimatemetronome.R;
 import com.Stephen.ultimatemetronome.Utility;
 
@@ -25,7 +27,7 @@ public class MetronomeController implements Runnable{
 	//fields
 	private int measureInCurrentEvent;
 	private MetronomeEvent currentEvent;
-	private Iterator<MetronomeEvent> it;
+	private CustomLinkedList<MetronomeEvent>.DLIterator it;
 	private MyMetronome met = null;
 	static enum MetronomeState{NotYetPlayed, Playing, Paused, Stopping};
 	private MetronomeState state;
@@ -56,16 +58,16 @@ public class MetronomeController implements Runnable{
 	 */
 	public void startMet() throws IllegalStateException {
 		if (state == MetronomeState.NotYetPlayed) {
-		Log.d(Tag, "Starting metronome");
-		it = song.iterator();
-		currentEvent = it.next();
-		if (listener != null) {
-			listener.EventUpdate(currentEvent);
-		}
-		measureInCurrentEvent = 1;
-		met = new MyMetronome(context, currentEvent.tempo, currentEvent.volume, currentEvent.pattern, currentEvent.beat, Sounds.set1, this);
-		state = MetronomeState.Playing;
-		met.start(); 
+			Log.d(Tag, "Starting metronome");
+			it = song.iterator(false);
+			currentEvent = it.next();
+			if (listener != null) {
+				listener.EventUpdate(currentEvent);
+			}
+			measureInCurrentEvent = 1;
+			met = new MyMetronome(context, currentEvent.tempo, currentEvent.volume, currentEvent.pattern, currentEvent.beat, Sounds.set1, this);
+			state = MetronomeState.Playing;
+			met.start(); 
 		}
 		else {
 			throw new IllegalStateException("startMet called on Metronome that was not in an uninitialized state. (state == NotYetPlayed)");
@@ -168,12 +170,41 @@ public class MetronomeController implements Runnable{
 		}
 		met.updated = true;
 	}
-	
-//	void nextMeasure() {
-//		if (state == MetronomeState.Playing) {
-//			met.pause();
-//		}
-//	}
+
+	void nextMeasure() {
+		if (state == MetronomeState.NotYetPlayed) {
+			//TODO figure this out
+		}
+		else {
+			if (state == MetronomeState.Playing) {
+				met.pause();
+			}
+			//should increment the measure successfully. 
+			updateMeasure();
+			if (state == MetronomeState.Playing) {
+				met.resume();
+			}
+		}
+	}
+
+	void previousMeasure() {
+		if (state == MetronomeState.NotYetPlayed) {
+			//TODO as well
+		}
+		else {
+			if (state == MetronomeState.Playing) {
+				met.pause();
+			}
+			//cases:
+			//it is in the middle (or last measure) of an event, just needs measure decremented
+			if (measureInCurrentEvent <= currentEvent.repeats) {
+				measureInCurrentEvent--;
+			}
+			//it is at the beginning of 
+			
+			
+		}
+	}
 
 	/**
 	 * Pauses a playing metronome and set it to the beginning of the measure it is on. 
