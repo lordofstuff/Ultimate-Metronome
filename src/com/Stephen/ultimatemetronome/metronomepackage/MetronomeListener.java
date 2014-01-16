@@ -7,8 +7,6 @@ package com.Stephen.ultimatemetronome.metronomepackage;
  */
 interface MetronomeListener {
 	
-	void minorBeatUpdate(int beat);
-	
 	void majorBeatUpdate(int beat);
 	
 	void measureUpdate(int measureInEvent);

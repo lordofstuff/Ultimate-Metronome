@@ -8,16 +8,6 @@
 	android:paddingTop="@dimen/activity_vertical_margin"
 	tools:context=".PlayMetronomeActivity" >
 
-    <Button
-    	android:id="@+id/play_pause_button"
-    	android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:layout_alignParentBottom="true"
-    	android:layout_centerHorizontal="true"
-    	android:layout_marginBottom="66dp"
-    	android:onClick="playOrPause"
-    	android:text="@string/play_text" />
-
     <TextView
     	android:id="@+id/beat_textview"
     	android:layout_width="wrap_content"
@@ -29,7 +19,6 @@
     	android:clickable="false"
     	android:duplicateParentState="false"
     	android:longClickable="false"
-    	android:text="0:0"
     	android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
@@ -54,7 +43,7 @@
     	android:layout_alignParentBottom="true"
     	android:layout_marginBottom="20dp"
     	android:onClick="stop"
-    	android:text="@string/stop_text" />
+    	android:drawableLeft="@drawable/ic_action_stop" />
 
     <Button
     	android:id="@+id/next_measure_button"
@@ -65,7 +54,7 @@
     	android:layout_alignBottom="@+id/play_pause_button"
     	android:layout_toRightOf="@+id/play_pause_button"
     	android:onClick="nextMeasure"
-    	android:text="next measure" />
+    	android:drawableLeft="@drawable/ic_action_fast_forward" />
 
     <Button
     	android:id="@+id/previous_measure_button"
@@ -76,27 +65,7 @@
     	android:layout_alignBottom="@+id/play_pause_button"
     	android:layout_toLeftOf="@+id/play_pause_button"
     	android:onClick="previousMeasure"
-    	android:text="prev measure" />
-
-    <Button
-    	android:id="@+id/previous_event_button"
-    	style="?android:attr/buttonStyleSmall"
-    	android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:layout_above="@+id/previous_measure_button"
-    	android:layout_alignRight="@+id/previous_measure_button"
-    	android:onClick="previousEvent"
-    	android:text="prev set" />
-
-    <Button
-    	android:id="@+id/button2"
-    	style="?android:attr/buttonStyleSmall"
-    	android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:layout_above="@+id/next_measure_button"
-    	android:layout_alignLeft="@+id/next_measure_button"
-    	android:onClick="nextEvent"
-    	android:text="next set" />
+    	android:drawableLeft="@drawable/ic_action_rewind" />
 
     <TextView
     	android:id="@+id/measure_textview"
@@ -105,5 +74,36 @@
     	android:layout_alignBaseline="@+id/beat_textview"
     	android:layout_alignBottom="@+id/beat_textview"
     	android:layout_alignRight="@+id/Current_event_name_textview" />
+
+    <Button
+    	android:id="@+id/play_pause_button"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_above="@+id/stop_button"
+    	android:layout_centerHorizontal="true"
+    	android:onClick="playOrPause"
+    	android:drawableLeft="@drawable/ic_action_play" />
+
+    <Button
+    	android:id="@+id/next_event_button"
+    	style="?android:attr/buttonStyleSmall"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_alignBaseline="@+id/next_measure_button"
+    	android:layout_alignBottom="@+id/next_measure_button"
+    	android:layout_toRightOf="@+id/next_measure_button"
+    	android:drawableLeft="@drawable/ic_action_next"
+    	android:onClick="nextEvent" />
+
+    <Button
+    	android:id="@+id/previous_event_button"
+    	style="?android:attr/buttonStyleSmall"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_alignBaseline="@+id/previous_measure_button"
+    	android:layout_alignBottom="@+id/previous_measure_button"
+    	android:layout_toLeftOf="@+id/previous_measure_button"
+    	android:drawableLeft="@drawable/ic_action_previous"
+    	android:onClick="previousEvent" />
 
 </RelativeLayout>

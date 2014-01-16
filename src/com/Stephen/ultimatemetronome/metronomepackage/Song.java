@@ -178,4 +178,8 @@ public class Song implements Iterable<MetronomeEvent>{
 		return events.get(0);
 	}
 
+	public MetronomeEvent getLastEvent() {
+		return events.get(events.size() - 1);
+    }
+
 }

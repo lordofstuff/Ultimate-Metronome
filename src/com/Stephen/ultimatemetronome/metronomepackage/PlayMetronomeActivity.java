@@ -64,13 +64,13 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 		try {
 			song = Song.createFromFileForPlayback(file);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		} catch (FileFormatException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		return song;
@@ -79,7 +79,7 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 
 	public void playOrPause(View view) {
 		if (mode == Mode.Streaming) {
-			synchronized(mc) {
+			
 				if (mc.getState() == MetronomeState.NotYetPlayed) {
 					Log.v(Tag, "(re)Starting Metronome");
 					mc.startMet();
@@ -92,7 +92,7 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 					Log.v(Tag, "Resuming Metronome");
 					mc.resume();
 				}
-			}
+			
 		}
 		else { //Static mode
 			if (met.getState() == Metronome.MetronomeState.Initialized) {
@@ -126,9 +126,9 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 
 	public void nextMeasure(View view) {
 		if (mode == Mode.Streaming) {
-			synchronized(mc) {
+			
 				mc.nextMeasure();
-			}
+			
 		}
 		else {
 			Log.v(Tag, "nextMeasure called on static track. not implemented. ");
@@ -137,9 +137,9 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 
 	public void previousMeasure(View view) {
 		if (mode == Mode.Streaming) {
-			synchronized(mc) {
+			
 				mc.previousMeasure();
-			}
+			
 		}
 		else {
 			Log.v(Tag, "nextMeasure called on static track. not implemented. ");
@@ -148,9 +148,9 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 
 	public void nextEvent(View view) {
 		if (mode == Mode.Streaming) {
-			synchronized(mc) {
+			
 				mc.nextEvent();
-			}
+			
 		}
 		else {
 			Log.v(Tag, "nextEvent called on static track. not implemented. ");
@@ -159,18 +159,13 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 
 	public void previousEvent(View view) {
 		if (mode == Mode.Streaming) {
-			synchronized(mc) {
+			
 				mc.previousEvent();
-			}
+			
 		}
 		else {
 			Log.v(Tag, "previousEvent called on static track. not implemented. ");
 		}
-	}
-
-	@Override
-	public void minorBeatUpdate(int beat) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
