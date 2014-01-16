@@ -13,9 +13,9 @@ interface MetronomeListener {
 	
 	void measureUpdate(int measureInEvent);
 	
-	void EventUpdate(MetronomeEvent newEvent);
+	void eventUpdate(MetronomeEvent newEvent);
 	
-	void SongEnd();
+	void songEnd();
 	
 	
 	

@@ -237,8 +237,11 @@ public class CustomLinkedList<T> extends AbstractList<T> {
 		}
 
 		@Override
-		public T next() {
+		public T next() throws NoSuchElementException{
 			nodePointer = nodePointer.getNext();
+			if (nodePointer == null) {
+				throw new NoSuchElementException("No more elements in list.");
+			}
 			return nodePointer.getElement();
 		}
 
@@ -246,8 +249,11 @@ public class CustomLinkedList<T> extends AbstractList<T> {
 		 * Returns the element of the previous node in the list. 
 		 * @return The element of the previous node in the list. 
 		 */
-		public T previous() {
+		public T previous() throws NoSuchElementException {
 			nodePointer = nodePointer.getPrevious();
+			if (nodePointer == null) {
+				throw new NoSuchElementException("No more elements in list.");
+			}
 			return nodePointer.getElement();
 		}
 

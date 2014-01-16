@@ -172,7 +172,10 @@ public class Song implements Iterable<MetronomeEvent>{
 	 */
 	public CustomLinkedList<MetronomeEvent>.DLIterator iterator(boolean backwards) {
 		return events.iterator(backwards);
-		
+	}
+	
+	public MetronomeEvent getFirstEvent() {
+		return events.get(0);
 	}
 
 }

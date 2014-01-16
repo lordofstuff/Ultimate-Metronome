@@ -19,7 +19,7 @@
     	android:text="@string/play_text" />
 
     <TextView
-    	android:id="@+id/measure_and_beat_textview"
+    	android:id="@+id/beat_textview"
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
     	android:layout_alignBottom="@+id/Current_event_name_textview"
@@ -97,5 +97,13 @@
     	android:layout_alignLeft="@+id/next_measure_button"
     	android:onClick="nextEvent"
     	android:text="next set" />
+
+    <TextView
+    	android:id="@+id/measure_textview"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_alignBaseline="@+id/beat_textview"
+    	android:layout_alignBottom="@+id/beat_textview"
+    	android:layout_alignRight="@+id/Current_event_name_textview" />
 
 </RelativeLayout>

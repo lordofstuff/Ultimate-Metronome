@@ -1,9 +1,9 @@
 package com.Stephen.ultimatemetronome.metronomepackage;
 
-import java.util.Iterator;
+//import java.util.Iterator;
 
 import com.Stephen.ultimatemetronome.CustomLinkedList;
-import com.Stephen.ultimatemetronome.CustomLinkedList.DLIterator;
+//import com.Stephen.ultimatemetronome.CustomLinkedList.DLIterator;
 import com.Stephen.ultimatemetronome.R;
 import com.Stephen.ultimatemetronome.Utility;
 
@@ -48,6 +48,8 @@ public class MetronomeController implements Runnable{
 		this.context = context;
 		state = MetronomeState.NotYetPlayed;
 		listener = null;
+		it = song.iterator(false);
+		currentEvent = it.next();
 	}
 
 
@@ -56,13 +58,12 @@ public class MetronomeController implements Runnable{
 	 * Starts this metronome playing for the first time or restarts it after if is stopped or finishes.
 	 * @throws IllegalStateException if it is called while playing, paused, or before it has finished destroying the old one. 
 	 */
-	public void startMet() throws IllegalStateException {
+	public synchronized void startMet() throws IllegalStateException {
 		if (state == MetronomeState.NotYetPlayed) {
 			Log.d(Tag, "Starting metronome");
-			it = song.iterator(false);
-			currentEvent = it.next();
+			currentEvent = it.current();
 			if (listener != null) {
-				listener.EventUpdate(currentEvent);
+				listener.eventUpdate(currentEvent);
 			}
 			measureInCurrentEvent = 1;
 			met = new MyMetronome(context, currentEvent.tempo, currentEvent.volume, currentEvent.pattern, currentEvent.beat, Sounds.set1, this);
@@ -86,7 +87,7 @@ public class MetronomeController implements Runnable{
 	 * Called by MyMetronome every time it reaches the end of a measure. 
 	 * increments measure numbers and events, including updating the parameters of the metronome as necessary.
 	 */
-	public void updateMeasure() {
+	public synchronized void updateMeasure() {
 		//gets called every time the metronome finishes a measure
 		//thus, it will increment the measure number and change values for a different event when needed.
 		Log.v(Tag, "Finished measure " + measureInCurrentEvent + "/" + currentEvent.repeats);
@@ -105,7 +106,7 @@ public class MetronomeController implements Runnable{
 		else if (it.hasNext()) {
 			currentEvent = it.next();
 			if (listener != null) {
-				listener.EventUpdate(currentEvent);
+				listener.eventUpdate(currentEvent);
 			}
 			measureInCurrentEvent = 1;
 			updateMet();
@@ -129,8 +130,17 @@ public class MetronomeController implements Runnable{
 		met.track.stop();
 		met.track.release();
 		met = null;
+		resetToStart();
 		state = MetronomeState.NotYetPlayed;
 		Log.v(Tag, "Cleaned up");
+	}
+	
+	private void resetToStart() {
+		it = song.iterator(false);
+		currentEvent = it.next();
+		if (listener != null) {
+			listener.songEnd();
+		}
 	}
 
 	/**
@@ -160,21 +170,25 @@ public class MetronomeController implements Runnable{
 	 * @param event the event to move to. 
 	 */
 	private void changeCurrentEvent(MetronomeEvent event) {
-		if (event == null) {
-			//stop the song.
-			stop();
-		}
 		if (state == MetronomeState.NotYetPlayed) {
 			//TODO figure this out
+			//can do everything else the same, but no references to met, as it is null in this state. 
+			currentEvent = event;
+			it.set(currentEvent);	
 		}
 		else if (met.paused){ //checks directly if the metronome is paused, but the externally exposed state is probably still playing
 			currentEvent = event;
 			it.set(currentEvent);
+			measureInCurrentEvent = 1;
 			updateMet();
 			met.updated = true;
 		}
 		else {
 			throw new IllegalStateException("Metronome must not be playing while event is updated.");
+		}
+		//notify the listener
+		if (listener != null) {
+			listener.eventUpdate(currentEvent);
 		}
 	}
 
@@ -182,8 +196,23 @@ public class MetronomeController implements Runnable{
 		if (state == MetronomeState.Playing) {
 			met.pause();
 		}
-		//should increment the measure successfully. 
-		updateMeasure();
+		//it is in the middle (or first measure) of an event, just needs measure incremented
+		if (measureInCurrentEvent < currentEvent.repeats) {
+			measureInCurrentEvent++;
+			if (listener != null) {
+				listener.measureUpdate(measureInCurrentEvent);
+			}
+		}
+		//it is at the end of an event
+		else {
+			if (it.hasNext()) {
+				changeCurrentEvent(it.next());
+			}
+			else {
+				stop();
+				return;
+			}
+		}
 		if (state == MetronomeState.Playing) {
 			met.resume();
 		}
@@ -197,6 +226,9 @@ public class MetronomeController implements Runnable{
 		//it is in the middle (or last measure) of an event, just needs measure decremented
 		if (measureInCurrentEvent <= currentEvent.repeats) {
 			measureInCurrentEvent--;
+			if (listener != null) {
+				listener.measureUpdate(measureInCurrentEvent);
+			}
 		}
 		//it is at the beginning of an event
 		else {
@@ -220,7 +252,7 @@ public class MetronomeController implements Runnable{
 		if (it.hasNext()) {
 			changeCurrentEvent(it.next());
 		}
-		else {
+		else if (state != MetronomeState.NotYetPlayed) {
 			stop();
 			return;
 		}
@@ -233,10 +265,10 @@ public class MetronomeController implements Runnable{
 		if (state == MetronomeState.Playing) {
 			met.pause();
 		}
-		if (it.hasPrevious()) {
+		if (it.hasPrevious()) { //if there is an event before this one
 			changeCurrentEvent(it.previous());
 		}
-		else {
+		else if (state != MetronomeState.NotYetPlayed) { //if there is not, just stop everything. 
 			stop();
 			return;
 		}
@@ -347,8 +379,8 @@ public class MetronomeController implements Runnable{
 		private int beatSoundLength;
 		private int smallestSubdivisionInFrames;
 		private volatile boolean paused;
-		private int written = 0;
-		private int position;
+		//private int written = 0;
+		//private int position;
 		private Thread metThread;
 		private boolean stopping;
 
@@ -386,7 +418,7 @@ public class MetronomeController implements Runnable{
 
 		public void flush() {
 			track.flush();
-			written = 0;
+			//written = 0;
 			resetBeat();
 		}
 
@@ -448,7 +480,7 @@ public class MetronomeController implements Runnable{
 					int writeLength = Math.min(leftToWrite, WriteChunk);
 					track.write(new short[writeLength], 0, writeLength);
 					Log.d(Tag, "wrote silence in " + writeLength);
-					written += writeLength;
+					//written += writeLength;
 					leftToWrite -= writeLength;
 				}
 			}
@@ -477,7 +509,10 @@ public class MetronomeController implements Runnable{
 			}
 			int wrote = track.write(data, 0, beatSoundLength);
 			Log.v(Tag, "write beat " + (currentBeat + 1) + "/" + pattern.length);
-			written += wrote; //TODO check for errors first
+			if (listener != null) {
+				listener.majorBeatUpdate(currentBeat + 1);
+			}
+			//written += wrote; //TODO check for errors first
 			if (paused) { //should not increment further if it is paused
 				return;
 			}
@@ -550,7 +585,7 @@ public class MetronomeController implements Runnable{
 				throw new IllegalStateException("Resume called while metronome was not paused");
 			}
 			Log.v(Tag, "Resuming Metronome");
-			Log.v(Tag, "written " + written);
+			//Log.v(Tag, "written " + written);
 			//track.setPlaybackHeadPosition(position);
 			if (!playing) {
 				Log.v(Tag, "resuming after all values written");

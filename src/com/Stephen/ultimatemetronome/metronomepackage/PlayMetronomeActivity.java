@@ -23,8 +23,9 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 	Song song;
 	MetronomeController mc;
 	Metronome met;
-	TextView measureAndBeat;
+	TextView beatText;
 	TextView eventName;
+	TextView measureText;
 	Button playPausebutton;
 	Button stopButton;
 	static enum Mode {Streaming, Static};
@@ -45,7 +46,9 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 			met = new Metronome(song, getApplicationContext());
 		}
 		eventName = (TextView) findViewById(R.id.Current_event_name_textview);
-
+		beatText = (TextView)findViewById(R.id.beat_textview);
+		measureText = (TextView)findViewById(R.id.measure_textview);
+		songEnd();
 	}
 
 	@Override
@@ -123,25 +126,19 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 
 	public void nextMeasure(View view) {
 		if (mode == Mode.Streaming) {
-			if (mc.getState() == MetronomeState.Playing || mc.getState() == MetronomeState.Paused) {
+			synchronized(mc) {
 				mc.nextMeasure();
-			}
-			else if (mc.getState() == MetronomeState.NotYetPlayed) {
-				Log.v(Tag, "nextMeasure called on stopped track.");
 			}
 		}
 		else {
 			Log.v(Tag, "nextMeasure called on static track. not implemented. ");
 		}
 	}
-	
+
 	public void previousMeasure(View view) {
 		if (mode == Mode.Streaming) {
-			if (mc.getState() == MetronomeState.Playing || mc.getState() == MetronomeState.Paused) {
+			synchronized(mc) {
 				mc.previousMeasure();
-			}
-			else if (mc.getState() == MetronomeState.NotYetPlayed) {
-				Log.v(Tag, "previousMeasure called on stopped track.");
 			}
 		}
 		else {
@@ -151,32 +148,26 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 
 	public void nextEvent(View view) {
 		if (mode == Mode.Streaming) {
-			if (mc.getState() == MetronomeState.Playing || mc.getState() == MetronomeState.Paused) {
+			synchronized(mc) {
 				mc.nextEvent();
-			}
-			else if (mc.getState() == MetronomeState.NotYetPlayed) {
-				Log.v(Tag, "nextEvent called on stopped track.");
 			}
 		}
 		else {
 			Log.v(Tag, "nextEvent called on static track. not implemented. ");
 		}
 	}
-	
+
 	public void previousEvent(View view) {
 		if (mode == Mode.Streaming) {
-			if (mc.getState() == MetronomeState.Playing || mc.getState() == MetronomeState.Paused) {
+			synchronized(mc) {
 				mc.previousEvent();
-			}
-			else if (mc.getState() == MetronomeState.NotYetPlayed) {
-				Log.v(Tag, "previousEvent called on stopped track.");
 			}
 		}
 		else {
 			Log.v(Tag, "previousEvent called on static track. not implemented. ");
 		}
 	}
-	
+
 	@Override
 	public void minorBeatUpdate(int beat) {
 		// TODO Auto-generated method stub
@@ -184,32 +175,49 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 	}
 
 	@Override
-	public void majorBeatUpdate(int beat) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void measureUpdate(int measureInEvent) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void EventUpdate(final MetronomeEvent newEvent) {
-		Log.v(Tag, "New Event: " + newEvent.name);
+	public void majorBeatUpdate(final int beat) {
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				eventName.setText(newEvent.name);
-			}	
+				beatText.setText(Integer.toString(beat));
+			}
 		});
 	}
 
 	@Override
-	public void SongEnd() {
-		// TODO Auto-generated method stub
+	public void measureUpdate(final int measureInEvent) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				measureText.setText(Integer.toString(measureInEvent));
+			}
+		});
+	}
 
+	@Override
+	public void eventUpdate(final MetronomeEvent newEvent) {
+		Log.v(Tag, "New Event: " + newEvent.name);
+		measureUpdate(1);
+		majorBeatUpdate(1);
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				eventName.setText(newEvent.name);
+			}
+		});
+	}
+
+	@Override
+	public void songEnd() {
+		//the song has been stopped and reset to the beginning. set the UI to match. 
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				beatText.setText("1");
+				eventName.setText(song.getFirstEvent().name);
+				measureText.setText("1");
+			}
+		});
 	}
 
 }
