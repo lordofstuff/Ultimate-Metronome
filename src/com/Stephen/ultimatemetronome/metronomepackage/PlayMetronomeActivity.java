@@ -171,7 +171,6 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 	@Override
 	public void minorBeatUpdate(int beat) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -179,7 +178,7 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				beatText.setText(Integer.toString(beat));
+				updateBeatText(beat);
 			}
 		});
 	}
@@ -189,7 +188,8 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				measureText.setText(Integer.toString(measureInEvent));
+				updateMeasureText(measureInEvent);
+				updateBeatText(1);
 			}
 		});
 	}
@@ -197,12 +197,12 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 	@Override
 	public void eventUpdate(final MetronomeEvent newEvent) {
 		Log.v(Tag, "New Event: " + newEvent.name);
-		measureUpdate(1);
-		majorBeatUpdate(1);
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				eventName.setText(newEvent.name);
+				updateEventName(newEvent.name);
+				updateMeasureText(1);
+				updateBeatText(1);
 			}
 		});
 	}
@@ -213,11 +213,23 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				beatText.setText("1");
-				eventName.setText(song.getFirstEvent().name);
-				measureText.setText("1");
+				updateBeatText(1);
+				updateEventName(song.getFirstEvent().name);
+				updateMeasureText(1);
 			}
 		});
+	}
+	
+	private void updateEventName(String name) {
+		eventName.setText(name);
+	}
+	
+	private void updateMeasureText(int measure) {
+		measureText.setText(Integer.toString(measure));
+	}
+	
+	private void updateBeatText(int beat) {
+		beatText.setText(Integer.toString(beat));
 	}
 
 }

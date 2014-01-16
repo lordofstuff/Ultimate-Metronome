@@ -96,9 +96,9 @@ public class MetronomeController implements Runnable{
 		if (measureInCurrentEvent < currentEvent.repeats) {
 			Log.d(Tag, "finished measure " + measureInCurrentEvent + "//" + currentEvent.repeats);
 			measureInCurrentEvent++;
-			if (listener != null) {
-				listener.measureUpdate(measureInCurrentEvent);
-			}
+			//			if (listener != null) {
+			//				listener.measureUpdate(measureInCurrentEvent);
+			//			}
 			met.updated = true;
 		}
 
@@ -106,7 +106,7 @@ public class MetronomeController implements Runnable{
 		else if (it.hasNext()) {
 			currentEvent = it.next();
 			if (listener != null) {
-				listener.eventUpdate(currentEvent);
+				met.eventUIUpdated = false;
 			}
 			measureInCurrentEvent = 1;
 			updateMet();
@@ -134,7 +134,7 @@ public class MetronomeController implements Runnable{
 		state = MetronomeState.NotYetPlayed;
 		Log.v(Tag, "Cleaned up");
 	}
-	
+
 	private void resetToStart() {
 		it = song.iterator(false);
 		currentEvent = it.next();
@@ -226,9 +226,9 @@ public class MetronomeController implements Runnable{
 		//it is in the middle (or last measure) of an event, just needs measure decremented
 		if (measureInCurrentEvent <= currentEvent.repeats) {
 			measureInCurrentEvent--;
-			if (listener != null) {
-				listener.measureUpdate(measureInCurrentEvent);
-			}
+			//			if (listener != null) {
+			//				listener.measureUpdate(measureInCurrentEvent);
+			//			}
 		}
 		//it is at the beginning of an event
 		else {
@@ -383,6 +383,8 @@ public class MetronomeController implements Runnable{
 		//private int position;
 		private Thread metThread;
 		private boolean stopping;
+		private boolean eventUIUpdated;
+		
 
 		//constructor(s)
 		MyMetronome(Context context, double tempo, double volume, int[] pattern, int beat, Sounds soundSet, MetronomeController mc) {
@@ -508,9 +510,20 @@ public class MetronomeController implements Runnable{
 					break;
 			}
 			int wrote = track.write(data, 0, beatSoundLength);
-			Log.v(Tag, "write beat " + (currentBeat + 1) + "/" + pattern.length);
+			//Log.v(Tag, "write beat " + (currentBeat + 1) + "/" + pattern.length);
 			if (listener != null) {
-				listener.majorBeatUpdate(currentBeat + 1);
+				if (!eventUIUpdated) {
+					listener.eventUpdate(currentEvent);
+					eventUIUpdated = true;
+				}
+				else {
+					if (currentBeat == 0) {
+						listener.measureUpdate(measureInCurrentEvent);
+					}
+					else {
+						listener.majorBeatUpdate(currentBeat + 1);
+					}
+				}
 			}
 			//written += wrote; //TODO check for errors first
 			if (paused) { //should not increment further if it is paused
