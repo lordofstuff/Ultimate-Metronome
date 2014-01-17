@@ -19,6 +19,8 @@ public class EventCreateObject implements Parcelable{
 	static final int DEFAULT_TIME_SIG_TOP = 4;
 	static final int DEFAULT_TIME_SIG_BOTTOM = 4;
 	private static final String Tag = "EventCreateObject";
+	private static final int[] DEFAULT_EMPHASIS = new int[] {1, 0, 0, 0};
+	
 	
 	//actual values
 	private String name;
@@ -33,10 +35,12 @@ public class EventCreateObject implements Parcelable{
 	//used regardless of complexity, but not exposed if not complex
 	private int[] pattern;
 	private int beat;
+	private int[] emphasis;
 	
 	//fields used only for simple time signatures
 	private int timeSigTop;
 	private int timeSigBottom;
+	
 	
 	//for parceling
 	public static EventCreator CREATOR = new EventCreator();
@@ -66,7 +70,7 @@ public class EventCreateObject implements Parcelable{
 	 * Creates an editable event with default values.
 	 */
 	public EventCreateObject() {
-	    this(DEFAULT_NAME, DEFAULT_TEMPO, DEFAULT_VOLUME, DEFAULT_REPEATS, false, DEFAULT_PATTERN, DEFAULT_BEAT, DEFAULT_TIME_SIG_TOP, DEFAULT_TIME_SIG_BOTTOM);
+	    this(DEFAULT_NAME, DEFAULT_TEMPO, DEFAULT_VOLUME, DEFAULT_REPEATS, false, DEFAULT_PATTERN, DEFAULT_BEAT, DEFAULT_TIME_SIG_TOP, DEFAULT_TIME_SIG_BOTTOM, DEFAULT_EMPHASIS);
     }
 
 	/**
@@ -80,10 +84,11 @@ public class EventCreateObject implements Parcelable{
 	 * @param beat The number of subdivisions that make up one beat for tempo purposes.
 	 * @param timeSigTop The top of a simple time signature.
 	 * @param timeSigBottom The bottom of a simple time signature.
+	 * @param emphasis determines which beats are treated as "major" beats for the purposes of counting in the UI
 	 */
 	public EventCreateObject(String name, double tempo, float volume,
             int repeats, boolean complex, int[] pattern, int beat,
-            int timeSigTop, int timeSigBottom) {
+            int timeSigTop, int timeSigBottom, int[] emphasis) {
 	    super();
 	    this.name = name;
 	    this.tempo = tempo;
@@ -94,6 +99,7 @@ public class EventCreateObject implements Parcelable{
 	    this.beat = beat;
 	    this.timeSigTop = timeSigTop;
 	    this.timeSigBottom = timeSigBottom;
+	    this.emphasis = emphasis;
     }
 
 	//getters and setters
@@ -272,6 +278,11 @@ public class EventCreateObject implements Parcelable{
         }
 		
 	}
+
+	public String getEmphasisString() {
+	    // TODO make this do something
+	    return "";
+    }
 	
 	
 	

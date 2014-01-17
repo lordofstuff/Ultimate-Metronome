@@ -33,7 +33,7 @@ public class MetronomeController implements Runnable{
 	//fields
 	private int measureInCurrentEvent;
 	private MetronomeEvent currentEvent;
-	private CustomLinkedList<MetronomeEvent>.DLIterator it;
+	private Song.CustomIterator it;
 	private MyMetronome met = null;
 	static enum MetronomeState{NotYetPlayed, Playing, Paused};
 	private MetronomeState state;

@@ -52,7 +52,7 @@ public class MainActivity extends SherlockActivity {
 
 	static String promptForNameLoad() {
 	    //TODO
-	    return "TheOneSongToRuleThemAll";
+	    return "song.txt";
     }
 	
 }

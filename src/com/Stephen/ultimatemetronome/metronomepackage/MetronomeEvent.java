@@ -13,9 +13,16 @@ public class MetronomeEvent {
 	final int repeats;
 	final int beat;
 	final String name;
+	
+	final int[] emphasis;
+	final int timeSigTop;
+	final int timeSigBottom;
+	final boolean complex;
+	
 	int playbackPosition; //used for static playback maybe
 	
 	//constructor
+	//used for loading version 1 files, may be removed later. 
 	public MetronomeEvent(double tempo, int[] pattern, float volume, int repeats, int beat, String name) {
 	    super();
 	    this.tempo = tempo;
@@ -24,7 +31,27 @@ public class MetronomeEvent {
 	    this.repeats = repeats;
 	    this.beat = beat;
 	    this.name = name;
+	    emphasis = null;
+		timeSigTop = 0;
+		timeSigBottom = 0;
+		complex = true;
     }
+	
+	//used for version 2 files. does not depend on the old one. 
+	public MetronomeEvent(double tempo, int[] pattern, float volume, int repeats, int beat, String name, int[] emphasis, int timeSigTop, int timeSigBottom, boolean complex) {
+	    this.tempo = tempo;
+	    this.pattern = pattern;
+	    this.volume = volume;
+	    this.repeats = repeats;
+	    this.beat = beat;
+	    this.name = name;
+	    this.emphasis = emphasis;
+		this.timeSigTop = timeSigTop;
+		this.timeSigBottom = timeSigBottom;
+		this.complex = complex;
+	}
+	
+	
 	
 	//methods
 	

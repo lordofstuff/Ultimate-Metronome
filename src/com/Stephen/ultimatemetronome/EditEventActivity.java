@@ -195,9 +195,8 @@ public class EditEventActivity extends SherlockActivity {
 	static String convertFromPattern(int[] pattern) {
 		StringBuilder sb = new StringBuilder();
 		for (int i: pattern) {
-			sb.append(Integer.toString(i) + " ");
+			sb.append(i);
 		}
-
 		return sb.toString();
 	}
 
