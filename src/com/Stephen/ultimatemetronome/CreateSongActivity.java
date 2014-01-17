@@ -63,7 +63,7 @@ public class CreateSongActivity extends SherlockFragmentActivity {
 				break;
 			case R.id.toggle_sort_action:
 				//TODO add visual indication that sorting is active, disable other behavior when it is.
-				
+
 				if (item.isChecked()) { //it was already checked; disable sorting and uncheck it
 					item.setChecked(false);
 					list.setDragEnabled(false);
@@ -246,39 +246,100 @@ public class CreateSongActivity extends SherlockFragmentActivity {
 	public void saveSong(View view) {
 		new Thread(new Runnable() { 
 			public void run() {
-//				//TURD legacy code, remove when I am sure everything else is working. 
-//				String fileName = "TheOneSongToRuleThemAll";
-//				//File file = new File(getBaseContext().getFilesDir(), fileName);
-//				FileOutputStream outputStream;
-//
-//				String string = "file version 1\n" +
-//						"#lines beginning with a # are comments which are ignored.\n" +
-//						"#blank lines are also ignored\n" +
-//						"#Files will have the following format (version 1)\n\n" +
-//						"#name\n#tempo\n#volume\n#pattern\n#repeats\n#beat\n\n";
-//
-//				try {
-//					outputStream = openFileOutput(fileName, Context.MODE_PRIVATE);
-//					outputStream.write(string.getBytes());
-//					//outputStream.write(string.getBytes());
-//					for (EventCreateObject e: dataAdapter.getList()) {
-//						string = e.getName() + "\n" + e.getTempo() + "\n" + 
-//								e.getVolume() + "\n" + EditEventActivity.convertFromPattern(e.getPattern()) + "\n" +
-//								e.getRepeats() + "\n" + e.getBeat() + "\n\n";
-//						outputStream.write(string.getBytes());
-//					}
-//					outputStream.close();
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
 				
-				//file version 2.0
+				/*
+				*				//TURD legacy code, remove when I am sure everything else is working. 
+				//				String fileName = "TheOneSongToRuleThemAll";
+				//				//File file = new File(getBaseContext().getFilesDir(), fileName);
+				//				FileOutputStream outputStream;
+				//
+				//				String string = "file version 1\n" +
+				//						"#lines beginning with a # are comments which are ignored.\n" +
+				//						"#blank lines are also ignored\n" +
+				//						"#Files will have the following format (version 1)\n\n" +
+				//						"#name\n#tempo\n#volume\n#pattern\n#repeats\n#beat\n\n";
+				//
+				//				try {
+				//					outputStream = openFileOutput(fileName, Context.MODE_PRIVATE);
+				//					outputStream.write(string.getBytes());
+				//					//outputStream.write(string.getBytes());
+				//					for (EventCreateObject e: dataAdapter.getList()) {
+				//						string = e.getName() + "\n" + e.getTempo() + "\n" + 
+				//								e.getVolume() + "\n" + EditEventActivity.convertFromPattern(e.getPattern()) + "\n" +
+				//								e.getRepeats() + "\n" + e.getBeat() + "\n\n";
+				//						outputStream.write(string.getBytes());
+				//					}
+				//					outputStream.close();
+				//				} catch (Exception e) {
+				//					e.printStackTrace();
+				//				}
+
+				//				//file version 2.0
+				//				String fileName = "song.txt";
+				//				CustomLinkedList<EventCreateObject> list = dataAdapter.getList();
+				//				FileOutputStream outputStream;
+				//				StringBuilder sb = new StringBuilder(200);
+				//				String string;
+				//				sb.append("file version 2.0\n");
+				//				sb.append(list.size() + "\n" + songName);
+				//				sb.append("\n#lines beginning with a # are comments which are ignored.\n");
+				//				sb.append("#blank lines are also ignored\n");
+				//				sb.append("#Files will have the following format (version 2)\n\n");
+				//				sb.append("#name\n#tempo\n#volume\n#pattern\n#repeats\n#beat\n");
+				//				sb.append("#complex (1) or simple (2)\n");
+				//				sb.append("#beat designator (major vs subdivision beats)\n");
+				//				sb.append("#top of time signature\n");
+				//				sb.append("#bottom of time signature");
+				//				sb.append("#\n\n");
+				//				string = sb.toString();
+				//
+				//				try {
+				//					outputStream = openFileOutput(fileName, Context.MODE_PRIVATE);
+				//					outputStream.write(string.getBytes());
+				//					for (EventCreateObject e: dataAdapter.getList()) {
+				//						sb.setLength(0);
+				//						sb.append(e.getName());
+				//						sb.append("\n");
+				//						sb.append(e.getTempo());
+				//						sb.append("\n");
+				//						sb.append(e.getVolume());
+				//						sb.append("\n");
+				//						sb.append(EditEventActivity.convertFromPattern(e.getPattern()));
+				//						sb.append("\n");
+				//						sb.append(e.getRepeats());
+				//						sb.append("\n");
+				//						sb.append(e.getBeat());
+				//						sb.append("\n");
+				//						if (e.isComplex()) {
+				//							sb.append("1\n");
+				//						}
+				//						else {
+				//							sb.append("0\n");
+				//						}
+				//						sb.append(e.getEmphasisString());
+				//						sb.append("\n");
+				//						sb.append(e.getTimeSigTop());
+				//						sb.append("\n");
+				//						sb.append(e.getTimeSigBottom());
+				//						sb.append("\n\n");
+				//						string = sb.toString();
+				//						outputStream.write(string.getBytes());
+				//					}
+				//					outputStream.close();
+				//				} catch (Exception e) {
+				//					e.printStackTrace();
+				//				}
+				//			}	
+				 * 
+				 */
+
+				//file version 2.1 (modified to include extra info on simple time sig subdivisions and any additional notes
 				String fileName = "song.txt";
 				CustomLinkedList<EventCreateObject> list = dataAdapter.getList();
 				FileOutputStream outputStream;
 				StringBuilder sb = new StringBuilder(200);
 				String string;
-				sb.append("file version 2.0\n");
+				sb.append("file version 2.1\n");
 				sb.append(list.size() + "\n" + songName);
 				sb.append("\n#lines beginning with a # are comments which are ignored.\n");
 				sb.append("#blank lines are also ignored\n");
@@ -287,8 +348,11 @@ public class CreateSongActivity extends SherlockFragmentActivity {
 				sb.append("#complex (1) or simple (2)\n");
 				sb.append("#beat designator (major vs subdivision beats)\n");
 				sb.append("#top of time signature\n");
-				sb.append("#bottom of time signature");
-				sb.append("#\n\n");
+				sb.append("#bottom of time signature\n");
+				sb.append("#information about simple time signature subdivisions\n");
+				sb.append("#<notes>\n");
+				sb.append("#additional information to be displayed about the song, which can be several lines long\n");
+				sb.append("#</notes>\n\n");
 				string = sb.toString();
 
 				try {
@@ -319,7 +383,11 @@ public class CreateSongActivity extends SherlockFragmentActivity {
 						sb.append(e.getTimeSigTop());
 						sb.append("\n");
 						sb.append(e.getTimeSigBottom());
-						sb.append("\n\n");
+						sb.append("\n");
+						sb.append(e.getTimeSigInfo());
+						sb.append("\n<notes>\n");
+						sb.append(e.getNotes());
+						sb.append("\n</notes>\n\n");
 						string = sb.toString();
 						outputStream.write(string.getBytes());
 					}
@@ -327,16 +395,13 @@ public class CreateSongActivity extends SherlockFragmentActivity {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			}	
+			}
 		}).start();
 		//TODO display a toast when done
 		Toast.makeText(getBaseContext(), "DONE!", Toast.LENGTH_LONG).show();
 	}
 
-	protected String getEmphasisString() {
-	    // TODO Auto-generated method stub
-	    return null;
-    }
+	
 
 
 }

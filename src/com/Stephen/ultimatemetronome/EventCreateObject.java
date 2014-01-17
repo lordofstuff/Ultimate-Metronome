@@ -20,32 +20,33 @@ public class EventCreateObject implements Parcelable{
 	static final int DEFAULT_TIME_SIG_BOTTOM = 4;
 	private static final String Tag = "EventCreateObject";
 	private static final int[] DEFAULT_EMPHASIS = new int[] {1, 0, 0, 0};
-	
-	
+
+
 	//actual values
 	private String name;
 	private double tempo;
 	private float volume;
 	private int repeats;
-	
-	
+
+
 	//determines if complex time signatures are exposed
 	private boolean complex;
-	
+
 	//used regardless of complexity, but not exposed if not complex
 	private int[] pattern;
 	private int beat;
 	private int[] emphasis;
-	
+
 	//fields used only for simple time signatures
 	private int timeSigTop;
 	private int timeSigBottom;
-	
-	
+	private String timeSigInfo;
+
+
 	//for parceling
 	public static EventCreator CREATOR = new EventCreator();
-	
-	
+
+
 	//constructors
 	/**
 	 * To be used to create an instance from a parcel.
@@ -54,24 +55,24 @@ public class EventCreateObject implements Parcelable{
 	private EventCreateObject(Parcel source) {
 		this();
 		name = source.readString();
-	    tempo = source.readDouble();
-	    volume = source.readFloat();
-	    repeats = source.readInt();
-	    complex = source.readByte() != 0;     //myBoolean == true if byte != 0
-	    int patternLength = source.readInt();
-	    pattern = new int[patternLength];
-	    source.readIntArray(pattern);
-	    beat = source.readInt();
-	    timeSigTop = source.readInt();
-	    timeSigBottom = source.readInt();
+		tempo = source.readDouble();
+		volume = source.readFloat();
+		repeats = source.readInt();
+		complex = source.readByte() != 0;     //myBoolean == true if byte != 0
+		int patternLength = source.readInt();
+		pattern = new int[patternLength];
+		source.readIntArray(pattern);
+		beat = source.readInt();
+		timeSigTop = source.readInt();
+		timeSigBottom = source.readInt();
 	}
-	
+
 	/**
 	 * Creates an editable event with default values.
 	 */
 	public EventCreateObject() {
-	    this(DEFAULT_NAME, DEFAULT_TEMPO, DEFAULT_VOLUME, DEFAULT_REPEATS, false, DEFAULT_PATTERN, DEFAULT_BEAT, DEFAULT_TIME_SIG_TOP, DEFAULT_TIME_SIG_BOTTOM, DEFAULT_EMPHASIS);
-    }
+		this(DEFAULT_NAME, DEFAULT_TEMPO, DEFAULT_VOLUME, DEFAULT_REPEATS, false, DEFAULT_PATTERN, DEFAULT_BEAT, DEFAULT_TIME_SIG_TOP, DEFAULT_TIME_SIG_BOTTOM, DEFAULT_EMPHASIS);
+	}
 
 	/**
 	 * Creates an editable event with completely configurable values, especially for loading from a file.
@@ -87,20 +88,20 @@ public class EventCreateObject implements Parcelable{
 	 * @param emphasis determines which beats are treated as "major" beats for the purposes of counting in the UI
 	 */
 	public EventCreateObject(String name, double tempo, float volume,
-            int repeats, boolean complex, int[] pattern, int beat,
-            int timeSigTop, int timeSigBottom, int[] emphasis) {
-	    super();
-	    this.name = name;
-	    this.tempo = tempo;
-	    this.volume = volume;
-	    this.repeats = repeats;
-	    this.complex = complex;
-	    this.pattern = pattern;
-	    this.beat = beat;
-	    this.timeSigTop = timeSigTop;
-	    this.timeSigBottom = timeSigBottom;
-	    this.emphasis = emphasis;
-    }
+			int repeats, boolean complex, int[] pattern, int beat,
+			int timeSigTop, int timeSigBottom, int[] emphasis) {
+		super();
+		this.name = name;
+		this.tempo = tempo;
+		this.volume = volume;
+		this.repeats = repeats;
+		this.complex = complex;
+		this.pattern = pattern;
+		this.beat = beat;
+		this.timeSigTop = timeSigTop;
+		this.timeSigBottom = timeSigBottom;
+		this.emphasis = emphasis;
+	}
 
 	//getters and setters
 	/**
@@ -232,63 +233,76 @@ public class EventCreateObject implements Parcelable{
 	//other methods
 
 	public static CustomLinkedList<EventCreateObject> defaultList() {
-	    CustomLinkedList<EventCreateObject> list = new CustomLinkedList<EventCreateObject>();
-	    list.add(new EventCreateObject());
-	    list.add(new EventCreateObject());
-	    Log.d("defaultList method", "stuff added");
-	    list.get(0).setName("First one");
-	    list.get(1).setName("second one");
-	    Log.d("defaultList method", "stuff gotten");
-	    return list;
-    }
+		CustomLinkedList<EventCreateObject> list = new CustomLinkedList<EventCreateObject>();
+		list.add(new EventCreateObject());
+		list.add(new EventCreateObject());
+		Log.d("defaultList method", "stuff added");
+		list.get(0).setName("First one");
+		list.get(1).setName("second one");
+		Log.d("defaultList method", "stuff gotten");
+		return list;
+	}
 
 	@Override
-    public int describeContents() {
-	    // TODO Auto-generated method stub
-	    return 0;
-    }
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
 	@Override
-    public void writeToParcel(Parcel out, int flags) {
+	public void writeToParcel(Parcel out, int flags) {
 		Log.v(Tag, "Writing to parcel: flag " + flags);
 		out.writeString(name);
-	    out.writeDouble(tempo);
-	    out.writeFloat(volume);
-	    out.writeInt(repeats);
-	    out.writeByte((byte) (complex ? 1 : 0));     //if myBoolean == true, byte == 1
-	    out.writeInt(pattern.length);
-	    out.writeIntArray(pattern);
-	    out.writeInt(beat);
-	    out.writeInt(timeSigTop);
-	    out.writeInt(timeSigBottom);
-	    //TODO do something with flags?
-	    
-    }
-	
+		out.writeDouble(tempo);
+		out.writeFloat(volume);
+		out.writeInt(repeats);
+		out.writeByte((byte) (complex ? 1 : 0));     //if myBoolean == true, byte == 1
+		out.writeInt(pattern.length);
+		out.writeIntArray(pattern);
+		out.writeInt(beat);
+		out.writeInt(timeSigTop);
+		out.writeInt(timeSigBottom);
+		//TODO do something with flags?
+
+	}
+
 	public static final class EventCreator implements Parcelable.Creator<EventCreateObject> {
 
 		@Override
-        public EventCreateObject createFromParcel(Parcel source) {
-	        return new EventCreateObject(source);
-        }
+		public EventCreateObject createFromParcel(Parcel source) {
+			return new EventCreateObject(source);
+		}
 
 		@Override
-        public EventCreateObject[] newArray(int size) {
-	        return new EventCreateObject[size];
-        }
-		
+		public EventCreateObject[] newArray(int size) {
+			return new EventCreateObject[size];
+		}
+
 	}
 
 	public String getEmphasisString() {
-	    // TODO make this do something
-	    return "";
-    }
-	
-	
-	
-	
-	
-	
-	
+		// TODO make this do something
+		return "1111";
+	}
+
+	public String getTimeSigInfo() {
+		return "Filler time sig info"; //TODO
+	}
+
+	public String getNotes() {
+		// TODO this should return user editable notes about a set
+		return "filler notes";
+	}
+
+	public void addtimeSigInfo(String timeSigInfo) {
+		this.timeSigInfo = timeSigInfo;
+	}
+
+
+
+
+
+
+
 
 }

@@ -27,6 +27,7 @@ public class Song implements Iterable<MetronomeEvent>{
 	//fields
 	//private CustomLinkedList<MetronomeEvent> events;
 	private MetronomeEvent[] eventArray;
+	private String title;
 	private static int PLAYBACK = 1;
 	private static int EDIT = 2;
 
@@ -46,11 +47,11 @@ public class Song implements Iterable<MetronomeEvent>{
 
 	//methods
 
-	@SuppressWarnings("unchecked")
+	
 	public static Song createFromFileForPlayback(File file) throws IOException, FileNotFoundException, FileFormatException {
 		//return new Song((loadFile(file, PLAYBACK)));
 		
-		return new Song((MetronomeEvent[])(loadFile(file, PLAYBACK))); 
+		return (Song)(loadFile(file, PLAYBACK)); 
 	}
 
 
@@ -89,6 +90,8 @@ public class Song implements Iterable<MetronomeEvent>{
 		int[] emphasis;
 		int timeSigTop;
 		int timeSigBottom;
+		String timeSigInfo;
+		String songName = "";
 		
 		/*
 		 file version 1
@@ -163,7 +166,7 @@ public class Song implements Iterable<MetronomeEvent>{
 
 			s = br.readLine(); //will be the number of events in the song
 			array = new MetronomeEvent[Integer.parseInt(s)];
-			String songName = br.readLine();
+			songName = br.readLine();
 			s = br.readLine();
 			
 			int i = 0;
@@ -194,7 +197,64 @@ public class Song implements Iterable<MetronomeEvent>{
 					}
 					if (flag == EDIT) {
 						list.add(new EventCreateObject(name, tempo, volume, repeats, complex, pattern, beat, timeSigTop, timeSigBottom, emphasis));
-						//TODO add new file version which stores these extras
+					}
+				}
+				else {
+					//Log.d(Tag, "Ignoring comment or blank line");
+				}
+				s = br.readLine();
+			}
+
+		}
+		else if (s.equals("file version 2.1")) {
+
+			s = br.readLine(); //will be the number of events in the song
+			array = new MetronomeEvent[Integer.parseInt(s)];
+			songName = br.readLine();
+			s = br.readLine();
+			String notes;
+			
+			int i = 0;
+			while (s != null) {
+				Log.d(Tag, "Read line: " + s);
+				if (!s.equals("") && s.charAt(0) != '#') { //if not a comment or blank line
+					//Log.d(Tag, "starting to read a real one");
+					name = s;
+					tempo = Double.parseDouble(br.readLine());
+					// TODO check for exceptions here
+					volume = Float.parseFloat(br.readLine());
+					pattern = toPatternArray(br.readLine()); //convert this to an array of ints
+					repeats = Integer.parseInt(br.readLine());
+					beat = Integer.parseInt(br.readLine());
+					s = br.readLine();
+					if (s.equals("2")) {
+						complex = false;
+					}
+					else {
+						complex = true;
+					}
+					emphasis = toPatternArray(br.readLine());
+					timeSigTop = Integer.parseInt(br.readLine());
+					timeSigBottom = Integer.parseInt(br.readLine());
+					timeSigInfo = br.readLine();
+					br.readLine(); //read over "<notes>
+					s = br.readLine(); //read into the first line of the notes
+					StringBuilder sb2 = new StringBuilder();
+					while (!s.equals("</notes>")) {
+						sb2.append(s);
+						sb2.append("\n");
+						s = br.readLine();
+					}
+					notes = sb2.toString();
+					
+					if (flag == PLAYBACK) {
+						array[i] = (new MetronomeEvent(tempo, pattern, volume, repeats, beat, name, emphasis, timeSigTop, timeSigBottom, complex));
+						array[i].setNotes(notes);
+						i++;
+					}
+					if (flag == EDIT) {
+						list.add(new EventCreateObject(name, tempo, volume, repeats, complex, pattern, beat, timeSigTop, timeSigBottom, emphasis));
+						((EventCreateObject) list.getLastElement()).addtimeSigInfo(timeSigInfo);
 					}
 				}
 				else {
@@ -218,12 +278,18 @@ public class Song implements Iterable<MetronomeEvent>{
 			return list;
 		}
 		else if (flag == PLAYBACK) {
-			return array;
+			Song song = new Song(array);
+			song.setSongTitle(songName);
+			return song;
 		}
 		else {
-			return null;
+			return null; //it will never reach this point because it will already have thrown an exception above if the flag was not one of these. 
 		}
 	}
+
+	private void setSongTitle(String songName) {
+	    this.title = songName;
+    }
 
 	private static int[] toPatternArray(String numbers) {
 		//the string will be in the form of space separated whole numbers 0-4 inclusive. anything else will be ignored. 
@@ -304,12 +370,21 @@ public class Song implements Iterable<MetronomeEvent>{
 		}
 
 		public MetronomeEvent current() {
-			return eventArray[index];
-			//TODO illegal state if called before next/ if it is on -1
+			if (index >= 0 && index < eventArray.length) {
+				return eventArray[index];
+			}
+			else {
+				throw new IllegalStateException("You must call next, previous, or set before calling this method. ");
+			}
 		}
 
 		public int getCurrentIndex() {
-			return index;
+			if (index >= 0 && index < eventArray.length) {
+				return index;
+			}
+			else {
+				throw new IllegalStateException("You must call next, previous, or set before calling this method. ");
+			}
 		}
 
 		public void set(int newIndex) throws IndexOutOfBoundsException {
@@ -324,9 +399,12 @@ public class Song implements Iterable<MetronomeEvent>{
 			throw new UnsupportedOperationException();
 		}
 
+		/**
+		 * sets the iterator to point to the specified event. less efficient than just using set(int) with the index. 
+		 * @param event the event this iterator should point to. 
+		 */
 		public void set(MetronomeEvent event) {
-			//TODO make this more efficient
-			//for now, just a linear search
+			// just a linear search, since they are not ordered by any comparable property
 			for (int i = 0; i < eventArray.length; i++) {
 				if (eventArray[i] == event) {
 					index = i;
@@ -336,7 +414,6 @@ public class Song implements Iterable<MetronomeEvent>{
 			//if it reaches this point, it is not in there
 			throw new NoSuchElementException();
 		}
-
 	}
 
 }

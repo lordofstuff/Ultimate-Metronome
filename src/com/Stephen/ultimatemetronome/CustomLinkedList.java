@@ -416,4 +416,8 @@ public class CustomLinkedList<T> extends AbstractList<T> {
 			return "DLNode " + getElement().toString();
 		}
 	}
+
+	public Object getLastElement() {
+	    return back.getElement();
+    }
 }

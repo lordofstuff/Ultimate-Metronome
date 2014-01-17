@@ -18,8 +18,11 @@ public class MetronomeEvent {
 	final int timeSigTop;
 	final int timeSigBottom;
 	final boolean complex;
+	private String notes;
 	
 	int playbackPosition; //used for static playback maybe
+	
+	
 	
 	//constructor
 	//used for loading version 1 files, may be removed later. 
@@ -50,11 +53,16 @@ public class MetronomeEvent {
 		this.timeSigBottom = timeSigBottom;
 		this.complex = complex;
 	}
-	
-	
-	
+
 	//methods
+	public void setNotes(String notes) {
+	    this.notes = notes;
+	    
+    }
 	
+	public String getNotes() {
+		return notes;
+	}
 	
 	
 }

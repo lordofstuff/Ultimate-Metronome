@@ -41,6 +41,7 @@ public class MetronomeController implements Runnable{
 	enum Sounds {set1, set2}; //currently there is only one set, and it is incomplete. TODO
 	Context context;
 	private Song song;
+	public double tempoAdjustFactor = 1;
 
 
 	//constructor
@@ -459,7 +460,7 @@ public class MetronomeController implements Runnable{
 
 		@Override
 		public void run() {
-			smallestSubdivisionInFrames = (int) (60 * SAMPLE_RATE / (tempo * beat));
+			smallestSubdivisionInFrames = (int) (60 * SAMPLE_RATE / (getTempo() * beat));
 			beatSoundLength = primarySoundData.length;
 			updateLengths();
 			//initialize for play (the parameters are up to date to begin with). 
@@ -569,7 +570,7 @@ public class MetronomeController implements Runnable{
 		}
 
 		void updateLengths() {
-			smallestSubdivisionInFrames = (int) (60 * SAMPLE_RATE / (tempo * beat)); // Recalculate in case tempo changed
+			smallestSubdivisionInFrames = (int) (60 * SAMPLE_RATE / (getTempo() * beat)); // Recalculate in case tempo changed
 			if ((beatSoundLength <= smallestSubdivisionInFrames)) {
 				beatSoundLength = primarySoundData.length;
 			}
@@ -640,6 +641,10 @@ public class MetronomeController implements Runnable{
 				metLock.notifyAll();
 			}
 			//Log.v(Tag, "notified to unpause.");
+		}
+		
+		private double getTempo() {
+			return tempo * tempoAdjustFactor ;
 		}
 
 
