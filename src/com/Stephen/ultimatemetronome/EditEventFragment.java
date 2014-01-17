@@ -1,12 +1,14 @@
 package com.Stephen.ultimatemetronome;
 
-import android.app.Fragment;
+import com.actionbarsherlock.app.SherlockFragment;
+
+//import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-class EditEventFragment extends Fragment {
+class EditEventFragment extends SherlockFragment {
 	@Override
 	  public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	      Bundle savedInstanceState) {

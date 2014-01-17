@@ -53,6 +53,11 @@ public class Song implements Iterable<MetronomeEvent>{
 		
 		return (Song)(loadFile(file, PLAYBACK)); 
 	}
+	
+	public static CustomLinkedList<EventCreateObject> createFromFileForEdit(File file) throws FileNotFoundException, IOException, FileFormatException {
+		
+		return (CustomLinkedList<EventCreateObject>)(loadFile(file, EDIT));
+	}
 
 
 

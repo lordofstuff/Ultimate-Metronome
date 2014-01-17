@@ -2,8 +2,13 @@ package com.Stephen.ultimatemetronome;
 
 
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
+import com.Stephen.ultimatemetronome.metronomepackage.FileFormatException;
+import com.Stephen.ultimatemetronome.metronomepackage.Song;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -28,9 +33,16 @@ import android.view.View.OnClickListener;
 
 public class CreateSongActivity extends SherlockFragmentActivity {
 
+	public static final int NEW_FLAG = 1;
+	public static final int EDIT_FLAG = 2;
+	
+	
+	
 	String Tag = "CreateSongActivity";
 	DragSortListView list;// = (DragSortListView)findViewById(R.id.list);
 	CustomArrayAdapter dataAdapter;
+	
+	
 	private String songName = "Poop";
 
 	/* TURD 1 */
@@ -43,7 +55,29 @@ public class CreateSongActivity extends SherlockFragmentActivity {
 		//Log.d(Tag, "activity created");
 		setContentView(R.layout.activity_create_song);
 		list = (DragSortListView)findViewById(R.id.list);
-		dataAdapter = new CustomArrayAdapter(this, R.id.tvItemTitle, new CustomLinkedList<EventCreateObject>());
+		CustomLinkedList<EventCreateObject> songList = null;
+		Intent intent = getIntent();
+		int flag = intent.getIntExtra("LoadFlag", NEW_FLAG);
+		if (flag == NEW_FLAG) {
+			songList = new CustomLinkedList<EventCreateObject>();
+		}
+		else {
+			String fileName = intent.getStringExtra("fileName");
+			File file = new File(getBaseContext().getFilesDir(), fileName);
+			try {
+	            songList = Song.createFromFileForEdit(file);
+            } catch (FileNotFoundException e) {
+	            // TODO Auto-generated catch block
+	            e.printStackTrace();
+            } catch (IOException e) {
+	            // TODO Auto-generated catch block
+	            e.printStackTrace();
+            } catch (FileFormatException e) {
+	            // TODO Auto-generated catch block
+	            e.printStackTrace();
+            }
+		}
+		dataAdapter = new CustomArrayAdapter(this, R.id.tvItemTitle, songList);
 		//Log.d(Tag, "adapter created.");
 		list.setAdapter(dataAdapter);
 		list.setDropListener(dataAdapter);
@@ -199,19 +233,14 @@ public class CreateSongActivity extends SherlockFragmentActivity {
 			});
 
 			holder.eventName.setOnClickListener(new OnClickListener() {
-
 				@Override
 				public void onClick(View v) {
 					launchEdit(position);
 				}
-
 			});
-
 			//setting data into the the ViewHolder.
 			holder.title.setText("Delete Set");
 			holder.checked.setChecked(list.get(position).isComplex());
-
-
 			//return the row view.
 			return convertView;
 		}
@@ -220,13 +249,17 @@ public class CreateSongActivity extends SherlockFragmentActivity {
 
 		void launchEdit(int position) {
 			//intent to launch new activity where you can edit all properties of this particular event
-			Intent intent = new Intent(getContext(), EditEventActivity.class);
-			intent.putExtra("EventName", list.get(position).getName());
-			intent.putExtra("EventData", list.get(position));
-			// TURD 1
-			CreateSongActivity.currentEventObject = list.get(position);
-			// TURD 1 
-			startActivity(intent);
+//			Intent intent = new Intent(getContext(), EditEventActivity.class);
+//			intent.putExtra("EventName", list.get(position).getName());
+//			intent.putExtra("EventData", list.get(position));
+//			// TURD 1
+//			CreateSongActivity.currentEventObject = list.get(position);
+//			// TURD 1 
+//			startActivity(intent);
+			
+			//alternate mechanism using a fragment.
+			
+			
 		}
 
 		@Override

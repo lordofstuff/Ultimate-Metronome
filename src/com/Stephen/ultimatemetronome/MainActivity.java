@@ -31,15 +31,16 @@ public class MainActivity extends SherlockActivity {
 		return true;
 	}
 	
-//	public void testMet(View view) {
-//		Log.d("main Activity", "button click registered");
-//		Song song = Song.testSong();
-//		MetronomeController mc = new MetronomeController(getApplicationContext(), song);
-//		mc.startMet();
-//	}
-
+	public void loadSongEdit(View view) {
+		Intent intent = new Intent(this, CreateSongActivity.class);
+		intent.putExtra("LoadFlag", CreateSongActivity.EDIT_FLAG);
+		intent.putExtra("fileName", promtForNameEdit());
+		startActivity(intent);	
+	}
+	
 	public void createSong(View view) {
 		Intent intent = new Intent(this, CreateSongActivity.class);	
+		intent.putExtra("LoadFlag", CreateSongActivity.NEW_FLAG);
 		startActivity(intent);	
 	}
 	
@@ -54,5 +55,10 @@ public class MainActivity extends SherlockActivity {
 	    //TODO
 	    return "song.txt";
     }
+	
+	static String promtForNameEdit() {
+		//TODO
+		return "song.txt";
+	}
 	
 }

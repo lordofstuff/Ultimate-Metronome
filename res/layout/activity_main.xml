@@ -27,4 +27,14 @@
     	android:onClick="loadSong"
     	android:text="@string/load_song" />
 
+    <Button
+    	android:id="@+id/edit_song_button"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_alignParentTop="true"
+    	android:layout_centerHorizontal="true"
+    	android:layout_marginTop="26dp"
+    	android:onClick="loadSongEdit"
+    	android:text="Edit Song" />
+
 </RelativeLayout>
