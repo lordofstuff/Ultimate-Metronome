@@ -64,13 +64,10 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 		try {
 			song = Song.createFromFileForPlayback(file);
 		} catch (FileNotFoundException e) {
-			
 			e.printStackTrace();
 		} catch (IOException e) {
-			
 			e.printStackTrace();
 		} catch (FileFormatException e) {
-			
 			e.printStackTrace();
 		}
 		return song;
@@ -79,7 +76,6 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 
 	public void playOrPause(View view) {
 		if (mode == Mode.Streaming) {
-			
 				if (mc.getState() == MetronomeState.NotYetPlayed) {
 					Log.v(Tag, "(re)Starting Metronome");
 					mc.startMet();

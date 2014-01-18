@@ -21,5 +21,6 @@
 	<string name="play_text">Play</string>
 	<string name="pause_text">Pause</string>
 	<string name="stop_text">Stop</string>
+	<string name="title_activity_song_list_fragment">Song</string>
 
 </resources>

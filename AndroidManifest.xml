@@ -35,6 +35,10 @@
 			android:name="com.Stephen.ultimatemetronome.metronomepackage.PlayMetronomeActivity"
 			android:label="@string/title_activity_play_metronome_activity" >
 		</activity>
+		<activity
+			android:name="com.Stephen.ultimatemetronome.SongListFragment"
+			android:label="@string/title_activity_song_list_fragment" >
+		</activity>
 	</application>
 
 </manifest>
