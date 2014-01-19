@@ -215,7 +215,8 @@ public class SongListFragment extends SherlockFragment {
 			//			startActivity(intent);
 
 			//alternate mechanism using a fragment.
-			//TODO attach things here!
+			//call method from hosting activity
+			parentActivity.editEvent(position);
 
 		}
 

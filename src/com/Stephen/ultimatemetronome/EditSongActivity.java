@@ -7,7 +7,7 @@ import java.io.IOException;
 
 import com.Stephen.ultimatemetronome.metronomepackage.FileFormatException;
 import com.Stephen.ultimatemetronome.metronomepackage.Song;
-import com.actionbarsherlock.app.SherlockFragment;
+//import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -35,13 +35,12 @@ public class EditSongActivity extends SherlockFragmentActivity {
 	private CustomLinkedList<EventCreateObject> songList = null;
 	private SongListFragment listFragment;
 	protected int songName;
+	private int position;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_song);
-
-		
 
 		//load the song/create a new one
 		Intent intent = getIntent();
@@ -53,7 +52,7 @@ public class EditSongActivity extends SherlockFragmentActivity {
 			loadSongEdit(intent.getStringExtra("fileName"));
 		}
 
-		//add the list fragment in, get the refernce to it. 
+		//add the list fragment in
 		String listFragmentTag = "ListFragment";
 		FragmentManager fm = getSupportFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
@@ -68,16 +67,16 @@ public class EditSongActivity extends SherlockFragmentActivity {
 		getSupportMenuInflater().inflate(R.menu.create_song_menu, menu);
 		return true;
 	}
-	
+
 	CustomLinkedList<EventCreateObject> getSongList() {
 		return songList;
 	}
-	
+
 	public boolean onOptionsItemSelected(MenuItem item) {
 		listFragment = (SongListFragment) getSupportFragmentManager().findFragmentByTag("ListFragment");
 		switch (item.getItemId()) {
 			case R.id.add_event_action:
-				
+
 				listFragment.addEvent(null);
 				break;
 			case R.id.toggle_sort_action:
@@ -99,7 +98,7 @@ public class EditSongActivity extends SherlockFragmentActivity {
 
 		return true;
 	} 
-	
+
 	public void saveSong(View view) {
 		new Thread(new Runnable() { 
 			public void run() {
@@ -189,8 +188,24 @@ public class EditSongActivity extends SherlockFragmentActivity {
 		return null; //it will not reach this point, hopefully. 
 	}
 
-	
 
+	public void editEvent(int position) {
+		//small screen behavior
+		this.position = position;
+		FragmentManager fm = getSupportFragmentManager();
+		FragmentTransaction ft = fm.beginTransaction();
+		ft.replace(R.id.create_song_container, new EditEventFragment(), "EditFragment");
+		ft.addToBackStack(null);
+		ft.commit();
+		
+	}
 	
+	int getPosition() {
+		return position;
+	}
+
+
+
+
 
 }

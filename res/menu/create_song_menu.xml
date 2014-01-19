@@ -8,7 +8,7 @@
 	</item>
 	<item android:id="@+id/add_event_action" 
 		android:titleCondensed="@string/add_event_condensed" 
-		android:showAsAction="ifRoom" 
+		android:showAsAction="always" 
 		android:icon="@drawable/ic_action_new" 
 		android:title="@string/add_event_button_text" 
 		></item>
@@ -22,7 +22,7 @@
 		android:checked="false"></item>
 	<item android:id="@+id/save_action"
 		android:visible="true"
-		android:showAsAction="ifRoom"
+		android:showAsAction="always"
 		
 		android:titleCondensed="@string/save_action_condensed" android:checkable="false" android:icon="@drawable/ic_action_save" android:title="@string/save_action_title"></item>
 

@@ -3,24 +3,94 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:orientation="vertical" >
-	
+
 	<EditText
 		android:id="@+id/edit_event_name"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="@string/hello_world" 
-		android:hint="@string/event_name_hint">
+		android:hint="@string/event_name_hint" >
 
 		<requestFocus />
-
 	</EditText>
 
-	<Button
-		android:id="@+id/play_pause_button"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="@string/event_edit_save" 
-		android:onClick="saveEvent"/>
-	
+	<ScrollView
+		android:id="@+id/scrollView1"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent" >
+
+		<TableLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content" >
+
+			<TableRow
+				android:id="@+id/tableRow1"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" >
+
+				<TextView
+					android:id="@+id/tempo_text"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="Tempo"
+					android:textAppearance="?android:attr/textAppearanceLarge" />
+
+				<EditText
+					android:id="@+id/tempo_input"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:ems="10"
+					android:inputType="number" />
+
+
+			</TableRow>
+
+			<TableRow
+				android:id="@+id/tableRow2"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" >
+
+				<TextView
+					android:id="@+id/textView1"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="Large Text"
+					android:textAppearance="?android:attr/textAppearanceLarge" />
+
+				<SeekBar
+					android:id="@+id/seekBar1"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content" />
+
+			</TableRow>
+
+			<TableRow
+				android:id="@+id/tableRow3"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" >
+
+				<TextView
+					android:id="@+id/textView2"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="Large Text"
+					android:textAppearance="?android:attr/textAppearanceLarge" />
+
+			</TableRow>
+
+			<TableRow
+				android:id="@+id/tableRow4"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" >
+
+				<TextView
+					android:id="@+id/textView3"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="Large Text"
+					android:textAppearance="?android:attr/textAppearanceLarge" />
+
+			</TableRow>
+		</TableLayout>
+	</ScrollView>
 
 </LinearLayout>

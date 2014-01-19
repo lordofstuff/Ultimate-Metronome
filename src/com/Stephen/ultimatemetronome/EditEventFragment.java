@@ -2,23 +2,106 @@ package com.Stephen.ultimatemetronome;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
+import android.app.Activity;
 //import android.app.Fragment;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 class EditEventFragment extends SherlockFragment {
-	@Override
-	  public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	      Bundle savedInstanceState) {
-	    View view = inflater.inflate(R.layout.fragment_edit_event,
-	        container, false);
-	    return view;
-	  }
 
-	  public void setText(String item) {
-	    //TextView view = (TextView) getView().findViewById(R.id.detailsText);
-	    //view.setText(item);
-	  }
+	protected static final String Tag = "Edit event fragment";
+	private TextView eventNameText;
+	private TextView tempoEdit;
+
+	private EventCreateObject myEvent;
+	private int position;
+	private EditSongActivity parentActivity;
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.fragment_edit_event,
+				container, false);
+		eventNameText = (TextView) view.findViewById(R.id.edit_event_name);
+		tempoEdit = (TextView) view.findViewById(R.id.tempo_input);
+		//TODO add other views here. 
+
+		//set up important variables
+		parentActivity = (EditSongActivity)getSherlockActivity();
+		position = parentActivity.getPosition();
+		myEvent = parentActivity.getSongList().get(position);
+
+		//set UI to match the event info
+		eventNameText.setText(myEvent.getName());
+		tempoEdit.setText(Double.toString(myEvent.getTempo()));
+
+		//add listeners (this should maybe be in another on*** method) TODO
+		eventNameText.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void afterTextChanged(Editable charset) {
+				myEvent.setName(charset.toString());
+			}
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				// TODO Auto-generated method stub
+			}
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
+				// TODO 
+			}
+		});
+
+		tempoEdit.addTextChangedListener(new TextWatcher() {
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				try {
+					myEvent.setTempo(Double.parseDouble(s.toString()));
+				}
+				catch (NumberFormatException e){
+					Log.v(Tag, "number format exception; value not committed to tempo.");
+				}
+			}
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				// TODO Auto-generated method stub
+
+			}
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
+				// TODO Auto-generated method stub 
+			}
+		});
+
+		return view;
+	}
+
+
+
+	/* (non-Javadoc)
+	 * @see com.actionbarsherlock.app.SherlockFragment#onAttach(android.app.Activity)
+	 */
+	@Override
+	public void onAttach(Activity activity) {
+		// TODO Auto-generated method stub
+		super.onAttach(activity);
+	}
+
+
+	//	public void setName(String item) {
+	//		//TextView view = (TextView) getView().findViewById(R.id.detailsText);
+	//		eventNameText.setText(item);
+	//	}
+
+
 }
