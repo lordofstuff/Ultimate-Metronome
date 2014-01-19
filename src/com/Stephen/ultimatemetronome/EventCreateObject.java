@@ -10,7 +10,7 @@ import android.util.Log;
 public class EventCreateObject implements Parcelable{
 	//fields
 	//default values
-	static final String DEFAULT_NAME = "poop";
+	static final String DEFAULT_NAME = "Set";
 	static final double DEFAULT_TEMPO = 120;
 	static final float DEFAULT_VOLUME = 1;
 	static final int DEFAULT_REPEATS = 1;

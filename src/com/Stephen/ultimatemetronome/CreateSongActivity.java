@@ -18,6 +18,7 @@ import com.mobeta.android.dslv.DragSortListView.DropListener;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,9 +34,9 @@ import android.view.View.OnClickListener;
 
 public class CreateSongActivity extends SherlockFragmentActivity {
 
+	
 	public static final int NEW_FLAG = 1;
 	public static final int EDIT_FLAG = 2;
-	
 	
 	
 	String Tag = "CreateSongActivity";
@@ -54,7 +55,12 @@ public class CreateSongActivity extends SherlockFragmentActivity {
 		super.onCreate(savedInstanceState);
 		//Log.d(Tag, "activity created");
 		setContentView(R.layout.activity_create_song);
-		list = (DragSortListView)findViewById(R.id.list);
+		
+		//add the list fragment in:
+		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		ft.add(R.id.create_song_container, new SongListFragment(), "ListFragment");
+		ft.commit(); 
+		
 		CustomLinkedList<EventCreateObject> songList = null;
 		Intent intent = getIntent();
 		int flag = intent.getIntExtra("LoadFlag", NEW_FLAG);
@@ -67,6 +73,7 @@ public class CreateSongActivity extends SherlockFragmentActivity {
 			try {
 	            songList = Song.createFromFileForEdit(file);
             } catch (FileNotFoundException e) {
+            	
 	            // TODO Auto-generated catch block
 	            e.printStackTrace();
             } catch (IOException e) {
