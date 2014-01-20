@@ -1,12 +1,12 @@
 package com.AppsOfAwesome.ultimatemetronome;
 
-import java.io.FileOutputStream;
+//import java.io.FileOutputStream;
 
 import com.AppsOfAwesome.ultimatemetronome.R;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
+//import com.actionbarsherlock.view.Menu;
+//import com.actionbarsherlock.view.MenuItem;
 import com.mobeta.android.dslv.DragSortListView;
 import com.mobeta.android.dslv.DragSortListView.DropListener;
 

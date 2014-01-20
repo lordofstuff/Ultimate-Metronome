@@ -34,14 +34,14 @@ public class MainActivity extends SherlockActivity {
 	
 	public void loadSongEdit(View view) {
 		Intent intent = new Intent(this, EditSongActivity.class);
-		intent.putExtra("LoadFlag", CreateSongActivity.EDIT_FLAG);
+		intent.putExtra("LoadFlag", EditSongActivity.EDIT_FLAG);
 		intent.putExtra("fileName", promtForNameEdit());
 		startActivity(intent);	
 	}
 	
 	public void createSong(View view) {
 		Intent intent = new Intent(this, EditSongActivity.class);
-		intent.putExtra("LoadFlag", CreateSongActivity.NEW_FLAG);
+		intent.putExtra("LoadFlag", EditSongActivity.NEW_FLAG);
 		startActivity(intent);	
 	}
 	

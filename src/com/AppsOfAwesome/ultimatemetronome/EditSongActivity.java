@@ -8,7 +8,6 @@ import java.io.IOException;
 import com.AppsOfAwesome.ultimatemetronome.metronomepackage.FileFormatException;
 import com.AppsOfAwesome.ultimatemetronome.metronomepackage.Song;
 import com.AppsOfAwesome.ultimatemetronome.R;
-//import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -35,8 +34,10 @@ public class EditSongActivity extends SherlockFragmentActivity {
 	public static final int EDIT_FLAG = 2;
 	private CustomLinkedList<EventCreateObject> songList = null;
 	private SongListFragment listFragment;
+	private EditEventFragment eventFragment;
 	protected int songName;
 	private int position;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +58,17 @@ public class EditSongActivity extends SherlockFragmentActivity {
 		String listFragmentTag = "ListFragment";
 		FragmentManager fm = getSupportFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
-		ft.add(R.id.create_song_container, new SongListFragment(), listFragmentTag);
+		if (!getResources().getBoolean(R.bool.tablet_layout)) {
+			ft.add(R.id.create_song_container, new SongListFragment(), listFragmentTag);
+		}
+		else {
+			ft.add(R.id.list_container, new SongListFragment(), listFragmentTag);
+			songList.add(new EventCreateObject());
+			position = 0;
+			//listFragment =  (SongListFragment) fm.findFragmentById(R.id.list_fragment);
+			//eventFragment =  (EditEventFragment) fm.findFragmentById(R.id.event_fragment);
+			ft.add(R.id.event_container, new EditEventFragment(), "EditFragment");
+		}
 		ft.commit(); 
 		//listFragment = (SongListFragment) fm.findFragmentByTag(listFragmentTag); //returns null for some reason...
 	}
@@ -77,7 +88,7 @@ public class EditSongActivity extends SherlockFragmentActivity {
 		listFragment = (SongListFragment) getSupportFragmentManager().findFragmentByTag("ListFragment");
 		switch (item.getItemId()) {
 			case R.id.add_event_action:
-
+				//findViewById(R.id.create_song_container).invalidate();
 				listFragment.addEvent(null);
 				break;
 			case R.id.toggle_sort_action:
@@ -136,7 +147,7 @@ public class EditSongActivity extends SherlockFragmentActivity {
 						sb.append("\n");
 						sb.append(e.getVolume());
 						sb.append("\n");
-						sb.append(EditEventActivity.convertFromPattern(e.getPattern()));
+						sb.append(EditEventFragment.convertFromPattern(e.getPattern()));
 						sb.append("\n");
 						sb.append(e.getRepeats());
 						sb.append("\n");
@@ -191,14 +202,27 @@ public class EditSongActivity extends SherlockFragmentActivity {
 
 
 	public void editEvent(int position) {
-		//small screen behavior
 		this.position = position;
-		FragmentManager fm = getSupportFragmentManager();
-		FragmentTransaction ft = fm.beginTransaction();
-		ft.replace(R.id.create_song_container, new EditEventFragment(), "EditFragment");
-		ft.addToBackStack(null);
-		ft.commit();
-		
+		//small screen behavior (or pre HC)
+		if (!getResources().getBoolean(R.bool.tablet_layout)) {
+			Log.v(Tag, "tablet behavior!");
+			FragmentManager fm = getSupportFragmentManager();
+			FragmentTransaction ft = fm.beginTransaction();
+			ft.replace(R.id.create_song_container, new EditEventFragment(), "EditFragment");
+			ft.addToBackStack(null);
+			ft.commit();
+		}
+		else {
+			//for tablets running HC or newer; should work with 7 inch and up
+			Log.v(Tag, "tablet behavior!");
+			eventFragment =  (EditEventFragment) getSupportFragmentManager().findFragmentByTag("EditFragment");
+//			FragmentManager fm = getSupportFragmentManager();
+//			FragmentTransaction ft = fm.beginTransaction();
+//			ft.add(R.id.event_container, new EditEventFragment(), "EditFragment");
+//			ft.addToBackStack(null); //remove? TODO
+//			ft.commit();
+			eventFragment.changed();
+		}
 	}
 	
 	int getPosition() {

@@ -22,15 +22,6 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<activity
-			android:name="com.AppsOfAwesome.ultimatemetronome.CreateSongActivity"
-			android:label="@string/title_activity_opening_menu"
-			android:theme="@style/Theme.Sherlock" >
-		</activity>
-		<activity
-			android:name="com.AppsOfAwesome.ultimatemetronome.EditEventActivity"
-			android:label="@string/title_activity_edit_event" >
-		</activity>
 		<activity			android:name="com.AppsOfAwesome.ultimatemetronome.metronomepackage.PlayMetronomeActivity"
 			android:label="@string/title_activity_play_metronome_activity" >
 		</activity>

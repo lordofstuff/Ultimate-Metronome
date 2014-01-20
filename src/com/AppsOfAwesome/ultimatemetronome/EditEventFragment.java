@@ -17,6 +17,7 @@ import android.widget.TextView;
 class EditEventFragment extends SherlockFragment {
 
 	protected static final String Tag = "Edit event fragment";
+	private View view;
 	private TextView eventNameText;
 	private TextView tempoEdit;
 
@@ -29,18 +30,18 @@ class EditEventFragment extends SherlockFragment {
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_edit_event,
 				container, false);
+		
+		this.view = view;
 		eventNameText = (TextView) view.findViewById(R.id.edit_event_name);
 		tempoEdit = (TextView) view.findViewById(R.id.tempo_input);
 		//TODO add other views here. 
 
 		//set up important variables
 		parentActivity = (EditSongActivity)getSherlockActivity();
-		position = parentActivity.getPosition();
-		myEvent = parentActivity.getSongList().get(position);
+		
 
 		//set UI to match the event info
-		eventNameText.setText(myEvent.getName());
-		tempoEdit.setText(Double.toString(myEvent.getTempo()));
+		changed();
 
 		//add listeners (this should maybe be in another on*** method) TODO
 		eventNameText.addTextChangedListener(new TextWatcher() {
@@ -96,6 +97,24 @@ class EditEventFragment extends SherlockFragment {
 	public void onAttach(Activity activity) {
 		// TODO Auto-generated method stub
 		super.onAttach(activity);
+	}
+
+
+
+	public static String convertFromPattern(int[] pattern) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+	public void changed() {
+		//update position and set all UI to match new data
+		position = parentActivity.getPosition();
+		myEvent = parentActivity.getSongList().get(position);
+		eventNameText.setText(myEvent.getName());
+		tempoEdit.setText(Double.toString(myEvent.getTempo()));
+		view.invalidate();
 	}
 
 

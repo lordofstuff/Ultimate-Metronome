@@ -47,4 +47,9 @@ public static short[] intToShortArrayHalf(int[] int_array) {
     }
     return result;
 }
+
+public static Object convertFromPattern(int[] pattern) {
+	// TODO Auto-generated method stub
+	return null;
+}
 }
