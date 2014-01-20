@@ -1,15 +1,15 @@
 /**
  * A class that plays metronome sounds. Includes useful methods for working with this implementation.
  */
-package com.Stephen.ultimatemetronome.metronomepackage;
+package com.AppsOfAwesome.ultimatemetronome.metronomepackage;
 
 
 
 
 
-import com.Stephen.ultimatemetronome.R;
-import com.Stephen.ultimatemetronome.Utility;
-//import com.Stephen.ultimatemetronome.R.array;
+import com.AppsOfAwesome.ultimatemetronome.Utility;
+import com.AppsOfAwesome.ultimatemetronome.R;
+//import com.AppsOfAwesome.ultimatemetronome.R.array;
 
 import android.content.Context;
 import android.media.AudioFormat;

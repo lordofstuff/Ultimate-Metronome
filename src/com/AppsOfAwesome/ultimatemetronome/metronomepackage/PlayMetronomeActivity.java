@@ -1,11 +1,11 @@
-package com.Stephen.ultimatemetronome.metronomepackage;
+package com.AppsOfAwesome.ultimatemetronome.metronomepackage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import com.Stephen.ultimatemetronome.R;
-import com.Stephen.ultimatemetronome.metronomepackage.MetronomeController.MetronomeState;
+import com.AppsOfAwesome.ultimatemetronome.metronomepackage.MetronomeController.MetronomeState;
+import com.AppsOfAwesome.ultimatemetronome.R;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 

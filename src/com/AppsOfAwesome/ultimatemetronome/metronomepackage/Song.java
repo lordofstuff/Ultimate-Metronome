@@ -1,4 +1,4 @@
-package com.Stephen.ultimatemetronome.metronomepackage;
+package com.AppsOfAwesome.ultimatemetronome.metronomepackage;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,9 +11,9 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 
-import com.Stephen.ultimatemetronome.CustomLinkedList;
-//import com.Stephen.ultimatemetronome.CustomLinkedList.DLIterator;
-import com.Stephen.ultimatemetronome.EventCreateObject;
+import com.AppsOfAwesome.ultimatemetronome.CustomLinkedList;
+import com.AppsOfAwesome.ultimatemetronome.EventCreateObject;
+//import com.AppsOfAwesome.ultimatemetronome.CustomLinkedList.DLIterator;
 
 import android.util.Log;
 

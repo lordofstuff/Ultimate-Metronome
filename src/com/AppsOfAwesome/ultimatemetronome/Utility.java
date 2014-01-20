@@ -2,7 +2,7 @@
  * Contains utility methods that are not specific to a part of the application or this application
  * at all.
  */
-package com.Stephen.ultimatemetronome;
+package com.AppsOfAwesome.ultimatemetronome;
 
 public class Utility {
   /**

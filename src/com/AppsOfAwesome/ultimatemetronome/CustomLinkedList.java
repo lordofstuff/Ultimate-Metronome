@@ -1,4 +1,4 @@
-package com.Stephen.ultimatemetronome;
+package com.AppsOfAwesome.ultimatemetronome;
 
 import java.util.AbstractList;
 import java.util.Iterator;

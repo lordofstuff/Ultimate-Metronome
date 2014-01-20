@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.Stephen.ultimatemetronome"
+	package="com.AppsOfAwesome.ultimatemetronome"
 	android:versionCode="1"
 	android:versionName="1.0" >
 
@@ -14,7 +14,7 @@
 		android:label="@string/app_name"
 		android:theme="@style/Theme.Sherlock" >
 		<activity
-			android:name="com.Stephen.ultimatemetronome.MainActivity"
+			android:name="com.AppsOfAwesome.ultimatemetronome.MainActivity"
 			android:label="@string/app_name" >
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
@@ -23,24 +23,23 @@
 			</intent-filter>
 		</activity>
 		<activity
-			android:name="com.Stephen.ultimatemetronome.CreateSongActivity"
+			android:name="com.AppsOfAwesome.ultimatemetronome.CreateSongActivity"
 			android:label="@string/title_activity_opening_menu"
 			android:theme="@style/Theme.Sherlock" >
 		</activity>
 		<activity
-			android:name="com.Stephen.ultimatemetronome.EditEventActivity"
+			android:name="com.AppsOfAwesome.ultimatemetronome.EditEventActivity"
 			android:label="@string/title_activity_edit_event" >
 		</activity>
-		<activity
-			android:name="com.Stephen.ultimatemetronome.metronomepackage.PlayMetronomeActivity"
+		<activity			android:name="com.AppsOfAwesome.ultimatemetronome.metronomepackage.PlayMetronomeActivity"
 			android:label="@string/title_activity_play_metronome_activity" >
 		</activity>
 		<activity
-			android:name="com.Stephen.ultimatemetronome.SongListFragment"
+			android:name="com.AppsOfAwesome.ultimatemetronome.SongListFragment"
 			android:label="@string/title_activity_song_list_fragment" >
 		</activity>
 		<activity
-			android:name="com.Stephen.ultimatemetronome.EditSongActivity"
+			android:name="com.AppsOfAwesome.ultimatemetronome.EditSongActivity"
 			android:label="@string/title_activity_edit_song" >
 		</activity>
 	</application>

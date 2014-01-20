@@ -1,4 +1,4 @@
-package com.Stephen.ultimatemetronome;
+package com.AppsOfAwesome.ultimatemetronome;
 
 import static org.junit.Assert.*;
 

@@ -1,9 +1,9 @@
-package com.Stephen.ultimatemetronome.metronomepackage;
+package com.AppsOfAwesome.ultimatemetronome.metronomepackage;
 
 import java.util.Iterator;
 
-import com.Stephen.ultimatemetronome.R;
-import com.Stephen.ultimatemetronome.Utility;
+import com.AppsOfAwesome.ultimatemetronome.Utility;
+import com.AppsOfAwesome.ultimatemetronome.R;
 
 import android.content.Context;
 import android.media.AudioFormat;

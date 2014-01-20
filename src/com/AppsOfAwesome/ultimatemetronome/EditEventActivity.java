@@ -1,9 +1,10 @@
-package com.Stephen.ultimatemetronome;
+package com.AppsOfAwesome.ultimatemetronome;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.AppsOfAwesome.ultimatemetronome.R;
 import com.actionbarsherlock.app.SherlockActivity;
 //import com.actionbarsherlock.app.SherlockFragment;
 

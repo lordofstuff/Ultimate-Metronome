@@ -1,4 +1,4 @@
-package com.Stephen.ultimatemetronome.metronomepackage;
+package com.AppsOfAwesome.ultimatemetronome.metronomepackage;
 
 public class MetronomeEvent {
 	/*

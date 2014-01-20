@@ -1,5 +1,6 @@
-package com.Stephen.ultimatemetronome;
+package com.AppsOfAwesome.ultimatemetronome;
 
+import com.AppsOfAwesome.ultimatemetronome.R;
 import com.actionbarsherlock.app.SherlockFragment;
 
 import android.app.Activity;

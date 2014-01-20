@@ -1,4 +1,4 @@
-package com.Stephen.ultimatemetronome.metronomepackage;
+package com.AppsOfAwesome.ultimatemetronome.metronomepackage;
 
 /**
  * An interface for an object that will be notified of changes to the current metronome's state, such as updates to the 
