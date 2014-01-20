@@ -50,7 +50,7 @@ public class EditSongActivity extends SherlockFragmentActivity {
 			songList = new CustomLinkedList<EventCreateObject>();
 		}
 		else {
-			loadSongEdit(intent.getStringExtra("fileName"));
+			songList = loadSongEdit(intent.getStringExtra("fileName"));
 		}
 
 		//add the list fragment in
