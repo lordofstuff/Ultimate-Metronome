@@ -229,6 +229,10 @@ public class EditSongActivity extends SherlockFragmentActivity {
 		return position;
 	}
 
+	public void editDataChanged() {
+		listFragment.notifyDataChanged();
+	}
+
 
 
 

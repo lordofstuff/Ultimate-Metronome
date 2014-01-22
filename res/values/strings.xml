@@ -23,5 +23,7 @@
 	<string name="stop_text">Stop</string>
 	<string name="title_activity_song_list_fragment">Song</string>
 	<string name="title_activity_edit_song">Edit</string>
+	<string name="tempo_text">Tempo</string>
+	<string name="volume_edit_label">Volume</string>
 
 </resources>

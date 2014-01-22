@@ -251,4 +251,10 @@ public class SongListFragment extends SherlockFragment {
 	    list.setDragEnabled(sort);
     }
 
+
+
+	public void notifyDataChanged() {
+		dataAdapter.notifyDataSetChanged();
+	}
+
 }

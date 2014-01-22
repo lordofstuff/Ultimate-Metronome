@@ -114,7 +114,12 @@ class EditEventFragment extends SherlockFragment {
 		myEvent = parentActivity.getSongList().get(position);
 		eventNameText.setText(myEvent.getName());
 		tempoEdit.setText(Double.toString(myEvent.getTempo()));
-		view.invalidate();
+		
+	}
+	
+	private void dataChanged() {
+		//tells the hosting class that the data has changed and the list needs to be redrawn
+		parentActivity.editDataChanged();
 	}
 
 

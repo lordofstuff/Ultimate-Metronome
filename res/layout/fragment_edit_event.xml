@@ -1,100 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:orientation="vertical" >
+    xmlns:app="http://schemas.android.com/apk/res/com.AppsOfAwesome.ultimatemetronome"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
 
-	<EditText
-		android:id="@+id/edit_event_name"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:hint="@string/event_name_hint" >
+    <EditText
+        android:id="@+id/edit_event_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/event_name_hint" >
+    </EditText>
 
-		<requestFocus />
-	</EditText>
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
 
-	<ScrollView
-		android:id="@+id/scrollView1"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent" >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
 
-		<TableLayout
-		    android:paddingLeft="@dimen/activity_horizontal_margin"
-			android:paddingRight="@dimen/activity_horizontal_margin"
-		    android:paddingBottom="@dimen/activity_vertical_margin"
-			android:paddingTop="@dimen/activity_vertical_margin"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content" >
+            <LinearLayout
+                android:id="@+id/tableRow1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
 
-			<TableRow
-				android:id="@+id/tableRow1"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content" >
+                <TextView
+                    android:id="@+id/tempo_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:paddingBottom="@dimen/widget_padding"
+                    android:paddingLeft="@dimen/widget_padding"
+                    android:paddingRight="@dimen/widget_padding"
+                    android:paddingTop="@dimen/widget_padding"
+                    android:text="@string/tempo_text"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
 
-				<TextView
-					android:id="@+id/tempo_text"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="Tempo"
-					android:textAppearance="?android:attr/textAppearanceLarge" />
+                <EditText
+                    android:id="@+id/tempo_input"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="number"
+                    android:paddingBottom="@dimen/widget_padding"
+                    android:paddingLeft="@dimen/widget_padding"
+                    android:paddingRight="@dimen/widget_padding"
+                    android:paddingTop="@dimen/widget_padding" />
+            </LinearLayout>
 
-				<EditText
-					android:id="@+id/tempo_input"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:ems="10"
-					android:inputType="number" />
+            <LinearLayout
+                android:id="@+id/tableRow2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
 
+                <TextView
+                    android:id="@+id/textView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/widget_padding"
+                    android:paddingLeft="@dimen/widget_padding"
+                    android:paddingRight="@dimen/widget_padding"
+                    android:paddingTop="@dimen/widget_padding"
+                    android:text="@string/volume_edit_label"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
 
-			</TableRow>
+                <SeekBar
+                    android:id="@+id/seekBar1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/widget_padding"
+                    android:paddingRight="@dimen/widget_padding"
+                    android:paddingTop="@dimen/widget_padding" />
+            </LinearLayout>
 
-			<TableRow
-				android:id="@+id/tableRow2"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content" >
+            <LinearLayout
+                android:id="@+id/tableRow3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
 
-				<TextView
-					android:id="@+id/textView1"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="Large Text"
-					android:textAppearance="?android:attr/textAppearanceLarge" />
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/widget_padding"
+                    android:paddingLeft="@dimen/widget_padding"
+                    android:paddingRight="@dimen/widget_padding"
+                    android:paddingTop="@dimen/widget_padding"
+                    android:text="Pulse"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                
+                <com.AppsOfAwesome.ultimatemetronome.CustomNumberPicker
+                    android:id="@+id/beat_picker" 
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:min="1"
+                    app:max="6" />
+                    
+            </LinearLayout>
 
-				<SeekBar
-					android:id="@+id/seekBar1"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content" />
+            <LinearLayout
+                android:id="@+id/tableRow4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
 
-			</TableRow>
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/widget_padding"
+                    android:paddingLeft="@dimen/widget_padding"
+                    android:paddingRight="@dimen/widget_padding"
+                    android:paddingTop="@dimen/widget_padding"
+                    android:text="Large Text"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+            </LinearLayout>
 
-			<TableRow
-				android:id="@+id/tableRow3"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content" >
-
-				<TextView
-					android:id="@+id/textView2"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="Large Text"
-					android:textAppearance="?android:attr/textAppearanceLarge" />
-
-			</TableRow>
-
-			<TableRow
-				android:id="@+id/tableRow4"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content" >
-
-				<TextView
-					android:id="@+id/textView3"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:text="Large Text"
-					android:textAppearance="?android:attr/textAppearanceLarge" />
-
-			</TableRow>
-		</TableLayout>
-	</ScrollView>
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

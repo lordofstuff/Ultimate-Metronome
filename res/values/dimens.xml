@@ -4,5 +4,6 @@
 	<dimen name="activity_horizontal_margin">16dp</dimen>
 	<dimen name="activity_vertical_margin">16dp</dimen>
 	<item format="boolean" type="bool" name="tablet_layout">false</item>
+	<dimen name="widget_padding">16dp</dimen>
 
 </resources>
