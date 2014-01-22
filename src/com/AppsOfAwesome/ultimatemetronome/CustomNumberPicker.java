@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 public class CustomNumberPicker extends LinearLayout {
@@ -24,8 +25,8 @@ public class CustomNumberPicker extends LinearLayout {
 
 	//UI elements; may change if I change what it looks like
 	EditText numberText;
-	Button upButton;
-	Button downButton;
+	ImageButton upButton;
+	ImageButton downButton;
 	
 	
 
@@ -38,14 +39,18 @@ public class CustomNumberPicker extends LinearLayout {
 		this.context = context;
 		init(attrs);
 		
+		
 		//MAY CHANGE DRASTICALLY
 		numberText = (EditText) this.findViewById(R.id.number);
-		upButton = (Button) this.findViewById(R.id.up_button);
-		downButton = (Button) this.findViewById(R.id.down_button);
+		upButton = (ImageButton) this.findViewById(R.id.up_button);
+		downButton = (ImageButton) this.findViewById(R.id.down_button);
 		numberText.addTextChangedListener(new TextListener());
 	}
 
 	private void init(AttributeSet attrs) {
+		if (this.isInEditMode()) {
+			return;
+		}
 		TypedArray a = context.obtainStyledAttributes(attrs,
 			    R.styleable.CustomNumberPicker);
 			 
