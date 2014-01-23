@@ -4,11 +4,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    
-    <com.AppsOfAwesome.UltimateMetronome.CustomNumberPicker
-        app:max="4"
-        app:min="0" />
-        
-    
+
+    <TextView
+        android:id="@+id/pattern_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Example text"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:id="@+id/picker_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

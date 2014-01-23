@@ -20,6 +20,8 @@ class EditEventFragment extends SherlockFragment {
 	private View view;
 	private TextView eventNameText;
 	private TextView tempoEdit;
+	private TextView testText;
+	private CustomNumberPicker beatPicker;
 
 	private EventCreateObject myEvent;
 	private int position;
@@ -34,6 +36,9 @@ class EditEventFragment extends SherlockFragment {
 		this.view = view;
 		eventNameText = (TextView) view.findViewById(R.id.edit_event_name);
 		tempoEdit = (TextView) view.findViewById(R.id.tempo_input);
+		
+		testText = (TextView) view.findViewById(R.id.textView3);
+		beatPicker = (CustomNumberPicker) view.findViewById(R.id.beat_picker);
 		//TODO add other views here. 
 
 		//set up important variables
@@ -120,6 +125,10 @@ class EditEventFragment extends SherlockFragment {
 	private void dataChanged() {
 		//tells the hosting class that the data has changed and the list needs to be redrawn
 		parentActivity.editDataChanged();
+	}
+	
+	public void test(View view) {
+		((TextView) view).setText(beatPicker.getValue());
 	}
 
 

@@ -29,6 +29,19 @@ public class CustomNumberPicker extends LinearLayout {
 	ImageButton downButton;
 	
 	
+	public CustomNumberPicker(Context context, int min, int max, int currentValue) {
+		super(context);
+		LayoutInflater layoutInflater = (LayoutInflater)context
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		layoutInflater.inflate(R.layout.custom_number_picker, this);
+		this.context = context;
+		this.minimum = min;
+		this.maximum = max;
+		this.currentValue = currentValue;
+		init2();
+		
+	}
+	
 
 	public CustomNumberPicker(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -40,11 +53,29 @@ public class CustomNumberPicker extends LinearLayout {
 		init(attrs);
 		
 		
+		
+		init2();
+	}
+	
+	private void init2() {
 		//MAY CHANGE DRASTICALLY
+		//sets views for the components, etc.
 		numberText = (EditText) this.findViewById(R.id.number);
 		upButton = (ImageButton) this.findViewById(R.id.up_button);
 		downButton = (ImageButton) this.findViewById(R.id.down_button);
 		numberText.addTextChangedListener(new TextListener());
+		upButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				upClick(null);
+			}	
+		});
+		downButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				downClick(null);
+			}	
+		});
 	}
 
 	private void init(AttributeSet attrs) {
@@ -65,7 +96,6 @@ public class CustomNumberPicker extends LinearLayout {
 			            break;
 			        case R.styleable.CustomNumberPicker_max:
 			            maximum =  a.getInt(i, 0);
-			            //...do something with fancyColors...
 			            break;
 			    }
 			}
@@ -81,7 +111,7 @@ public class CustomNumberPicker extends LinearLayout {
 		currentValue = value;
 	}
 
-	public boolean setVlaue(int newValue) {
+	public boolean setValue(int newValue) {
 		if (newValue >= minimum && newValue <= maximum) {
 			setCurrentValue(newValue);
 			updateValue();
@@ -104,7 +134,7 @@ public class CustomNumberPicker extends LinearLayout {
 			int value = Integer.parseInt(arg0.toString());
 			if (value >= minimum && value <= maximum) {
 				setCurrentValue(value);
-				updateValue();
+				//updateValue();
 			}	
 		}
 		@Override
@@ -129,8 +159,8 @@ public class CustomNumberPicker extends LinearLayout {
 	}
 	
 	public void downClick(View view) {
-		if (currentValue < maximum) {
-			currentValue++;
+		if (currentValue > minimum) {
+			currentValue--;
 			updateValue();
 		}
 	}
