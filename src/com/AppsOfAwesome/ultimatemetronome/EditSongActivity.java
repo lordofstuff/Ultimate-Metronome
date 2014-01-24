@@ -63,11 +63,12 @@ public class EditSongActivity extends SherlockFragmentActivity {
 		}
 		else {
 			ft.add(R.id.list_container, new SongListFragment(), listFragmentTag);
-			songList.add(new EventCreateObject());
-			position = 0;
+			//songList.add(new EventCreateObject());
+			//position = 0;
 			//listFragment =  (SongListFragment) fm.findFragmentById(R.id.list_fragment);
 			//eventFragment =  (EditEventFragment) fm.findFragmentById(R.id.event_fragment);
-			ft.add(R.id.event_container, new EditEventFragment(), "EditFragment");
+			//ft.add(R.id.event_container, new EditEventFragment(), "EditFragment");
+			//ft.add(R.id.pattern_container, new PatternPickerFragment(), "PatternFragment");
 		}
 		ft.commit(); 
 		//listFragment = (SongListFragment) fm.findFragmentByTag(listFragmentTag); //returns null for some reason...
@@ -205,7 +206,6 @@ public class EditSongActivity extends SherlockFragmentActivity {
 		this.position = position;
 		//small screen behavior (or pre HC)
 		if (!getResources().getBoolean(R.bool.tablet_layout)) {
-			Log.v(Tag, "tablet behavior!");
 			FragmentManager fm = getSupportFragmentManager();
 			FragmentTransaction ft = fm.beginTransaction();
 			ft.replace(R.id.create_song_container, new EditEventFragment(), "EditFragment");
@@ -215,18 +215,27 @@ public class EditSongActivity extends SherlockFragmentActivity {
 		else {
 			//for tablets running HC or newer; should work with 7 inch and up
 			Log.v(Tag, "tablet behavior!");
-			eventFragment =  (EditEventFragment) getSupportFragmentManager().findFragmentByTag("EditFragment");
-//			FragmentManager fm = getSupportFragmentManager();
-//			FragmentTransaction ft = fm.beginTransaction();
-//			ft.add(R.id.event_container, new EditEventFragment(), "EditFragment");
-//			ft.addToBackStack(null); //remove? TODO
-//			ft.commit();
-			eventFragment.changed();
+			//eventFragment =  (EditEventFragment) getSupportFragmentManager().findFragmentByTag("EditFragment");
+			FragmentManager fm = getSupportFragmentManager();
+			FragmentTransaction ft = fm.beginTransaction();
+			ft.add(R.id.event_container, new EditEventFragment(), "EditFragment");
+			ft.addToBackStack(null); //remove? TODO
+			ft.commit();
+			//eventFragment.changed();
 		}
 	}
 	
+	public void editPattern(int position) {
+		//adding the pattern picker to the layout
+		FragmentManager fm = getSupportFragmentManager();
+		FragmentTransaction ft = fm.beginTransaction();
+		ft.add(R.id.pattern_container, new PatternPickerFragment(), "PatternFragment");
+		ft.addToBackStack(null); //remove? TODO
+		ft.commit();
+	}
+	
 	int getPosition() {
-		return position;
+		return 0;//position; FIXME
 	}
 
 	public void editDataChanged() {
@@ -234,7 +243,10 @@ public class EditSongActivity extends SherlockFragmentActivity {
 	}
 
 
-
+	public void test(View view) {
+		Log.v(Tag, "editing pattern");
+		editPattern(getPosition());
+	}
 
 
 }

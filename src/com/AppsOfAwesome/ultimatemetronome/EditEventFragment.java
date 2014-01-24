@@ -128,7 +128,8 @@ class EditEventFragment extends SherlockFragment {
 	}
 	
 	public void test(View view) {
-		((TextView) view).setText(beatPicker.getValue());
+		Log.v(Tag, "editing pattern");
+		parentActivity.editPattern(parentActivity.getPosition());
 	}
 
 

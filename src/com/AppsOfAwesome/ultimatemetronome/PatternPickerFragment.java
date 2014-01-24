@@ -26,7 +26,7 @@ public class PatternPickerFragment extends SherlockFragment{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 				
-		view = inflater.inflate(R.layout.pattern_picker, container);
+		view = inflater.inflate(R.layout.pattern_picker, null);//container);
 		parentActivity = (EditSongActivity) getSherlockActivity();
 		currentEvent = parentActivity.getSongList().get(parentActivity.getPosition());
 		pattern = currentEvent.getPattern();

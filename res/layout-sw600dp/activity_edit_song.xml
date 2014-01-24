@@ -11,11 +11,18 @@
 		    android:id="@+id/list_container"
 		    android:layout_width="match_parent"
 		    android:layout_height="match_parent"
-		    android:layout_weight="2" >
+		    android:layout_weight="1" >
 		</FrameLayout>
 		
 		<FrameLayout
 		    android:id="@+id/event_container"
+		    android:layout_width="match_parent"
+		    android:layout_height="match_parent"
+		    android:layout_weight="1" >
+		</FrameLayout>
+		
+		<FrameLayout
+		    android:id="@+id/pattern_container"
 		    android:layout_width="match_parent"
 		    android:layout_height="match_parent"
 		    android:layout_weight="1" >
