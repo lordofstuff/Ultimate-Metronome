@@ -27,17 +27,21 @@ import android.widget.Toast;
 
 
 
-public class EditSongActivity extends SherlockFragmentActivity {
+public class EditSongActivity extends SherlockFragmentActivity implements ListParent, EditEventParent, PatternFragmentParent{
 
 	private static final String Tag = "Edit Song Activity";
 	public static final int NEW_FLAG = 1;
 	public static final int EDIT_FLAG = 2;
+	private static final int NORMAL_PATTERN = 0;
+	private static final int BEAT_PATTERN = 1;
 	private CustomLinkedList<EventCreateObject> songList = null;
 	private SongListFragment listFragment;
 	private EditEventFragment eventFragment;
-	protected int songName;
-	private int position;
-	
+	private PatternPickerFragment patternFragment;
+	protected String songName;
+	//private int position;
+	private EventCreateObject currentEvent;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +58,7 @@ public class EditSongActivity extends SherlockFragmentActivity {
 			songList = loadSongEdit(intent.getStringExtra("fileName"));
 		}
 
+
 		//add the list fragment in
 		String listFragmentTag = "ListFragment";
 		FragmentManager fm = getSupportFragmentManager();
@@ -62,6 +67,9 @@ public class EditSongActivity extends SherlockFragmentActivity {
 			ft.add(R.id.create_song_container, new SongListFragment(), listFragmentTag);
 		}
 		else {
+			//hide the unused containers
+			findViewById(R.id.pattern_container).setVisibility(View.GONE);
+
 			ft.add(R.id.list_container, new SongListFragment(), listFragmentTag);
 			//songList.add(new EventCreateObject());
 			//position = 0;
@@ -81,32 +89,32 @@ public class EditSongActivity extends SherlockFragmentActivity {
 		return true;
 	}
 
-	CustomLinkedList<EventCreateObject> getSongList() {
-		return songList;
-	}
+	//	CustomLinkedList<EventCreateObject> getSongList() {
+	//		return songList;
+	//	}
 
 	public boolean onOptionsItemSelected(MenuItem item) {
 		listFragment = (SongListFragment) getSupportFragmentManager().findFragmentByTag("ListFragment");
 		switch (item.getItemId()) {
-			case R.id.add_event_action:
-				//findViewById(R.id.create_song_container).invalidate();
-				listFragment.addEvent(null);
-				break;
-			case R.id.toggle_sort_action:
-				if (item.isChecked()) { //it was already checked; disable sorting and uncheck it
-					listFragment.setSort(false);
-					item.setChecked(false);
-				}
-				else {
-					listFragment.setSort(true);
-					item.setChecked(true);
-				}
-				break;
-			case R.id.save_action:
-				saveSong(null);
-				break;
-			default:
-				break;
+		case R.id.add_event_action:
+			//findViewById(R.id.create_song_container).invalidate();
+			listFragment.addEvent(null);
+			break;
+		case R.id.toggle_sort_action:
+			if (item.isChecked()) { //it was already checked; disable sorting and uncheck it
+				listFragment.setSort(false);
+				item.setChecked(false);
+			}
+			else {
+				listFragment.setSort(true);
+				item.setChecked(true);
+			}
+			break;
+		case R.id.save_action:
+			saveSong(null);
+			break;
+		default:
+			break;
 		}
 
 		return true;
@@ -202,9 +210,74 @@ public class EditSongActivity extends SherlockFragmentActivity {
 	}
 
 
-	public void editEvent(int position) {
-		this.position = position;
-		//small screen behavior (or pre HC)
+	//	public void editEvent(int position) {
+	//		currentEvent = songList.get(position);
+	//		//small screen behavior (or pre HC)
+	//		if (!getResources().getBoolean(R.bool.tablet_layout)) {
+	//			FragmentManager fm = getSupportFragmentManager();
+	//			FragmentTransaction ft = fm.beginTransaction();
+	//			ft.replace(R.id.create_song_container, new EditEventFragment(), "EditFragment");
+	//			ft.addToBackStack(null);
+	//			ft.commit();
+	//		}
+	//		else {
+	//			//for tablets running HC or newer; should work with 7 inch and up
+	//			Log.v(Tag, "tablet behavior!");
+	//			//eventFragment =  (EditEventFragment) getSupportFragmentManager().findFragmentByTag("EditFragment");
+	//			FragmentManager fm = getSupportFragmentManager();
+	//			FragmentTransaction ft = fm.beginTransaction();
+	//			ft.add(R.id.event_container, new EditEventFragment(), "EditFragment");
+	//			ft.addToBackStack(null); //remove? TODO
+	//			ft.commit();
+	//			//eventFragment.changed();
+	//		}
+	//	}
+
+	//	public void editPattern(int position) {
+	//		if (!getResources().getBoolean(R.bool.tablet_layout)) {
+	//
+	//		}
+	//		else {
+	//			//make the container visible again.
+	//			findViewById(R.id.pattern_container).setVisibility(View.VISIBLE);
+	//
+	//			//adding the pattern picker to the layout
+	//			FragmentManager fm = getSupportFragmentManager();
+	//			FragmentTransaction ft = fm.beginTransaction();
+	//			ft.add(R.id.pattern_container, new PatternPickerFragment(), "PatternFragment");
+	//			ft.addToBackStack(null); //remove? TODO
+	//			ft.commit();
+	//		}
+	//	}
+
+	//	public int getPosition() {
+	//		return 0;//position; FIXME
+	//	}
+
+	public void editDataChanged() {
+		listFragment.notifyDataChanged();
+	}
+
+
+	public void patternFragmentDetach() {
+		if (!getResources().getBoolean(R.bool.tablet_layout)) {
+
+		}
+		else {
+			//make the container invisible again.
+			findViewById(R.id.pattern_container).setVisibility(View.GONE);
+		}
+	}
+
+	@Override
+	public CustomLinkedList<EventCreateObject> getList() {
+		return songList;
+	}
+
+	@Override
+	public void editEvent(EventCreateObject event) {
+		//first, set the event so it is accessible to the fragment
+		this.currentEvent = event;
 		if (!getResources().getBoolean(R.bool.tablet_layout)) {
 			FragmentManager fm = getSupportFragmentManager();
 			FragmentTransaction ft = fm.beginTransaction();
@@ -224,29 +297,48 @@ public class EditSongActivity extends SherlockFragmentActivity {
 			//eventFragment.changed();
 		}
 	}
-	
-	public void editPattern(int position) {
-		//adding the pattern picker to the layout
-		FragmentManager fm = getSupportFragmentManager();
-		FragmentTransaction ft = fm.beginTransaction();
-		ft.add(R.id.pattern_container, new PatternPickerFragment(), "PatternFragment");
-		ft.addToBackStack(null); //remove? TODO
-		ft.commit();
-	}
-	
-	int getPosition() {
-		return 0;//position; FIXME
+
+	@Override
+	public EventCreateObject getCurrentEvent() {
+		return currentEvent;
 	}
 
-	public void editDataChanged() {
-		listFragment.notifyDataChanged();
+	@Override
+	public void detachEditFragment() {
+		// TODO Auto-generated method stub
+
 	}
 
+	@Override
+	public void editPattern(int flag) {
+		if (!getResources().getBoolean(R.bool.tablet_layout)) {
 
-	public void test(View view) {
-		Log.v(Tag, "editing pattern");
-		editPattern(getPosition());
+		}
+		else {
+			//make the container visible again.
+			findViewById(R.id.pattern_container).setVisibility(View.VISIBLE);
+
+			//adding the pattern picker to the layout
+			FragmentManager fm = getSupportFragmentManager();
+			FragmentTransaction ft = fm.beginTransaction();
+			ft.add(R.id.pattern_container, new PatternPickerFragment(), "PatternFragment");
+			ft.addToBackStack(null); //remove? TODO
+			ft.commit();
+		}
+
 	}
+
+	@Override
+	public int getNormalPatternConstant() {
+		
+		return NORMAL_PATTERN;
+	}
+
+	@Override
+	public int getBeatPatternConstant() {
+		return BEAT_PATTERN;
+	}
+
 
 
 }

@@ -91,14 +91,13 @@
                     android:paddingTop="@dimen/widget_padding"
                     android:text="Pulse"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
-                
+
                 <com.AppsOfAwesome.ultimatemetronome.CustomNumberPicker
                     android:id="@+id/beat_picker"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:max="6"
                     app:min="1" />
-                    
             </LinearLayout>
 
             <LinearLayout
@@ -107,24 +106,16 @@
                 android:layout_height="wrap_content" >
 
                 <TextView
-                    android:id="@+id/textView3"
+                    android:id="@+id/test_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingBottom="@dimen/widget_padding"
                     android:paddingLeft="@dimen/widget_padding"
                     android:paddingRight="@dimen/widget_padding"
                     android:paddingTop="@dimen/widget_padding"
-                    
                     android:text="Large Text"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
-                
-                <Button 
-                     android:text="Large Text"
-                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:onClick="test"/>
             </LinearLayout>
-
         </LinearLayout>
     </ScrollView>
 

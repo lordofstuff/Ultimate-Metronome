@@ -11,12 +11,14 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 class EditEventFragment extends SherlockFragment {
 
 	protected static final String Tag = "Edit event fragment";
+	
 	private View view;
 	private TextView eventNameText;
 	private TextView tempoEdit;
@@ -24,31 +26,37 @@ class EditEventFragment extends SherlockFragment {
 	private CustomNumberPicker beatPicker;
 
 	private EventCreateObject myEvent;
-	private int position;
-	private EditSongActivity parentActivity;
+	//private int position;
+	private EditEventParent parentActivity;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_edit_event,
+		view = inflater.inflate(R.layout.fragment_edit_event,
 				container, false);
 		
-		this.view = view;
 		eventNameText = (TextView) view.findViewById(R.id.edit_event_name);
 		tempoEdit = (TextView) view.findViewById(R.id.tempo_input);
 		
-		testText = (TextView) view.findViewById(R.id.textView3);
+		testText = (TextView) view.findViewById(R.id.test_text);
 		beatPicker = (CustomNumberPicker) view.findViewById(R.id.beat_picker);
 		//TODO add other views here. 
 
 		//set up important variables
-		parentActivity = (EditSongActivity)getSherlockActivity();
+		parentActivity = (EditEventParent)getSherlockActivity();
 		
 
 		//set UI to match the event info
 		changed();
 
 		//add listeners (this should maybe be in another on*** method) TODO
+		testText.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				parentActivity.editPattern(parentActivity.getNormalPatternConstant());
+				
+			}
+		});
 		eventNameText.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void afterTextChanged(Editable charset) {
@@ -115,8 +123,7 @@ class EditEventFragment extends SherlockFragment {
 
 	public void changed() {
 		//update position and set all UI to match new data
-		position = parentActivity.getPosition();
-		myEvent = parentActivity.getSongList().get(position);
+		myEvent = parentActivity.getCurrentEvent();
 		eventNameText.setText(myEvent.getName());
 		tempoEdit.setText(Double.toString(myEvent.getTempo()));
 		
@@ -127,10 +134,6 @@ class EditEventFragment extends SherlockFragment {
 		parentActivity.editDataChanged();
 	}
 	
-	public void test(View view) {
-		Log.v(Tag, "editing pattern");
-		parentActivity.editPattern(parentActivity.getPosition());
-	}
 
 
 	//	public void setName(String item) {

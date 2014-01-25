@@ -1,17 +1,12 @@
 package com.AppsOfAwesome.ultimatemetronome;
 
-//import java.io.FileOutputStream;
-
 import com.AppsOfAwesome.ultimatemetronome.R;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-//import com.actionbarsherlock.view.Menu;
-//import com.actionbarsherlock.view.MenuItem;
 import com.mobeta.android.dslv.DragSortListView;
 import com.mobeta.android.dslv.DragSortListView.DropListener;
 
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,71 +20,33 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
+/**
+ * A fragment holding a listview of events that can be reordered, created, and deleted. The parent activity must implement the ListParent interface.
+ * @author Stephen Rodriguez
+ *
+ */
 public class SongListFragment extends SherlockFragment {
 
 	private static final String Tag = "List Fragment";
-	private EditSongActivity parentActivity;
+	private ListParent parentActivity;
 	private DragSortListView list;// = (DragSortListView)findViewById(R.id.list);
 	private CustomArrayAdapter dataAdapter;
-	private CustomLinkedList<EventCreateObject> songList;
 	private LayoutInflater inflater;
 	private String songName;
-	
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-
-
-	}
-
-
-
-	/* (non-Javadoc)
-	 * @see com.actionbarsherlock.app.SherlockFragment#getSherlockActivity()
-	 */
-	@Override
-	public SherlockFragmentActivity getSherlockActivity() {
-		// TODO Auto-generated method stub
-		return super.getSherlockActivity();
-	}
-
-
-
-	/* (non-Javadoc)
-	 * @see com.actionbarsherlock.app.SherlockFragment#onAttach(android.app.Activity)
-	 */
-	@Override
-	public void onAttach(Activity activity) {
-		// TODO Auto-generated method stub
-		super.onAttach(activity);
-		parentActivity = (EditSongActivity) activity;
-		songList = parentActivity.getSongList();
-	}
-
-
-
-	/* (non-Javadoc)
-	 * @see com.actionbarsherlock.app.SherlockFragment#onDetach()
-	 */
-	@Override
-	public void onDetach() {
-		// TODO Auto-generated method stub
-		super.onDetach();
-	}
-
-
 
 	@Override
 	public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		//super.onCreateView(inflater, container, savedInstanceState);
+		SherlockFragmentActivity parent = getSherlockActivity();
+		if (!(parent instanceof ListParent)) {
+			throw new IllegalStateException("SongListFragment must be a child of a class implementing the ListParent Interface");
+		}
+		parentActivity = (ListParent) getSherlockActivity();
 		View view = inflater.inflate(R.layout.song_list_fragment,
 				container, false);
 		this.inflater = inflater;
 		list = (DragSortListView)view.findViewById(R.id.list);
-		dataAdapter = new CustomArrayAdapter(parentActivity, R.id.tvItemTitle, songList);
+		dataAdapter = new CustomArrayAdapter((Context) parentActivity, R.id.tvItemTitle, parentActivity.getList());
 		//Log.d(Tag, "adapter created.");
 		list.setAdapter(dataAdapter);
 		list.setDropListener(dataAdapter);
@@ -100,40 +57,26 @@ public class SongListFragment extends SherlockFragment {
 		dataAdapter.addEvent();
 	}
 
-	
-
 	private class CustomArrayAdapter extends ArrayAdapter<EventCreateObject> implements DropListener {   
+		private CustomLinkedList<EventCreateObject> songList;
 		
-		private CustomLinkedList<EventCreateObject> list;
-
 		//this custom adapter receives an ArrayList of EventCreateObject objects.
 		//EventCreateObject is my class that represents the data for a single row and could be anything.
-		public CustomArrayAdapter(Context context, int textViewResourceId, CustomLinkedList<EventCreateObject> EventCreateObjectList) 
-		{
+		public CustomArrayAdapter(Context context, int textViewResourceId, CustomLinkedList<EventCreateObject> EventCreateObjectList) {
 			//populate the local list with data.
 			super(context, textViewResourceId, EventCreateObjectList);
-			//			this.list = new CustomLinkedList<EventCreateObject>();
-			//			this.list.addAll(EventCreateObjectList);
-			this.list = EventCreateObjectList;
+			 songList = EventCreateObjectList;
 		}
 
-
-		CustomLinkedList<EventCreateObject> getList() {
-			return list;
-		}
 
 		public void addEvent() {
-			list.add(new EventCreateObject());
+			songList.add(new EventCreateObject());
 			CustomArrayAdapter.this.notifyDataSetChanged();
 		}
 
-		public View getView(final int position, View convertView, ViewGroup parent)
-		{
+		public View getView(final int position, View convertView, ViewGroup parent){
 			//creating the ViewHolder we defined earlier.
 			ViewHolder holder = new ViewHolder(); 
-
-			//creating LayoutInflator for inflating the row layout.
-			//TODO
 
 			//inflating the row layout we defined earlier.
 			convertView = inflater.inflate(R.layout.song_create_view_layout, null);
@@ -143,7 +86,7 @@ public class SongListFragment extends SherlockFragment {
 			holder.image1 = (ImageView) convertView.findViewById(R.id.iStatus);
 			holder.image1.setTag(position);
 			holder.eventName = (TextView) convertView.findViewById(R.id.eventName);
-			holder.eventName.setText(list.get(position).getName());
+			holder.eventName.setText(songList.get(position).getName());
 
 			//			//set a click listener for the list items themselves. 
 			//			((DragSortListView)parent).setOnItemClickListener(new OnItemClickListener() 
@@ -159,7 +102,7 @@ public class SongListFragment extends SherlockFragment {
 
 				@Override
 				public void onClick(View arg0) {
-					list.remove(position);
+					songList.remove(position);
 					notifyDataSetChanged();
 				}
 
@@ -185,7 +128,7 @@ public class SongListFragment extends SherlockFragment {
 				{
 					//assign check-box state to the corresponding object in list.    
 					CheckBox checkbox = (CheckBox) v;
-					list.get(position).setComplex(checkbox.isChecked());
+					songList.get(position).setComplex(checkbox.isChecked());
 					Toast.makeText(getContext(), "CheckBox from row " + position + " was checked", Toast.LENGTH_LONG).show();    
 				}
 			});
@@ -198,7 +141,7 @@ public class SongListFragment extends SherlockFragment {
 			});
 			//setting data into the the ViewHolder.
 			holder.title.setText("Delete Set");
-			holder.checked.setChecked(list.get(position).isComplex());
+			holder.checked.setChecked(songList.get(position).isComplex());
 			//return the row view.
 			return convertView;
 		}
@@ -206,19 +149,7 @@ public class SongListFragment extends SherlockFragment {
 
 
 		void launchEdit(int position) {
-			//intent to launch new activity where you can edit all properties of this particular event
-			//			Intent intent = new Intent(getContext(), EditEventActivity.class);
-			//			intent.putExtra("EventName", list.get(position).getName());
-			//			intent.putExtra("EventData", list.get(position));
-			//			// TURD 1
-			//			CreateSongActivity.currentEventObject = list.get(position);
-			//			// TURD 1 
-			//			startActivity(intent);
-
-			//alternate mechanism using a fragment.
-			//call method from hosting activity
-			parentActivity.editEvent(position);
-
+			parentActivity.editEvent(songList.get(position));
 		}
 
 		@Override
@@ -227,7 +158,7 @@ public class SongListFragment extends SherlockFragment {
 			Thread t = new Thread(new Runnable() {
 				@Override
 				public void run() {
-					list.moveElement(from, to);
+					songList.moveElement(from, to);
 				}
 			});
 			t.start();
@@ -247,7 +178,6 @@ public class SongListFragment extends SherlockFragment {
 	
 
 	public void setSort(boolean sort) {
-	    // TODO Auto-generated method stub
 	    list.setDragEnabled(sort);
     }
 

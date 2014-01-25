@@ -26,15 +26,15 @@ public class PatternPickerFragment extends SherlockFragment{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 				
-		view = inflater.inflate(R.layout.pattern_picker, null);//container);
+		view = inflater.inflate(R.layout.pattern_picker, container, false);
 		parentActivity = (EditSongActivity) getSherlockActivity();
-		currentEvent = parentActivity.getSongList().get(parentActivity.getPosition());
+		currentEvent = parentActivity.getCurrentEvent();
 		pattern = currentEvent.getPattern();
 		pickerArrayList = new ArrayList<CustomNumberPicker>(pattern.length);
 		layout = (LinearLayout) view.findViewById(R.id.picker_layout);
 		
 		int min = 0;
-		int max = 4;
+		int max = 4; //FIXME
 		
 		
 		for(int i=0; i < pattern.length; i++) {
@@ -62,6 +62,15 @@ public class PatternPickerFragment extends SherlockFragment{
 	public void dataChanged() {
 		//TODO
 	}
+
+	@Override
+	public void onDetach() {
+		
+		super.onDetach();
+		parentActivity.patternFragmentDetach();
+	}
+	
+	
 	
 	
 }
