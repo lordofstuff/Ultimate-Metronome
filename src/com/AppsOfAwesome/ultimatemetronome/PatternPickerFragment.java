@@ -10,7 +10,7 @@ import android.widget.LinearLayout;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
-public class PatternPickerFragment extends SherlockFragment{
+public class PatternPickerFragment extends SherlockFragment implements CustomNumberPicker.OnValueChangeListener{
 	
 	private View view;
 	private int[] pattern;
@@ -32,16 +32,14 @@ public class PatternPickerFragment extends SherlockFragment{
 		pickerArrayList = new ArrayList<CustomNumberPicker>(pattern.length);
 		layout = (LinearLayout) view.findViewById(R.id.picker_layout);
 		
-		int min = 0;
-		int max = 4; //FIXME
 		
 		
 		for(int i=0; i < pattern.length; i++) {
 			//add a new CustomNumberPicker to the linear layout
-			CustomNumberPicker current = new CustomNumberPicker(parentActivity, min, max, pattern[i]);
+			CustomNumberPicker current = new CustomNumberPicker(parentActivity, pattern[i], new String[] {"rest", "quaternary", "teriary", "secondary", "primary"});
+			current.setCustomTag(i);
 			layout.addView(current);
 			pickerArrayList.add(current);
-			
 			
 		}
 		
@@ -67,6 +65,19 @@ public class PatternPickerFragment extends SherlockFragment{
 		
 		super.onDetach();
 		parentActivity.patternFragmentDetach();
+	}
+	
+	public interface PatternFragmentParent {
+		
+		EventCreateObject getCurrentEvent();
+		
+		void patternFragmentDetach();
+		
+	}
+
+	@Override
+	public void valueChanged(int tag, int value) {
+		pattern[tag] = value;	
 	}
 	
 	

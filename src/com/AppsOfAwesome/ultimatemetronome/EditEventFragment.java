@@ -61,6 +61,7 @@ class EditEventFragment extends SherlockFragment {
 			@Override
 			public void afterTextChanged(Editable charset) {
 				myEvent.setName(charset.toString());
+				dataChanged();
 			}
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
@@ -80,6 +81,7 @@ class EditEventFragment extends SherlockFragment {
 			public void afterTextChanged(Editable s) {
 				try {
 					myEvent.setTempo(Double.parseDouble(s.toString()));
+					dataChanged();
 				}
 				catch (NumberFormatException e){
 					Log.v(Tag, "number format exception; value not committed to tempo.");
@@ -140,6 +142,35 @@ class EditEventFragment extends SherlockFragment {
 	//		//TextView view = (TextView) getView().findViewById(R.id.detailsText);
 	//		eventNameText.setText(item);
 	//	}
+	
+	public interface EditEventParent {
+		
+		/**
+		 * Gets the event to be edited. 
+		 * @return the event to be edited. 
+		 */
+		EventCreateObject getCurrentEvent();
+		
+		/**
+		 * informs the parent activity that the data on the current event has changed so that it can update the interface of other fragments to match. 
+		 */
+		void editDataChanged();
+		
+		/**
+		 * called when the fragment detaches so that the parent activity can update the UI accordingly. 
+		 */
+		void detachEditFragment();
+		
+		/**
+		 * called when a pattern needs to be edited.
+		 * @param flag a flag indicating which pattern is to be edited, to be passed along to the corresponding fragment. 
+		 */
+		void editPattern(int flag);
+		
+		int getNormalPatternConstant();
+		int getBeatPatternConstant();
+
+	}
 
 
 }

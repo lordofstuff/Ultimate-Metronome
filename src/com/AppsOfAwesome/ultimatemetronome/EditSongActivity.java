@@ -7,7 +7,10 @@ import java.io.IOException;
 
 import com.AppsOfAwesome.ultimatemetronome.metronomepackage.FileFormatException;
 import com.AppsOfAwesome.ultimatemetronome.metronomepackage.Song;
+import com.AppsOfAwesome.ultimatemetronome.EditEventFragment.EditEventParent;
+import com.AppsOfAwesome.ultimatemetronome.PatternPickerFragment.PatternFragmentParent;
 import com.AppsOfAwesome.ultimatemetronome.R;
+import com.AppsOfAwesome.ultimatemetronome.SongListFragment.ListParent;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -42,6 +45,9 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 	//private int position;
 	private EventCreateObject currentEvent;
 
+	private boolean eventOut;
+	private boolean patternOut;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -69,16 +75,12 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 		else {
 			//hide the unused containers
 			findViewById(R.id.pattern_container).setVisibility(View.GONE);
-
+			findViewById(R.id.event_container).setVisibility(View.GONE);
+			eventOut = false;
+			patternOut = false;
 			ft.add(R.id.list_container, new SongListFragment(), listFragmentTag);
-			//songList.add(new EventCreateObject());
-			//position = 0;
-			//listFragment =  (SongListFragment) fm.findFragmentById(R.id.list_fragment);
-			//eventFragment =  (EditEventFragment) fm.findFragmentById(R.id.event_fragment);
-			//ft.add(R.id.event_container, new EditEventFragment(), "EditFragment");
-			//ft.add(R.id.pattern_container, new PatternPickerFragment(), "PatternFragment");
 		}
-		ft.commit(); 
+		ft.commit();
 		//listFragment = (SongListFragment) fm.findFragmentByTag(listFragmentTag); //returns null for some reason...
 	}
 
@@ -88,10 +90,6 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 		getSupportMenuInflater().inflate(R.menu.create_song_menu, menu);
 		return true;
 	}
-
-	//	CustomLinkedList<EventCreateObject> getSongList() {
-	//		return songList;
-	//	}
 
 	public boolean onOptionsItemSelected(MenuItem item) {
 		listFragment = (SongListFragment) getSupportFragmentManager().findFragmentByTag("ListFragment");
@@ -116,12 +114,11 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 		default:
 			break;
 		}
-
 		return true;
 	} 
 
 	public void saveSong(View view) {
-		new Thread(new Runnable() { 
+		new Thread(new Runnable() {
 			public void run() {
 				//file version 2.1 (modified to include extra info on simple time sig subdivisions and any additional notes
 				String fileName = "song.txt";
@@ -209,63 +206,19 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 		return null; //it will not reach this point, hopefully. 
 	}
 
-
-	//	public void editEvent(int position) {
-	//		currentEvent = songList.get(position);
-	//		//small screen behavior (or pre HC)
-	//		if (!getResources().getBoolean(R.bool.tablet_layout)) {
-	//			FragmentManager fm = getSupportFragmentManager();
-	//			FragmentTransaction ft = fm.beginTransaction();
-	//			ft.replace(R.id.create_song_container, new EditEventFragment(), "EditFragment");
-	//			ft.addToBackStack(null);
-	//			ft.commit();
-	//		}
-	//		else {
-	//			//for tablets running HC or newer; should work with 7 inch and up
-	//			Log.v(Tag, "tablet behavior!");
-	//			//eventFragment =  (EditEventFragment) getSupportFragmentManager().findFragmentByTag("EditFragment");
-	//			FragmentManager fm = getSupportFragmentManager();
-	//			FragmentTransaction ft = fm.beginTransaction();
-	//			ft.add(R.id.event_container, new EditEventFragment(), "EditFragment");
-	//			ft.addToBackStack(null); //remove? TODO
-	//			ft.commit();
-	//			//eventFragment.changed();
-	//		}
-	//	}
-
-	//	public void editPattern(int position) {
-	//		if (!getResources().getBoolean(R.bool.tablet_layout)) {
-	//
-	//		}
-	//		else {
-	//			//make the container visible again.
-	//			findViewById(R.id.pattern_container).setVisibility(View.VISIBLE);
-	//
-	//			//adding the pattern picker to the layout
-	//			FragmentManager fm = getSupportFragmentManager();
-	//			FragmentTransaction ft = fm.beginTransaction();
-	//			ft.add(R.id.pattern_container, new PatternPickerFragment(), "PatternFragment");
-	//			ft.addToBackStack(null); //remove? TODO
-	//			ft.commit();
-	//		}
-	//	}
-
-	//	public int getPosition() {
-	//		return 0;//position; FIXME
-	//	}
-
 	public void editDataChanged() {
 		listFragment.notifyDataChanged();
 	}
 
-
 	public void patternFragmentDetach() {
 		if (!getResources().getBoolean(R.bool.tablet_layout)) {
-
+			//TODO anything?
 		}
 		else {
 			//make the container invisible again.
 			findViewById(R.id.pattern_container).setVisibility(View.GONE);
+			//make the list visible again
+			findViewById(R.id.list_container).setVisibility(View.VISIBLE);
 		}
 	}
 
@@ -286,15 +239,25 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 			ft.commit();
 		}
 		else {
-			//for tablets running HC or newer; should work with 7 inch and up
-			Log.v(Tag, "tablet behavior!");
-			//eventFragment =  (EditEventFragment) getSupportFragmentManager().findFragmentByTag("EditFragment");
-			FragmentManager fm = getSupportFragmentManager();
-			FragmentTransaction ft = fm.beginTransaction();
-			ft.add(R.id.event_container, new EditEventFragment(), "EditFragment");
-			ft.addToBackStack(null); //remove? TODO
-			ft.commit();
-			//eventFragment.changed();
+			if (eventOut) {
+				currentEvent = event;
+				eventFragment =  (EditEventFragment) getSupportFragmentManager().findFragmentByTag("EditFragment");
+				eventFragment.changed();
+			}
+			else {
+				
+				//for tablets running HC or newer; should work with 7 inch and up
+				Log.v(Tag, "tablet behavior!");
+				
+				//eventFragment =  (EditEventFragment) getSupportFragmentManager().findFragmentByTag("EditFragment");
+				FragmentManager fm = getSupportFragmentManager();
+				FragmentTransaction ft = fm.beginTransaction();
+				ft.add(R.id.event_container, new EditEventFragment(), "EditFragment");
+				findViewById(R.id.event_container).setVisibility(View.VISIBLE);
+				eventOut = true;
+				ft.addToBackStack(null); //remove? TODO
+				ft.commit();
+			}
 		}
 	}
 
@@ -305,8 +268,14 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 
 	@Override
 	public void detachEditFragment() {
-		// TODO Auto-generated method stub
-
+		if (!getResources().getBoolean(R.bool.tablet_layout)) {
+			//TODO anything?
+		}
+		else {
+			//make the container invisible again.
+			findViewById(R.id.event_container).setVisibility(View.GONE);
+			eventOut = false;
+		}
 	}
 
 	@Override
@@ -315,22 +284,28 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 
 		}
 		else {
-			//make the container visible again.
-			findViewById(R.id.pattern_container).setVisibility(View.VISIBLE);
+			if (patternOut) {
+				//this means the list is invisible, and the nothing should happen (I think)
+			}
+			else {
+				//make the container visible again.
+				findViewById(R.id.pattern_container).setVisibility(View.VISIBLE);
+				//make the list container invisible
+				findViewById(R.id.list_container).setVisibility(View.GONE);
 
-			//adding the pattern picker to the layout
-			FragmentManager fm = getSupportFragmentManager();
-			FragmentTransaction ft = fm.beginTransaction();
-			ft.add(R.id.pattern_container, new PatternPickerFragment(), "PatternFragment");
-			ft.addToBackStack(null); //remove? TODO
-			ft.commit();
+				//adding the pattern picker to the layout
+				FragmentManager fm = getSupportFragmentManager();
+				FragmentTransaction ft = fm.beginTransaction();
+				ft.add(R.id.pattern_container, new PatternPickerFragment(), "PatternFragment");
+				ft.addToBackStack(null);
+				patternOut = true;
+				ft.commit();
+			}
 		}
-
 	}
 
 	@Override
 	public int getNormalPatternConstant() {
-		
 		return NORMAL_PATTERN;
 	}
 

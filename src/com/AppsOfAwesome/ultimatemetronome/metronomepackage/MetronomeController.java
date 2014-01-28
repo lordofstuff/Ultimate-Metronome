@@ -524,19 +524,19 @@ public class MetronomeController implements Runnable{
 		private void writeNextBeatOfPattern() {
 			short[] data;
 			switch(pattern[currentBeat]){
-				case 1:
+				case 0:
 					data = primarySoundData;
 					//Log.v(Tag, "Primary");
 					break;
-				case 2:
+				case 1:
 					data = secondarySoundData;
 					//Log.v(Tag, "secondary");
 					break;
+					//case 2:
 					//case 3:
-					//case 4:
 				default:
 					data = new short[primarySoundData.length];
-					Log.v(Tag, "0 or other");
+					Log.v(Tag, "4 or other");
 					break;
 			}
 			int wrote = track.write(data, 0, beatSoundLength);

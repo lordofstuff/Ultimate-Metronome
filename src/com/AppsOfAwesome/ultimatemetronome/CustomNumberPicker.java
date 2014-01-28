@@ -10,24 +10,41 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 
 public class CustomNumberPicker extends LinearLayout {
 
 	//TODO change this to be sliders instead?
 	Context context;
-	
+
 	//fields
-	private int maximum = 5;
-	private int minimum = 0; //both inclusive
+	private int maximum;
+	private int minimum;
+	private String[] values;
+	int tag = -1;
 
 	private int currentValue;
 
-	//UI elements; may change if I change what it looks like
+	//UI elements: pre HC
 	EditText numberText;
 	ImageButton upButton;
 	ImageButton downButton;
-	
-	
+
+	//UI Elements: post HC
+	SeekBar valueSlider;
+	TextView valueText;
+
+	private OnValueChangeListener listener;
+
+	public CustomNumberPicker(Context context, int currentValue, String... values) {
+		this(context, 0, values.length -1, currentValue);
+		setValues(values);
+	}
+
+
+
 	public CustomNumberPicker(Context context, int min, int max, int currentValue) {
 		super(context);
 		LayoutInflater layoutInflater = (LayoutInflater)context
@@ -38,43 +55,51 @@ public class CustomNumberPicker extends LinearLayout {
 		this.maximum = max;
 		this.currentValue = currentValue;
 		init2();
-		
+
 	}
-	
+
 
 	public CustomNumberPicker(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		LayoutInflater layoutInflater = (LayoutInflater)context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		layoutInflater.inflate(R.layout.custom_number_picker, this);
-		
+
 		this.context = context;
 		init(attrs);
-		
-		
-		
+
+
+
 		init2();
 	}
-	
+
 	private void init2() {
-		//MAY CHANGE DRASTICALLY
-		//sets views for the components, etc.
-		numberText = (EditText) this.findViewById(R.id.number);
-		upButton = (ImageButton) this.findViewById(R.id.up_button);
-		downButton = (ImageButton) this.findViewById(R.id.down_button);
-		numberText.addTextChangedListener(new TextListener());
-		upButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				upClick(null);
-			}	
-		});
-		downButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				downClick(null);
-			}	
-		});
+		if (!getResources().getBoolean(R.bool.holo_compat)) {
+			numberText = (EditText) this.findViewById(R.id.number);
+			upButton = (ImageButton) this.findViewById(R.id.up_button);
+			downButton = (ImageButton) this.findViewById(R.id.down_button);
+			//numberText.addTextChangedListener(new TextListener());
+			upButton.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					upClick(null);
+				}
+			});
+			downButton.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					downClick(null);
+				}
+			});
+		}
+		// things for the post HC layout:
+		valueSlider = (SeekBar) findViewById(R.id.value_seekbar);
+		valueText = (TextView) findViewById(R.id.value_textview);
+		valueSlider.setMax(maximum);
+		valueSlider.setOnSeekBarChangeListener(new SeekListener());
+		valueSlider.setProgress(currentValue);
+		
+
 	}
 
 	private void init(AttributeSet attrs) {
@@ -82,30 +107,42 @@ public class CustomNumberPicker extends LinearLayout {
 			return;
 		}
 		TypedArray a = context.obtainStyledAttributes(attrs,
-			    R.styleable.CustomNumberPicker);
-			 
-			final int N = a.getIndexCount();
-			for (int i = 0; i < N; ++i)
-			{
-			    int attr = a.getIndex(i);
-			    switch (attr)
-			    {
-			        case R.styleable.CustomNumberPicker_min:
-			            minimum = a.getInt(i, 0);
-			            break;
-			        case R.styleable.CustomNumberPicker_max:
-			            maximum =  a.getInt(i, 0);
-			            break;
-			    }
-			}
-			a.recycle();
+				R.styleable.CustomNumberPicker);
 
+		final int N = a.getIndexCount();
+		for (int i = 0; i < N; ++i)
+		{
+			int attr = a.getIndex(i);
+			switch (attr)
+			{
+			case R.styleable.CustomNumberPicker_min:
+				minimum = a.getInt(i, 0);
+				break;
+			case R.styleable.CustomNumberPicker_max:
+				maximum =  a.getInt(i, 0);
+				break;
+			}
+		}
+		a.recycle();
+	}
+
+	public void setCustomTag(int tag) {
+		this.tag = tag;
+	}
+
+	public int getCustomTag() {
+		return tag;
 	}
 
 	public int getValue() {
 		return currentValue;
 	}
-	
+
+	private void setValues(String[] values) {
+		this.values = values;
+		updateValue();	
+	}
+
 	private void setCurrentValue(int value) {
 		currentValue = value;
 	}
@@ -122,46 +159,94 @@ public class CustomNumberPicker extends LinearLayout {
 	}
 
 	private void updateValue() {
-		numberText.setText(Integer.toString(getValue()));
-	}
-	
-	
-	//may change a lot
-	private class TextListener implements TextWatcher {
-		@Override
-		public void afterTextChanged(Editable arg0) {
-			int value = Integer.parseInt(arg0.toString());
-			if (value >= minimum && value <= maximum) {
-				setCurrentValue(value);
-				//updateValue();
-			}	
+		if (!getResources().getBoolean(R.bool.holo_compat)) {
+			if (values == null) {
+				numberText.setText(Integer.toString(getValue()));
+			}
+			else {
+				numberText.setText(values[getValue()]);
+			}
 		}
+		else { //post HC devices
+			if (values != null) {
+				valueText.setText(values[currentValue]);
+			}
+			else {
+				valueText.setText(Integer.toString(currentValue));
+			}
+		}
+		if (listener != null) {
+			listener.valueChanged(tag, currentValue);
+		}
+	}
+
+
+	//may change a lot
+	//	private class TextListener implements TextWatcher {
+	//		@Override
+	//		public void afterTextChanged(Editable arg0) {
+	//			int value = Integer.parseInt(arg0.toString());
+	//			if (value >= minimum && value <= maximum) {
+	//				setCurrentValue(value);
+	//				//updateValue();
+	//			}
+	//		}
+	//		@Override
+	//		public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
+	//				int arg3) {
+	//			// TODO Auto-generated method stub	
+	//		}
+	//
+	//		@Override
+	//		public void onTextChanged(CharSequence arg0, int arg1, int arg2,
+	//				int arg3) {
+	//			// TODO Auto-generated method stub	
+	//		}
+	//		
+	//	}
+
+	private class SeekListener implements OnSeekBarChangeListener {
+
 		@Override
-		public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
-				int arg3) {
-			// TODO Auto-generated method stub	
+		public void onProgressChanged(SeekBar seekBar, int value, boolean fromUser) {
+			//when the slider moves, the stored value and the displayed string need to both be updated. 
+			setCurrentValue(value);
+			updateValue();
 		}
 
 		@Override
-		public void onTextChanged(CharSequence arg0, int arg1, int arg2,
-				int arg3) {
-			// TODO Auto-generated method stub	
+		public void onStartTrackingTouch(SeekBar arg0) {
+			// TODO Auto-generated method stub
+
 		}
-		
+
+		@Override
+		public void onStopTrackingTouch(SeekBar arg0) {
+			// TODO Auto-generated method stub
+
+		}
+
 	}
-	
+	//only used for pre HC devices
 	public void upClick(View view) {
 		if (currentValue < maximum) {
 			currentValue++;
 			updateValue();
 		}
 	}
-	
 	public void downClick(View view) {
 		if (currentValue > minimum) {
 			currentValue--;
 			updateValue();
 		}
+	}
+
+	public void setOnValueChangeListener(OnValueChangeListener listener) {
+		this.listener = listener;
+	}
+
+	public interface OnValueChangeListener {
+		void valueChanged(int tag, int value);
 	}
 
 }

@@ -88,6 +88,7 @@ public class SongListFragment extends SherlockFragment {
 			//setting the views into the ViewHolder.
 			holder.eventName = (TextView) convertView.findViewById(R.id.event_name);
 			holder.deleteButton = (ImageButton) convertView.findViewById(R.id.delete_button);
+			holder.editButton = (ImageButton) convertView.findViewById(R.id.edit_button);
 			holder.tempoText = (TextView) convertView.findViewById(R.id.tempo_textview);
 			holder.volumeText = (TextView) convertView.findViewById(R.id.volume_textview);
 
@@ -195,6 +196,18 @@ public class SongListFragment extends SherlockFragment {
 
 	public void notifyDataChanged() {
 		dataAdapter.notifyDataSetChanged();
+	}
+	
+	public interface ListParent {
+		
+		CustomLinkedList<EventCreateObject> getList();
+		
+		/**
+		 * Called when an event is selected by the user for edit. Can be called again and in this case should change what event is displayed in other parts of the User interface. 
+		 * @param event the event to be edited.
+		 */
+		void editEvent(EventCreateObject event);
+		
 	}
 
 }
