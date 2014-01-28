@@ -16,6 +16,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,7 +47,7 @@ public class SongListFragment extends SherlockFragment {
 				container, false);
 		this.inflater = inflater;
 		list = (DragSortListView)view.findViewById(R.id.list);
-		dataAdapter = new CustomArrayAdapter((Context) parentActivity, R.id.tvItemTitle, parentActivity.getList());
+		dataAdapter = new CustomArrayAdapter((Context) parentActivity, R.id.event_name, parentActivity.getList());
 		//Log.d(Tag, "adapter created.");
 		list.setAdapter(dataAdapter);
 		list.setDropListener(dataAdapter);
@@ -71,7 +72,7 @@ public class SongListFragment extends SherlockFragment {
 
 		public void addEvent() {
 			songList.add(new EventCreateObject());
-			CustomArrayAdapter.this.notifyDataSetChanged();
+			notifyDataSetChanged();
 		}
 
 		public View getView(final int position, View convertView, ViewGroup parent){
@@ -80,13 +81,15 @@ public class SongListFragment extends SherlockFragment {
 
 			//inflating the row layout we defined earlier.
 			convertView = inflater.inflate(R.layout.song_create_view_layout, null);
+			
+			//getting the event create object associated with this view
+			EventCreateObject event = songList.get(position);
 
 			//setting the views into the ViewHolder.
-			holder.title = (TextView) convertView.findViewById(R.id.tvItemTitle);
-			holder.image1 = (ImageView) convertView.findViewById(R.id.iStatus);
-			holder.image1.setTag(position);
-			holder.eventName = (TextView) convertView.findViewById(R.id.eventName);
-			holder.eventName.setText(songList.get(position).getName());
+			holder.eventName = (TextView) convertView.findViewById(R.id.event_name);
+			holder.deleteButton = (ImageButton) convertView.findViewById(R.id.delete_button);
+			holder.tempoText = (TextView) convertView.findViewById(R.id.tempo_textview);
+			holder.volumeText = (TextView) convertView.findViewById(R.id.volume_textview);
 
 			//			//set a click listener for the list items themselves. 
 			//			((DragSortListView)parent).setOnItemClickListener(new OnItemClickListener() 
@@ -98,50 +101,54 @@ public class SongListFragment extends SherlockFragment {
 			//			});
 
 			//onclickListener for the text
-			holder.title.setOnClickListener(new OnClickListener() {
-
+			holder.deleteButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View arg0) {
 					songList.remove(position);
 					notifyDataSetChanged();
 				}
-
 			});
-
-			//define an onClickListener for the ImageView.
-			holder.image1.setOnClickListener(new OnClickListener() 
-			{           
-				@Override
-				public void onClick(View v) 
-				{
-					launchEdit(position);
-					Toast.makeText(getContext(), "Image from row " + position + " was pressed", Toast.LENGTH_LONG).show();
-				}
-			});
-			holder.checked = (CheckBox) convertView.findViewById(R.id.cbCheckListItem);
-			holder.checked.setTag(position);
-
-			//define an onClickListener for the CheckBox.
-			holder.checked.setOnClickListener(new OnClickListener() {       
-				@Override
-				public void onClick(View v)
-				{
-					//assign check-box state to the corresponding object in list.    
-					CheckBox checkbox = (CheckBox) v;
-					songList.get(position).setComplex(checkbox.isChecked());
-					Toast.makeText(getContext(), "CheckBox from row " + position + " was checked", Toast.LENGTH_LONG).show();    
-				}
-			});
-
-			holder.eventName.setOnClickListener(new OnClickListener() {
+			
+			holder.editButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					launchEdit(position);
 				}
 			});
+
+			//define an onClickListener for the ImageView.
+//			holder.editButton.setOnClickListener(new OnClickListener() 
+//			{           
+//				@Override
+//				public void onClick(View v) 
+//				{
+//					launchEdit(position);
+//					Toast.makeText(getContext(), "Image from row " + position + " was pressed", Toast.LENGTH_LONG).show();
+//				}
+//			});
+			//holder.checked = (CheckBox) convertView.findViewById(R.id.cbCheckListItem);
+			//holder.checked.setTag(position);
+
+			//define an onClickListener for the CheckBox.
+//			holder.checked.setOnClickListener(new OnClickListener() {       
+//				@Override
+//				public void onClick(View v)
+//				{
+//					//assign check-box state to the corresponding object in list.    
+//					CheckBox checkbox = (CheckBox) v;
+//					songList.get(position).setComplex(checkbox.isChecked());
+//					Toast.makeText(getContext(), "CheckBox from row " + position + " was checked", Toast.LENGTH_LONG).show();    
+//				}
+//			});
+
+			
 			//setting data into the the ViewHolder.
-			holder.title.setText("Delete Set");
-			holder.checked.setChecked(songList.get(position).isComplex());
+			holder.eventName.setText(event.getName());
+			holder.tempoText.setText(Double.toString(event.getTempo()));
+			holder.volumeText.setText(Float.toString(event.getVolume()));
+			
+			
+			
 			//return the row view.
 			return convertView;
 		}
@@ -166,12 +173,15 @@ public class SongListFragment extends SherlockFragment {
 		}
 	}
 
-	//should maybe include this as part of eventcreateobject?
 	//holds views from the listview
 	static class ViewHolder {
-		TextView title;
-		CheckBox checked;
-		ImageView image1;
+		ImageButton deleteButton;
+		ImageButton editButton;
+		TextView tempoText;
+		TextView volumeText;
+		//CheckBox checked;
+		//ImageView image1;
+		
 		TextView eventName;
 	}
 	

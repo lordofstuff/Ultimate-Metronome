@@ -2,32 +2,69 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:orientation="horizontal" >
-	
-	<CheckBox
-        android:id="@+id/cbCheckListItem"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp" />
-    <TextView
-        android:id="@+id/tvItemTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Delete Set" />
-    <ImageView
-        android:id="@+id/iStatus"
+	android:orientation="vertical" >
+
+   <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/event_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Not yet set" 
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <ImageButton
+            android:id="@+id/edit_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Edit"
+            android:src="@drawable/ic_action_edit" />
+
+        <ImageButton
+            android:id="@+id/delete_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Remove Set"
+            android:src="@drawable/ic_action_remove" />
+
+    </LinearLayout>
+    
+   <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <ImageView
+        android:id="@+id/metronome_imageview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:contentDescription="@drawable/ic_launcher"
-        android:src="@drawable/ic_launcher" /> 
-        
+        android:contentDescription="Tempo"
+        android:src="@drawable/ic_action_metronome" />
+
+        <TextView
+            android:id="@+id/tempo_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tempo"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <ImageView
+            android:id="@+id/volume_imageview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Volume"
+            android:src="@drawable/ic_action_volume_on" />
+
+        <TextView
+            android:id="@+id/volume_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Volume"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </LinearLayout>
     
-    <TextView 
-    	android:id="@+id/eventName"
-    	android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Not yet set" 
-    	/>
 
 </LinearLayout>
