@@ -13,15 +13,43 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <ScrollView
-        android:id="@+id/scrollView1"
+        android:id="@+id/picker_scrollview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
         <LinearLayout
-            android:id="@+id/picker_layout"
+            android:id="@+id/picker_big_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical" >
+
+            <LinearLayout
+                android:id="@+id/picker_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/picker_button_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <ImageButton
+                    android:id="@+id/remove_picker_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_action_minus" >
+                </ImageButton>
+
+                <ImageButton
+                    android:id="@+id/add_picker_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_action_new" >
+                </ImageButton>
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
