@@ -22,7 +22,7 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 	private static final String Tag = "PlayMetronomeActivity";
 	Song song;
 	MetronomeController mc;
-	Metronome met;
+	//Metronome met;
 	TextView beatText;
 	TextView eventName;
 	TextView measureText;
@@ -43,7 +43,7 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 			mc.addMetronomeListener(this);
 		}
 		else {
-			met = new Metronome(song, getApplicationContext());
+//			met = new Metronome(song, getApplicationContext());
 		}
 		eventName = (TextView) findViewById(R.id.Current_event_name_textview);
 		beatText = (TextView)findViewById(R.id.beat_textview);
@@ -91,18 +91,18 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 			
 		}
 		else { //Static mode
-			if (met.getState() == Metronome.MetronomeState.Initialized) {
-				Log.v(Tag, "(re)Starting Metronome");
-				met.play();
-			}
-			else if (met.getState() == Metronome.MetronomeState.Playing) {
-				Log.v(Tag, "Pausing Metronome");
-				met.pause();
-			}
-			else if (met.getState() == Metronome.MetronomeState.Paused) {
-				Log.v(Tag, "Resuming Metronome");
-				met.resume();
-			}
+//			if (met.getState() == Metronome.MetronomeState.Initialized) {
+//				Log.v(Tag, "(re)Starting Metronome");
+//				met.play();
+//			}
+//			else if (met.getState() == Metronome.MetronomeState.Playing) {
+//				Log.v(Tag, "Pausing Metronome");
+//				met.pause();
+//			}
+//			else if (met.getState() == Metronome.MetronomeState.Paused) {
+//				Log.v(Tag, "Resuming Metronome");
+//				met.resume();
+//			}
 		}
 	}
 
@@ -116,7 +116,7 @@ public class PlayMetronomeActivity extends SherlockFragmentActivity implements M
 			}
 		}
 		else {
-			met.stop();
+			//met.stop();
 		}
 	}
 

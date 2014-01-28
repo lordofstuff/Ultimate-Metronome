@@ -369,8 +369,8 @@ public class MetronomeController implements Runnable{
 		//fields
 
 		//min and max legal values. may be tweaked
-		static final double MAX_TEMPO = 900; //approximately
-		static final double MIN_TEMPO = 4;
+		//static final double MAX_TEMPO = 900; //approximately
+		//static final double MIN_TEMPO = 4;
 
 		private static final int SAMPLE_RATE = 22050;
 		private static final int BUFFER_SIZE = 3000;//5000//10000;//22050; //lowered to help with performance TODO check this, experiment

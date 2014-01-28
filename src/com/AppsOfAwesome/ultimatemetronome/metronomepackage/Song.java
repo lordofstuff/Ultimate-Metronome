@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -46,6 +44,10 @@ public class Song implements Iterable<MetronomeEvent>{
 	}
 
 	//methods
+	
+	public String getSongName() {
+		return title;
+	}
 
 	
 	public static Song createFromFileForPlayback(File file) throws IOException, FileNotFoundException, FileFormatException {
