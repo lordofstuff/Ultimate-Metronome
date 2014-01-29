@@ -53,10 +53,9 @@ public class PatternPickerFragment extends SherlockFragment implements CustomNum
 				layout.addView(current);
 				pickerArrayList.add(current);
 				scroller.fullScroll(View.FOCUS_DOWN); //TODO not working completely?
-				//view.requestFocus(); //doesn't work at all.
+				updateWholePattern();
+				
 			}
-
-			
 		});
 		
 		view.findViewById(R.id.remove_picker_button).setOnClickListener(new OnClickListener() {
@@ -71,6 +70,17 @@ public class PatternPickerFragment extends SherlockFragment implements CustomNum
 		return view;
 	}
 	
+	protected void updateWholePattern() {
+		//create a new array of the appropriate size
+		int[] newArray = new int[pickerArrayList.size()];
+		//copy data into it
+		for (int i = 0; i< newArray.length; i++) {
+			newArray[i] = pickerArrayList.get(i).getValue();
+		}
+		//set this to be the new pattern in the current event;
+		currentEvent.setPattern(newArray);
+	}
+
 	protected int getDefaultValue() {
 		return 0;
 	}

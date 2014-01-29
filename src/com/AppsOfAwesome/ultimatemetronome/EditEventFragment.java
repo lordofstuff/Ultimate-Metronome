@@ -117,8 +117,11 @@ class EditEventFragment extends SherlockFragment {
 
 
 	public static String convertFromPattern(int[] pattern) {
-		// TODO Auto-generated method stub
-		return null;
+		StringBuilder sb = new StringBuilder();
+		for (int i: pattern) {
+			sb.append(Integer.toString(i));
+		}
+		return sb.toString();
 	}
 
 
