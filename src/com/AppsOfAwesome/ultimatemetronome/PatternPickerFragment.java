@@ -16,13 +16,12 @@ public class PatternPickerFragment extends SherlockFragment implements CustomNum
 	
 	private View view;
 	private int[] pattern;
-	private int max;
-	private int min;
 	private ArrayList<CustomNumberPicker> pickerArrayList;
 	private EditSongActivity parentActivity;
 	private EventCreateObject currentEvent;
 	private LinearLayout layout;
 	private ScrollView scroller;
+	private String[] stringArray = new String[] {"rest", "quaternary", "teriary", "secondary", "primary"};
 	
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,7 +42,6 @@ public class PatternPickerFragment extends SherlockFragment implements CustomNum
 			current.setCustomTag(i);
 			layout.addView(current);
 			pickerArrayList.add(current);
-			
 		}
 		
 		//add listeners to the buttons
@@ -78,7 +76,7 @@ public class PatternPickerFragment extends SherlockFragment implements CustomNum
 	}
 
 	protected String[] getStrings() {
-		return new String[] {"rest", "quaternary", "teriary", "secondary", "primary"};
+		return stringArray;
 	}
 
 	public int[] getPattern() {

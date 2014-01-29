@@ -215,6 +215,7 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 			//TODO anything?
 		}
 		else {
+			patternOut = false;
 			//make the container invisible again.
 			findViewById(R.id.pattern_container).setVisibility(View.GONE);
 			//make the list visible again
