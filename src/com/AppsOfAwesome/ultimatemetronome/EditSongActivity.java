@@ -90,11 +90,8 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 		// TODO Auto-generated method stub
 		super.onRestoreInstanceState(savedInstanceState);
 		if (savedInstanceState != null) {
-			songList = savedInstanceState.getParcelable(songListKey);
-			patternOut = savedInstanceState.getBoolean(patternOutKey);
-			eventOut = savedInstanceState.getBoolean(eventOutKey);
-			currentEvent = songList.get(savedInstanceState.getInt(indexKey));
-			
+
+
 			//get the UI back to how it was
 			if (eventOut) {
 				editEvent(currentEvent);
@@ -168,6 +165,18 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 			}
 			else {
 				songList = loadSongEdit(intent.getStringExtra("fileName"));
+			}
+		}
+		else {
+			songList = savedInstanceState.getParcelable(songListKey);
+			patternOut = savedInstanceState.getBoolean(patternOutKey);
+			eventOut = savedInstanceState.getBoolean(eventOutKey);
+			int index = savedInstanceState.getInt(indexKey);
+			if (index != -1) {
+				currentEvent = songList.get(index);
+			}
+			else {
+				currentEvent = null;
 			}
 		}
 
