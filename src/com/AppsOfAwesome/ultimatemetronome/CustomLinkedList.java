@@ -4,15 +4,22 @@ import java.util.AbstractList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import com.AppsOfAwesome.ultimatemetronome.EventCreateObject.EventCreator;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
 //import android.util.Log;
 
-public class CustomLinkedList<T> extends AbstractList<T> {
+public class CustomLinkedList<T extends Parcelable> extends AbstractList<T> implements Parcelable {
 	static String Tag = "CustomLinkedList";
 
 	//fields
 	DLNode front;
 	DLNode back;
 	int size;
+	
+	public static CustomListCreator<Parcelable> CREATOR = new CustomListCreator<Parcelable>();
 
 	//constructors
 	public CustomLinkedList() {
@@ -38,6 +45,23 @@ public class CustomLinkedList<T> extends AbstractList<T> {
 		}
 		return current;
 
+	}
+	
+	/**
+	 * Finds the index of an object in the list. tests for exact object equality. 
+	 * @param element The element to be found in this list.
+	 * @return the index of the element. -1 if it is not present. 
+	 */
+	public int getIndex(T element) {
+		DLNode node = front;
+		for (int i = 0; i < size; i++) {
+			if (node.getElement() == element) {
+				return i;
+			}
+			node = node.getNext();
+		}
+		//if it reaches this point, that object is not in the list
+		return -1;
 	}
 
 	@Override
@@ -420,4 +444,42 @@ public class CustomLinkedList<T> extends AbstractList<T> {
 	public Object getLastElement() {
 	    return back.getElement();
     }
+
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+	@Override
+	public void writeToParcel(Parcel dest, int flag) {
+		for (T element : this) {
+			dest.writeParcelable(element, 0);
+		}
+	}
+	
+	private CustomLinkedList(Parcel Source) {
+		this();
+		T element = (T) Source.readParcelable(null);
+		while (element != null) {
+			this.add(element);
+			element = (T) Source.readParcelable(null);
+		}
+	}
+	
+	public static final class CustomListCreator<T extends Parcelable> implements Parcelable.Creator<CustomLinkedList> {
+
+		@Override
+		public CustomLinkedList<T> createFromParcel(Parcel source) {
+			return new CustomLinkedList<T>(source);
+		}
+
+		@Override
+		public CustomLinkedList<T>[] newArray(int size) {
+			throw new UnsupportedOperationException("cannot create array of a list");
+		}
+
+	}
 }

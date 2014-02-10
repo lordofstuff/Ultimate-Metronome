@@ -9,6 +9,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
@@ -29,20 +30,13 @@ public class PatternPickerFragment extends SherlockFragment implements CustomNum
 				
 		view = inflater.inflate(R.layout.pattern_picker, container, false);
 		parentActivity = (EditSongActivity) getSherlockActivity();
-		currentEvent = parentActivity.getCurrentEvent();
-		pattern = currentEvent.getPattern();
-		pickerArrayList = new ArrayList<CustomNumberPicker>(pattern.length);
+		
+		
 		layout = (LinearLayout) view.findViewById(R.id.picker_layout);
 		scroller = (ScrollView) view.findViewById(R.id.picker_scrollview);
+		dataChanged();
 		
 		
-		for(int i=0; i < pattern.length; i++) {
-			//add a new CustomNumberPicker to the linear layout
-			CustomNumberPicker current = new CustomNumberPicker(parentActivity, pattern[i], getStrings());
-			current.setCustomTag(i);
-			layout.addView(current);
-			pickerArrayList.add(current);
-		}
 		
 		//add listeners to the buttons
 		view.findViewById(R.id.add_picker_button).setOnClickListener(new OnClickListener() {
@@ -50,11 +44,11 @@ public class PatternPickerFragment extends SherlockFragment implements CustomNum
 			public void onClick(View v) {
 				CustomNumberPicker current = new CustomNumberPicker(parentActivity, getDefaultValue(), getStrings());
 				current.setCustomTag(pickerArrayList.size());
+				current.setOnValueChangeListener(PatternPickerFragment.this);
 				layout.addView(current);
 				pickerArrayList.add(current);
 				scroller.fullScroll(View.FOCUS_DOWN); //TODO not working completely?
 				updateWholePattern();
-				
 			}
 		});
 		
@@ -79,6 +73,7 @@ public class PatternPickerFragment extends SherlockFragment implements CustomNum
 		}
 		//set this to be the new pattern in the current event;
 		currentEvent.setPattern(newArray);
+		this.pattern = newArray;
 	}
 
 	protected int getDefaultValue() {
@@ -99,7 +94,21 @@ public class PatternPickerFragment extends SherlockFragment implements CustomNum
 	
 	//forces the UI of the whole fragment to update to match new data. 
 	public void dataChanged() {
-		//TODO
+		//TODO get rid of old stuff if present
+		//make sure data is up to date
+		currentEvent = parentActivity.getCurrentEvent();
+		((TextView) view.findViewById(R.id.pattern_text)).setText(currentEvent.getName());
+		pattern = currentEvent.getPattern();
+		pickerArrayList = new ArrayList<CustomNumberPicker>(pattern.length);
+		
+		for(int i=0; i < pattern.length; i++) {
+			//add a new CustomNumberPicker to the linear layout
+			CustomNumberPicker current = new CustomNumberPicker(parentActivity, pattern[i], getStrings());
+			current.setCustomTag(i);
+			current.setOnValueChangeListener(this);
+			layout.addView(current);
+			pickerArrayList.add(current);
+		}
 	}
 
 	@Override

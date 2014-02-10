@@ -13,6 +13,8 @@ import com.AppsOfAwesome.ultimatemetronome.CustomLinkedList;
 import com.AppsOfAwesome.ultimatemetronome.EventCreateObject;
 //import com.AppsOfAwesome.ultimatemetronome.CustomLinkedList.DLIterator;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 /**
@@ -20,7 +22,7 @@ import android.util.Log;
  * @author Stephen Rodriguez
  *
  */
-public class Song implements Iterable<MetronomeEvent>{
+public class Song implements Iterable<MetronomeEvent>, Parcelable{
 	private static final String Tag = "Song";
 	//fields
 	//private CustomLinkedList<MetronomeEvent> events;
@@ -41,6 +43,11 @@ public class Song implements Iterable<MetronomeEvent>{
 
 	private Song(MetronomeEvent[] events) {
 		eventArray = events;
+	}
+
+	private Song(Parcel source) {
+		//TODO
+		
 	}
 
 	//methods
@@ -78,7 +85,7 @@ public class Song implements Iterable<MetronomeEvent>{
 		CustomLinkedList list;
 		MetronomeEvent[] array = new MetronomeEvent[0];
 		if (flag == PLAYBACK) {
-			list = new CustomLinkedList<MetronomeEvent>();
+			list = null; //new CustomLinkedList<MetronomeEvent>();
 		}
 		else if (flag == EDIT) {
 			list = new CustomLinkedList<EventCreateObject>();
@@ -141,79 +148,79 @@ public class Song implements Iterable<MetronomeEvent>{
 		FileReader fr = new FileReader(file);
 		BufferedReader br = new BufferedReader(fr);
 		String s = br.readLine();
-		if (s.equals("file version 1")){
-			s = br.readLine();
-			while (s != null) {
-				Log.d(Tag, "Read line: " + s);
-				if (!s.equals("") && s.charAt(0) != '#') { //if not a comment or blank line
-
-					Log.d(Tag, "starting to read a real one");
-					name = s;
-					tempo = Double.parseDouble(br.readLine());
-					// TODO check for exceptions here
-					volume = Float.parseFloat(br.readLine());
-					pattern = toPatternArray(br.readLine()); //convert this to an array of ints
-					repeats = Integer.parseInt(br.readLine());
-					beat = Integer.parseInt(br.readLine());
-					if (flag == PLAYBACK) {
-						list.add(new MetronomeEvent(tempo, pattern, volume, repeats, beat, name));
-					}
-					if (flag == EDIT) {
-						list.add(new EventCreateObject(s, tempo, volume, repeats, false, pattern, beat, 0, 0, new int[] {0}));
-						//TODO add new file version which stores these extras
-					}
-				}
-				else {
-					//Log.d(Tag, "Ignoring comment or blank line");
-				}
-				s = br.readLine();
-			}
-		}
-		else if (s.equals("file version 2.0")) {
-
-			s = br.readLine(); //will be the number of events in the song
-			array = new MetronomeEvent[Integer.parseInt(s)];
-			songName = br.readLine();
-			s = br.readLine();
-			
-			int i = 0;
-			while (s != null) {
-				Log.d(Tag, "Read line: " + s);
-				if (!s.equals("") && s.charAt(0) != '#') { //if not a comment or blank line
-					//Log.d(Tag, "starting to read a real one");
-					name = s;
-					tempo = Double.parseDouble(br.readLine());
-					// TODO check for exceptions here
-					volume = Float.parseFloat(br.readLine());
-					pattern = toPatternArray(br.readLine()); //convert this to an array of ints
-					repeats = Integer.parseInt(br.readLine());
-					beat = Integer.parseInt(br.readLine());
-					s = br.readLine();
-					if (s.equals("2")) {
-						complex = false;
-					}
-					else {
-						complex = true;
-					}
-					emphasis = toPatternArray(br.readLine());
-					timeSigTop = Integer.parseInt(br.readLine());
-					timeSigBottom = Integer.parseInt(br.readLine());
-					
-					if (flag == PLAYBACK) {
-						array[i++] = (new MetronomeEvent(tempo, pattern, volume, repeats, beat, name, emphasis, timeSigTop, timeSigBottom, complex));
-					}
-					if (flag == EDIT) {
-						list.add(new EventCreateObject(name, tempo, volume, repeats, complex, pattern, beat, timeSigTop, timeSigBottom, emphasis));
-					}
-				}
-				else {
-					//Log.d(Tag, "Ignoring comment or blank line");
-				}
-				s = br.readLine();
-			}
-
-		}
-		else if (s.equals("file version 2.1")) {
+//		if (s.equals("file version 1")){
+//			s = br.readLine();
+//			while (s != null) {
+//				Log.d(Tag, "Read line: " + s);
+//				if (!s.equals("") && s.charAt(0) != '#') { //if not a comment or blank line
+//
+//					Log.d(Tag, "starting to read a real one");
+//					name = s;
+//					tempo = Double.parseDouble(br.readLine());
+//					// TODO check for exceptions here
+//					volume = Float.parseFloat(br.readLine());
+//					pattern = toPatternArray(br.readLine()); //convert this to an array of ints
+//					repeats = Integer.parseInt(br.readLine());
+//					beat = Integer.parseInt(br.readLine());
+//					if (flag == PLAYBACK) {
+//						list.add(new MetronomeEvent(tempo, pattern, volume, repeats, beat, name));
+//					}
+//					if (flag == EDIT) {
+//						list.add(new EventCreateObject(s, tempo, volume, repeats, false, pattern, beat, 0, 0, new int[] {0}));
+//						//TODO add new file version which stores these extras
+//					}
+//				}
+//				else {
+//					//Log.d(Tag, "Ignoring comment or blank line");
+//				}
+//				s = br.readLine();
+//			}
+//		}
+//		else if (s.equals("file version 2.0")) {
+//
+//			s = br.readLine(); //will be the number of events in the song
+//			array = new MetronomeEvent[Integer.parseInt(s)];
+//			songName = br.readLine();
+//			s = br.readLine();
+//			
+//			int i = 0;
+//			while (s != null) {
+//				Log.d(Tag, "Read line: " + s);
+//				if (!s.equals("") && s.charAt(0) != '#') { //if not a comment or blank line
+//					//Log.d(Tag, "starting to read a real one");
+//					name = s;
+//					tempo = Double.parseDouble(br.readLine());
+//					// TODO check for exceptions here
+//					volume = Float.parseFloat(br.readLine());
+//					pattern = toPatternArray(br.readLine()); //convert this to an array of ints
+//					repeats = Integer.parseInt(br.readLine());
+//					beat = Integer.parseInt(br.readLine());
+//					s = br.readLine();
+//					if (s.equals("2")) {
+//						complex = false;
+//					}
+//					else {
+//						complex = true;
+//					}
+//					emphasis = toPatternArray(br.readLine());
+//					timeSigTop = Integer.parseInt(br.readLine());
+//					timeSigBottom = Integer.parseInt(br.readLine());
+//					
+//					if (flag == PLAYBACK) {
+//						array[i++] = (new MetronomeEvent(tempo, pattern, volume, repeats, beat, name, emphasis, timeSigTop, timeSigBottom, complex));
+//					}
+//					if (flag == EDIT) {
+//						list.add(new EventCreateObject(name, tempo, volume, repeats, complex, pattern, beat, timeSigTop, timeSigBottom, emphasis));
+//					}
+//				}
+//				else {
+//					//Log.d(Tag, "Ignoring comment or blank line");
+//				}
+//				s = br.readLine();
+//			}
+//
+//		}
+		if (s.equals("file version 2.1")) {
 
 			s = br.readLine(); //will be the number of events in the song
 			array = new MetronomeEvent[Integer.parseInt(s)];
@@ -421,6 +428,34 @@ public class Song implements Iterable<MetronomeEvent>{
 			//if it reaches this point, it is not in there
 			throw new NoSuchElementException();
 		}
+		
+		
+	}
+	
+	public static final class SongCreator implements Parcelable.Creator<Song> {
+
+		@Override
+		public Song createFromParcel(Parcel source) {
+			return new Song(source);
+		}
+
+		@Override
+		public Song[] newArray(int size) {
+			return new Song[size];
+		}
+
+	}
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		// TODO Auto-generated method stub
+		Log.e(Tag, "Parcel not yet implemeneted for Song");
 	}
 
 }

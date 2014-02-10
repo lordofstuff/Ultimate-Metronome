@@ -14,7 +14,7 @@ public class EventCreateObject implements Parcelable{
 	static final double DEFAULT_TEMPO = 120;
 	static final float DEFAULT_VOLUME = 1;
 	static final int DEFAULT_REPEATS = 1;
-	static final int[] DEFAULT_PATTERN = new int[] {1, 2, 2, 2};
+	static final int[] DEFAULT_PATTERN = new int[] {4, 3, 3, 3};
 	static final int DEFAULT_BEAT = 1;
 	static final int DEFAULT_TIME_SIG_TOP = 4;
 	static final int DEFAULT_TIME_SIG_BOTTOM = 4;

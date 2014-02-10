@@ -8,9 +8,7 @@
         android:id="@+id/value_textview"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="poop"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:layout_weight="1" />
 
     <SeekBar
         android:id="@+id/value_seekbar"

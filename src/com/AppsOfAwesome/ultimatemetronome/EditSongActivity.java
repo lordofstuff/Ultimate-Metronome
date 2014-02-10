@@ -20,6 +20,7 @@ import com.actionbarsherlock.view.MenuItem;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -32,11 +33,115 @@ import android.widget.Toast;
 
 public class EditSongActivity extends SherlockFragmentActivity implements ListParent, EditEventParent, PatternFragmentParent{
 
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		// TODO Auto-generated method stub
+		super.onConfigurationChanged(newConfig);
+	}
+
+	@Override
+	protected void onPostResume() {
+		// TODO Auto-generated method stub
+		super.onPostResume();
+	}
+
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+	}
+
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+		super.onStop();
+	}
+
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		autoSave();
+	}
+
+	private void autoSave() {
+		// TODO Auto-generated method stub
+		Log.v(Tag, "Autosave not yet implemented.");
+	}
+
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onPostCreate(savedInstanceState);
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		//use this to save the song and any other relevant data for recreation after rotation, resuming, etc. 
+		outState.putParcelable(songListKey, songList);
+		outState.putBoolean(patternOutKey, patternOut);
+		outState.putBoolean(eventOutKey, eventOut);
+		outState.putInt(indexKey, songList.getIndex(currentEvent));
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onRestoreInstanceState(savedInstanceState);
+		if (savedInstanceState != null) {
+			songList = savedInstanceState.getParcelable(songListKey);
+			patternOut = savedInstanceState.getBoolean(patternOutKey);
+			eventOut = savedInstanceState.getBoolean(eventOutKey);
+			currentEvent = songList.get(savedInstanceState.getInt(indexKey));
+			
+			//get the UI back to how it was
+			if (eventOut) {
+				editEvent(currentEvent);
+			}
+			if (patternOut) {
+				editPattern(0);
+			}
+		}
+	}
+
+	@Override
+	public void finish() {
+		// TODO Auto-generated method stub
+		super.finish();
+	}
+
+	@Override
+	public void finishActivity(int requestCode) {
+		// TODO Auto-generated method stub
+		super.finishActivity(requestCode);
+	}
+
+	@Override
+	protected void onRestart() {
+		// TODO Auto-generated method stub
+		super.onRestart();
+	}
+
+	@Override
+	public void recreate() {
+		// TODO Auto-generated method stub
+		super.recreate();
+	}
+
 	private static final String Tag = "Edit Song Activity";
 	public static final int NEW_FLAG = 1;
 	public static final int EDIT_FLAG = 2;
 	private static final int NORMAL_PATTERN = 0;
 	private static final int BEAT_PATTERN = 1;
+
+	//keys for bundling:
+	private static final String songListKey = "songList";
+	private static final String eventOutKey = "eventOut";
+	private static final String patternOutKey = "patternOut";
+	private static final String indexKey = "currentIndex";
+
+
 	private CustomLinkedList<EventCreateObject> songList = null;
 	private SongListFragment listFragment;
 	private EditEventFragment eventFragment;
@@ -54,14 +159,16 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_song);
 
-		//load the song/create a new one
-		Intent intent = getIntent();
-		int flag = intent.getIntExtra("LoadFlag", NEW_FLAG);
-		if (flag == NEW_FLAG) {
-			songList = new CustomLinkedList<EventCreateObject>();
-		}
-		else {
-			songList = loadSongEdit(intent.getStringExtra("fileName"));
+		if (savedInstanceState == null) {
+			//load the song/create a new one
+			Intent intent = getIntent();
+			int flag = intent.getIntExtra("LoadFlag", NEW_FLAG);
+			if (flag == NEW_FLAG) {
+				songList = new CustomLinkedList<EventCreateObject>();
+			}
+			else {
+				songList = loadSongEdit(intent.getStringExtra("fileName"));
+			}
 		}
 
 
@@ -207,6 +314,7 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 	}
 
 	public void editDataChanged() {
+		listFragment = (SongListFragment) getSupportFragmentManager().findFragmentByTag("ListFragment");
 		listFragment.notifyDataChanged();
 	}
 
@@ -241,15 +349,15 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 		}
 		else {
 			if (eventOut) {
-				currentEvent = event;
+				//currentEvent = event;
 				eventFragment =  (EditEventFragment) getSupportFragmentManager().findFragmentByTag("EditFragment");
 				eventFragment.changed();
 			}
 			else {
-				
+
 				//for tablets running HC or newer; should work with 7 inch and up
 				Log.v(Tag, "tablet behavior!");
-				
+
 				//eventFragment =  (EditEventFragment) getSupportFragmentManager().findFragmentByTag("EditFragment");
 				FragmentManager fm = getSupportFragmentManager();
 				FragmentTransaction ft = fm.beginTransaction();
@@ -282,11 +390,17 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 	@Override
 	public void editPattern(int flag) {
 		if (!getResources().getBoolean(R.bool.tablet_layout)) {
-
+			FragmentManager fm = getSupportFragmentManager();
+			FragmentTransaction ft = fm.beginTransaction();
+			ft.replace(R.id.create_song_container, new PatternPickerFragment(), "PatternFragment");
+			ft.addToBackStack(null);
+			ft.commit();
 		}
 		else {
 			if (patternOut) {
 				//this means the list is invisible, and the nothing should happen (I think)
+				//just need to notify the pattern fragment to update the ui in case it is editing a different pattern or the event has changed
+				((PatternPickerFragment) getSupportFragmentManager().findFragmentByTag("PatternFragment")).dataChanged();
 			}
 			else {
 				//make the container visible again.
