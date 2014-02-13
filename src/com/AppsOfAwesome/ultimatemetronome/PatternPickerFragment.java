@@ -130,7 +130,7 @@ public class PatternPickerFragment extends SherlockFragment implements CustomNum
 
 	@Override
 	public void valueChanged(int tag, int value) {
-		pattern[tag] = value;	
+		pattern[tag] = value;
 	}
 	
 	
