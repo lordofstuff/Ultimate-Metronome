@@ -72,7 +72,7 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		super.onPostCreate(savedInstanceState);
+		super.onPostCreate(null);
 	}
 
 	@Override
@@ -93,12 +93,12 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 
 
 			//get the UI back to how it was
-//			if (eventOut) {
-//				editEvent(currentEvent);
-//			}
-//			if (patternOut) {
-//				editPattern(0);
-//			}
+			//			if (eventOut) {
+			//				editEvent(currentEvent);
+			//			}
+			//			if (patternOut) {
+			//				editPattern(0);
+			//			}
 		}
 	}
 
@@ -154,9 +154,9 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+		super.onCreate(null);
 		setContentView(R.layout.activity_edit_song);
-		
+
 		boolean patternOutTemp = false;
 		boolean eventOutTemp = false;
 
@@ -182,7 +182,7 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 			else {
 				currentEvent = null;
 			}
-			
+
 		}
 
 
@@ -205,11 +205,11 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 		if (savedInstanceState != null) {
 			if (eventOutTemp) {
 				eventOut = false;
-				//editEvent(currentEvent);
+				editEvent(currentEvent);
 			}
 			if (patternOutTemp) {
 				patternOut = false;
-				//editPattern(NORMAL_PATTERN);
+				editPattern(NORMAL_PATTERN);
 			}
 		}
 	}
@@ -343,7 +343,7 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 
 	public void patternFragmentDetach() {
 		if (!getResources().getBoolean(R.bool.tablet_layout)) {
-			//TODO anything?
+			patternOut = false;
 		}
 		else {
 			patternOut = false;
@@ -364,11 +364,19 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 		//first, set the event so it is accessible to the fragment
 		this.currentEvent = event;
 		if (!getResources().getBoolean(R.bool.tablet_layout)) {
-			FragmentManager fm = getSupportFragmentManager();
-			FragmentTransaction ft = fm.beginTransaction();
-			ft.replace(R.id.create_song_container, new EditEventFragment(), "EditFragment");
-			ft.addToBackStack(null);
-			ft.commit();
+			if (eventOut) {
+				//is unlikely to be called unless I implement next/previous event buttons, but that's ok. 
+				eventFragment =  (EditEventFragment) getSupportFragmentManager().findFragmentByTag("EditFragment");
+				eventFragment.changed();
+			}
+			else {
+				FragmentManager fm = getSupportFragmentManager();
+				FragmentTransaction ft = fm.beginTransaction();
+				ft.replace(R.id.create_song_container, new EditEventFragment(), "EditFragment");
+				ft.addToBackStack(null);
+				ft.commit();
+				eventOut = true;
+			}
 		}
 		else {
 			if (eventOut) {
@@ -401,7 +409,7 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 	@Override
 	public void detachEditFragment() {
 		if (!getResources().getBoolean(R.bool.tablet_layout)) {
-			//TODO anything?
+			eventOut = false; 
 		}
 		else {
 			//make the container invisible again.
@@ -413,11 +421,17 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 	@Override
 	public void editPattern(int flag) {
 		if (!getResources().getBoolean(R.bool.tablet_layout)) {
-			FragmentManager fm = getSupportFragmentManager();
-			FragmentTransaction ft = fm.beginTransaction();
-			ft.replace(R.id.create_song_container, new PatternPickerFragment(), "PatternFragment");
-			ft.addToBackStack(null);
-			ft.commit();
+			if (!patternOut) {
+				FragmentManager fm = getSupportFragmentManager();
+				FragmentTransaction ft = fm.beginTransaction();
+				ft.replace(R.id.create_song_container, new PatternPickerFragment(), "PatternFragment");
+				ft.addToBackStack(null);
+				ft.commit();
+				patternOut = true;
+			}
+			else {
+				((PatternPickerFragment) getSupportFragmentManager().findFragmentByTag("PatternFragment")).dataChanged();
+			}
 		}
 		else {
 			if (patternOut) {

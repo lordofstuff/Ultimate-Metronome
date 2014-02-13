@@ -81,7 +81,7 @@ class EditEventFragment extends SherlockFragment {
 			public void afterTextChanged(Editable s) {
 				try {
 					myEvent.setTempo(Double.parseDouble(s.toString()));
-					//dataChanged();
+					dataChanged();
 				}
 				catch (NumberFormatException e){
 					Log.v(Tag, "number format exception; value not committed to tempo.");
@@ -112,6 +112,12 @@ class EditEventFragment extends SherlockFragment {
 	public void onAttach(Activity activity) {
 		// TODO Auto-generated method stub
 		super.onAttach(activity);
+	}
+	
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		parentActivity.detachEditFragment();
 	}
 
 

@@ -57,7 +57,7 @@ public class PatternPickerFragment extends SherlockFragment implements CustomNum
 			public void onClick(View v) {
 				CustomNumberPicker current = pickerArrayList.remove(pickerArrayList.size() - 1);
 				layout.removeView(current);
-				
+				updateWholePattern();
 			}
 		});
 		
@@ -94,11 +94,13 @@ public class PatternPickerFragment extends SherlockFragment implements CustomNum
 	
 	//forces the UI of the whole fragment to update to match new data. 
 	public void dataChanged() {
-		//TODO get rid of old stuff if present
+		//get rid of old stuff if present
+		layout.removeAllViews();
+		
 		//make sure data is up to date
 		currentEvent = parentActivity.getCurrentEvent();
 		((TextView) view.findViewById(R.id.pattern_text)).setText(currentEvent.getName());
-		pattern = currentEvent.getPattern();
+		pattern = currentEvent.getPattern(); //TODO change this if another pattern needs to be edited
 		pickerArrayList = new ArrayList<CustomNumberPicker>(pattern.length);
 		
 		for(int i=0; i < pattern.length; i++) {
