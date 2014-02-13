@@ -15,11 +15,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * A fragment holding a listview of events that can be reordered, created, and deleted. The parent activity must implement the ListParent interface.
@@ -37,7 +34,7 @@ public class SongListFragment extends SherlockFragment {
 
 	@Override
 	public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		//super.onCreateView(inflater, container, savedInstanceState);
+		super.onCreateView(inflater, container, savedInstanceState);
 		SherlockFragmentActivity parent = getSherlockActivity();
 		if (!(parent instanceof ListParent)) {
 			throw new IllegalStateException("SongListFragment must be a child of a class implementing the ListParent Interface");
@@ -119,7 +116,7 @@ public class SongListFragment extends SherlockFragment {
 
 			//define an onClickListener for the ImageView.
 //			holder.editButton.setOnClickListener(new OnClickListener() 
-//			{           
+//			{
 //				@Override
 //				public void onClick(View v) 
 //				{

@@ -61,7 +61,7 @@ class EditEventFragment extends SherlockFragment {
 			@Override
 			public void afterTextChanged(Editable charset) {
 				myEvent.setName(charset.toString());
-				dataChanged();
+				//dataChanged(); //TODO fix this? also below
 			}
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
@@ -81,7 +81,7 @@ class EditEventFragment extends SherlockFragment {
 			public void afterTextChanged(Editable s) {
 				try {
 					myEvent.setTempo(Double.parseDouble(s.toString()));
-					dataChanged();
+					//dataChanged();
 				}
 				catch (NumberFormatException e){
 					Log.v(Tag, "number format exception; value not committed to tempo.");

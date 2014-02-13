@@ -93,12 +93,12 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 
 
 			//get the UI back to how it was
-			if (eventOut) {
-				editEvent(currentEvent);
-			}
-			if (patternOut) {
-				editPattern(0);
-			}
+//			if (eventOut) {
+//				editEvent(currentEvent);
+//			}
+//			if (patternOut) {
+//				editPattern(0);
+//			}
 		}
 	}
 
@@ -141,6 +141,7 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 
 	private CustomLinkedList<EventCreateObject> songList = null;
 	private SongListFragment listFragment;
+	private String listFragmentTag = "ListFragment";
 	private EditEventFragment eventFragment;
 	private PatternPickerFragment patternFragment;
 	protected String songName;
@@ -155,6 +156,9 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_song);
+		
+		boolean patternOutTemp = false;
+		boolean eventOutTemp = false;
 
 		if (savedInstanceState == null) {
 			//load the song/create a new one
@@ -169,8 +173,8 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 		}
 		else {
 			songList = savedInstanceState.getParcelable(songListKey);
-			patternOut = savedInstanceState.getBoolean(patternOutKey);
-			eventOut = savedInstanceState.getBoolean(eventOutKey);
+			patternOutTemp = savedInstanceState.getBoolean(patternOutKey);
+			eventOutTemp = savedInstanceState.getBoolean(eventOutKey);
 			int index = savedInstanceState.getInt(indexKey);
 			if (index != -1) {
 				currentEvent = songList.get(index);
@@ -178,11 +182,13 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 			else {
 				currentEvent = null;
 			}
+			
 		}
 
 
 		//add the list fragment in
-		String listFragmentTag = "ListFragment";
+		eventOut = false;
+		patternOut = false;
 		FragmentManager fm = getSupportFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
 		if (!getResources().getBoolean(R.bool.tablet_layout)) {
@@ -192,12 +198,20 @@ public class EditSongActivity extends SherlockFragmentActivity implements ListPa
 			//hide the unused containers
 			findViewById(R.id.pattern_container).setVisibility(View.GONE);
 			findViewById(R.id.event_container).setVisibility(View.GONE);
-			eventOut = false;
-			patternOut = false;
 			ft.add(R.id.list_container, new SongListFragment(), listFragmentTag);
 		}
 		ft.commit();
 		//listFragment = (SongListFragment) fm.findFragmentByTag(listFragmentTag); //returns null for some reason...
+		if (savedInstanceState != null) {
+			if (eventOutTemp) {
+				eventOut = false;
+				//editEvent(currentEvent);
+			}
+			if (patternOutTemp) {
+				patternOut = false;
+				//editPattern(NORMAL_PATTERN);
+			}
+		}
 	}
 
 	@Override
