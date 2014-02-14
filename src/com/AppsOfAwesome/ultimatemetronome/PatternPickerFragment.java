@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -23,6 +24,9 @@ public class PatternPickerFragment extends SherlockFragment implements CustomNum
 	private LinearLayout layout;
 	private ScrollView scroller;
 	private String[] stringArray = new String[] {"rest", "quaternary", "teriary", "secondary", "primary"};
+	private ImageButton removeButton;
+	private ImageButton addButton;
+	private static final int maxNumPickers = 40;
 	
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -39,7 +43,8 @@ public class PatternPickerFragment extends SherlockFragment implements CustomNum
 		
 		
 		//add listeners to the buttons
-		view.findViewById(R.id.add_picker_button).setOnClickListener(new OnClickListener() {
+		addButton = (ImageButton) view.findViewById(R.id.add_picker_button);
+		addButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				CustomNumberPicker current = new CustomNumberPicker(parentActivity, getDefaultValue(), getStrings());
@@ -52,7 +57,8 @@ public class PatternPickerFragment extends SherlockFragment implements CustomNum
 			}
 		});
 		
-		view.findViewById(R.id.remove_picker_button).setOnClickListener(new OnClickListener() {
+		removeButton = (ImageButton)(view.findViewById(R.id.remove_picker_button));
+		removeButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				CustomNumberPicker current = pickerArrayList.remove(pickerArrayList.size() - 1);
@@ -111,6 +117,7 @@ public class PatternPickerFragment extends SherlockFragment implements CustomNum
 			layout.addView(current);
 			pickerArrayList.add(current);
 		}
+		checkButtons();
 	}
 
 	@Override
@@ -133,7 +140,20 @@ public class PatternPickerFragment extends SherlockFragment implements CustomNum
 		pattern[tag] = value;
 	}
 	
-	
+	private void checkButtons() {
+		if (pickerArrayList.size() <= 1) {
+			removeButton.setEnabled(false);
+		}
+		else {
+			removeButton.setEnabled(true);
+		}
+		if (pickerArrayList.size() > maxNumPickers ) {
+			addButton.setEnabled(false);
+		}
+		else {
+			addButton.setEnabled(true);
+		}
+	}
 	
 	
 	

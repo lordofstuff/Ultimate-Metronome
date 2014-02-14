@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res/com.AppsOfAwesome.ultimatemetronome"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
@@ -15,12 +14,12 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_below="@id/pattern_text" 
-        android:layout_above="@+id/picker_button_layout" >"
+        android:layout_above="@+id/picker_button_layout" >
 
         <LinearLayout
             android:id="@+id/picker_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical" >
         </LinearLayout>
     </ScrollView>
@@ -38,12 +37,14 @@
             android:id="@+id/remove_picker_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="Remove beat"
             android:src="@drawable/ic_action_minus" />
 
         <ImageButton
             android:id="@+id/add_picker_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="Add beat"
             android:src="@drawable/ic_action_new" />
     </LinearLayout>
 
