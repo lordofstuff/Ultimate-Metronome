@@ -25,5 +25,6 @@
 	<string name="title_activity_edit_song">Edit</string>
 	<string name="tempo_text">Tempo</string>
 	<string name="volume_edit_label">Volume</string>
+	<string name="pattern_text">Edit Pattern</string>
 
 </resources>

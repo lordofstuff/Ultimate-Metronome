@@ -38,7 +38,7 @@ public class PatternPickerFragment extends SherlockFragment implements CustomNum
 		
 		layout = (LinearLayout) view.findViewById(R.id.picker_layout);
 		scroller = (ScrollView) view.findViewById(R.id.picker_scrollview);
-		dataChanged();
+		
 		
 		
 		
@@ -52,7 +52,13 @@ public class PatternPickerFragment extends SherlockFragment implements CustomNum
 				current.setOnValueChangeListener(PatternPickerFragment.this);
 				layout.addView(current);
 				pickerArrayList.add(current);
-				scroller.fullScroll(View.FOCUS_DOWN); //TODO not working completely?
+				scroller.post(new Runnable() {
+				    @Override
+				    public void run() {
+				        scroller.fullScroll(ScrollView.FOCUS_DOWN);
+				    }
+				});
+				//scroller.fullScroll(View.FOCUS_DOWN); //TODO not working completely?
 				updateWholePattern();
 			}
 		});
@@ -67,6 +73,8 @@ public class PatternPickerFragment extends SherlockFragment implements CustomNum
 			}
 		});
 		
+		dataChanged();
+		
 		return view;
 	}
 	
@@ -80,6 +88,7 @@ public class PatternPickerFragment extends SherlockFragment implements CustomNum
 		//set this to be the new pattern in the current event;
 		currentEvent.setPattern(newArray);
 		this.pattern = newArray;
+		checkButtons();
 	}
 
 	protected int getDefaultValue() {

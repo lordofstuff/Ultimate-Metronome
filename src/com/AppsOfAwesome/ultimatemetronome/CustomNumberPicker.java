@@ -2,8 +2,8 @@ package com.AppsOfAwesome.ultimatemetronome;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.text.Editable;
-import android.text.TextWatcher;
+//import android.text.Editable;
+//import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,13 +16,12 @@ import android.widget.TextView;
 
 public class CustomNumberPicker extends LinearLayout {
 
-	//TODO change this to be sliders instead?
 	Context context;
 
 	//fields
 	private int maximum;
 	private int minimum;
-	private String[] values;
+	private String[] values = null;
 	int tag = -1;
 
 	private int currentValue;
@@ -42,8 +41,6 @@ public class CustomNumberPicker extends LinearLayout {
 		this(context, 0, values.length -1, currentValue);
 		setValues(values);
 	}
-
-
 
 	public CustomNumberPicker(Context context, int min, int max, int currentValue) {
 		super(context);
@@ -67,9 +64,6 @@ public class CustomNumberPicker extends LinearLayout {
 
 		this.context = context;
 		init(attrs);
-
-
-
 		init2();
 	}
 
@@ -91,14 +85,15 @@ public class CustomNumberPicker extends LinearLayout {
 					downClick(null);
 				}
 			});
+			return; //make sure it does not keep going for pre HC devices
 		}
 		// things for the post HC layout:
 		valueSlider = (SeekBar) findViewById(R.id.value_seekbar);
 		valueText = (TextView) findViewById(R.id.value_textview);
-		valueSlider.setMax(maximum);
+		valueSlider.setMax(maximum - minimum);
 		valueSlider.setOnSeekBarChangeListener(new SeekListener());
-		valueSlider.setProgress(currentValue);
-		
+		valueSlider.setProgress(currentValue - minimum);
+		updateValue();
 
 	}
 
@@ -143,13 +138,10 @@ public class CustomNumberPicker extends LinearLayout {
 		updateValue();	
 	}
 
-	private void setCurrentValue(int value) {
-		currentValue = value;
-	}
 
 	public boolean setValue(int newValue) {
 		if (newValue >= minimum && newValue <= maximum) {
-			setCurrentValue(newValue);
+			currentValue = newValue;
 			updateValue();
 			return true;
 		}
@@ -158,13 +150,36 @@ public class CustomNumberPicker extends LinearLayout {
 		}
 	}
 
+	public void setMax(int newMax) {
+		//check that newMax is greater than minimum
+		if (newMax <= minimum) {
+			throw new IllegalArgumentException("newMax must be greater than minimum");
+		}
+		//if it is increasing the max, do not change the value, but do make sure the UI updates
+		if (newMax > maximum) {
+			maximum = newMax;
+			updateValue();
+		}
+		else {
+			//if it is decreasing the max and the old value would be invalid, throw exception. it should not change the value without the user knowing. 
+			if (getValue() > newMax) {
+				throw new IllegalArgumentException("the new maximum is less than the current value.");
+			}
+			else {
+				//if it is decreasing and the value is within the new valid range, leave it alone. 
+				maximum = newMax;
+				updateValue();
+			}
+		}
+	}
+
 	private void updateValue() {
 		if (!getResources().getBoolean(R.bool.holo_compat)) {
 			if (values == null) {
-				numberText.setText(Integer.toString(getValue()));
+				numberText.setText(Integer.toString(getValue())); 
 			}
 			else {
-				numberText.setText(values[getValue()]);
+				numberText.setText(values[currentValue]);
 			}
 		}
 		else { //post HC devices
@@ -172,7 +187,7 @@ public class CustomNumberPicker extends LinearLayout {
 				valueText.setText(values[currentValue]);
 			}
 			else {
-				valueText.setText(Integer.toString(currentValue));
+				valueText.setText(Integer.toString(currentValue)); 
 			}
 		}
 		if (listener != null) {
@@ -194,13 +209,13 @@ public class CustomNumberPicker extends LinearLayout {
 	//		@Override
 	//		public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
 	//				int arg3) {
-	//			// TODO Auto-generated method stub	
+	//			
 	//		}
 	//
 	//		@Override
 	//		public void onTextChanged(CharSequence arg0, int arg1, int arg2,
 	//				int arg3) {
-	//			// TODO Auto-generated method stub	
+	//			
 	//		}
 	//		
 	//	}
@@ -209,24 +224,19 @@ public class CustomNumberPicker extends LinearLayout {
 
 		@Override
 		public void onProgressChanged(SeekBar seekBar, int value, boolean fromUser) {
-			//when the slider moves, the stored value and the displayed string need to both be updated. 
-			setCurrentValue(value);
-			updateValue();
+			//when the slider moves, the stored value and the displayed string need to both be updated.
+
+			//assume the value is valid (it should be)
+			currentValue = value + minimum;
+			//setCurrentValue(value); //TODO make this work with non 0 minimum
+			if (fromUser) {
+				updateValue();
+			}
 		}
-
-		@Override
-		public void onStartTrackingTouch(SeekBar arg0) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void onStopTrackingTouch(SeekBar arg0) {
-			// TODO Auto-generated method stub
-
-		}
-
+		@Override public void onStartTrackingTouch(SeekBar arg0) {}
+		@Override public void onStopTrackingTouch(SeekBar arg0) {}
 	}
+	
 	//only used for pre HC devices
 	public void upClick(View view) {
 		if (currentValue < maximum) {

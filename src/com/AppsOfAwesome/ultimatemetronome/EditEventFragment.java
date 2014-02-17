@@ -1,9 +1,11 @@
 package com.AppsOfAwesome.ultimatemetronome;
 
+import com.AppsOfAwesome.ultimatemetronome.CustomNumberPicker.OnValueChangeListener;
 import com.AppsOfAwesome.ultimatemetronome.R;
 import com.actionbarsherlock.app.SherlockFragment;
 
 import android.app.Activity;
+import android.content.Context;
 //import android.app.Fragment;
 import android.os.Bundle;
 import android.text.Editable;
@@ -13,17 +15,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
-class EditEventFragment extends SherlockFragment {
+class EditEventFragment extends SherlockFragment implements OnValueChangeListener {
 
 	protected static final String Tag = "Edit event fragment";
-	
+
 	private View view;
 	private TextView eventNameText;
 	private TextView tempoEdit;
 	private TextView testText;
 	private CustomNumberPicker beatPicker;
+	
+	private static final int beatPickerTag = 1;
 
 	private EventCreateObject myEvent;
 	//private int position;
@@ -34,17 +39,23 @@ class EditEventFragment extends SherlockFragment {
 			Bundle savedInstanceState) {
 		view = inflater.inflate(R.layout.fragment_edit_event,
 				container, false);
-		
-		eventNameText = (TextView) view.findViewById(R.id.edit_event_name);
-		tempoEdit = (TextView) view.findViewById(R.id.tempo_input);
-		
-		testText = (TextView) view.findViewById(R.id.test_text);
-		beatPicker = (CustomNumberPicker) view.findViewById(R.id.beat_picker);
-		//TODO add other views here. 
 
 		//set up important variables
 		parentActivity = (EditEventParent)getSherlockActivity();
+
+		eventNameText = (TextView) view.findViewById(R.id.edit_event_name);
+		tempoEdit = (TextView) view.findViewById(R.id.tempo_input);
+
+		testText = (TextView) view.findViewById(R.id.test_text);
+		beatPicker = new CustomNumberPicker((Context)parentActivity, 1, 6, 1); //(CustomNumberPicker) view.findViewById(R.id.beat_picker);
+		((FrameLayout)view.findViewById(R.id.beat_picker_container)).addView(beatPicker);
+		beatPicker.setCustomTag(beatPickerTag);
+		beatPicker.setOnValueChangeListener(this);
 		
+		//TODO add other views here. 
+
+
+
 
 		//set UI to match the event info
 		changed();
@@ -54,24 +65,23 @@ class EditEventFragment extends SherlockFragment {
 			@Override
 			public void onClick(View v) {
 				parentActivity.editPattern(parentActivity.getNormalPatternConstant());
-				
 			}
 		});
 		eventNameText.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void afterTextChanged(Editable charset) {
 				myEvent.setName(charset.toString());
-				//dataChanged(); //TODO fix this? also below
+				dataChanged(); //TODO fix this? also below
 			}
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
-				// TODO Auto-generated method stub
+			
 			}
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
-				// TODO 
+				
 			}
 		});
 
@@ -90,13 +100,13 @@ class EditEventFragment extends SherlockFragment {
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
-				// TODO Auto-generated method stub
+				
 
 			}
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
 					int count) {
-				// TODO Auto-generated method stub 
+				 
 			}
 		});
 
@@ -110,10 +120,9 @@ class EditEventFragment extends SherlockFragment {
 	 */
 	@Override
 	public void onAttach(Activity activity) {
-		// TODO Auto-generated method stub
 		super.onAttach(activity);
 	}
-	
+
 	@Override
 	public void onDetach() {
 		super.onDetach();
@@ -137,48 +146,58 @@ class EditEventFragment extends SherlockFragment {
 		myEvent = parentActivity.getCurrentEvent();
 		eventNameText.setText(myEvent.getName());
 		tempoEdit.setText(Double.toString(myEvent.getTempo()));
-		
+
 	}
-	
+
 	private void dataChanged() {
 		//tells the hosting class that the data has changed and the list needs to be redrawn
 		parentActivity.editDataChanged();
 	}
-	
+
 
 
 	//	public void setName(String item) {
 	//		//TextView view = (TextView) getView().findViewById(R.id.detailsText);
 	//		eventNameText.setText(item);
 	//	}
-	
+
 	public interface EditEventParent {
-		
+
 		/**
 		 * Gets the event to be edited. 
 		 * @return the event to be edited. 
 		 */
 		EventCreateObject getCurrentEvent();
-		
+
 		/**
 		 * informs the parent activity that the data on the current event has changed so that it can update the interface of other fragments to match. 
 		 */
 		void editDataChanged();
-		
+
 		/**
 		 * called when the fragment detaches so that the parent activity can update the UI accordingly. 
 		 */
 		void detachEditFragment();
-		
+
 		/**
 		 * called when a pattern needs to be edited.
 		 * @param flag a flag indicating which pattern is to be edited, to be passed along to the corresponding fragment. 
 		 */
 		void editPattern(int flag);
-		
+
 		int getNormalPatternConstant();
 		int getBeatPatternConstant();
 
+	}
+
+
+
+	@Override
+	public void valueChanged(int tag, int value) {
+		if (tag == beatPickerTag) {
+			myEvent.setBeat(value);
+		}
+		
 	}
 
 
