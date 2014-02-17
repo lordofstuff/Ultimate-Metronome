@@ -65,6 +65,8 @@ public class EventCreateObject implements Parcelable{
 		beat = source.readInt();
 		timeSigTop = source.readInt();
 		timeSigBottom = source.readInt();
+		emphasis = new int[patternLength];
+		source.readIntArray(emphasis);
 	}
 
 	/**
@@ -262,6 +264,8 @@ public class EventCreateObject implements Parcelable{
 		out.writeInt(beat);
 		out.writeInt(timeSigTop);
 		out.writeInt(timeSigBottom);
+		out.writeIntArray(emphasis);
+		out.writeString(timeSigInfo);
 		//TODO do something with flags?
 
 	}

@@ -42,15 +42,17 @@ class EditEventFragment extends SherlockFragment implements OnValueChangeListene
 
 		//set up important variables
 		parentActivity = (EditEventParent)getSherlockActivity();
+		myEvent = parentActivity.getCurrentEvent();
 
 		eventNameText = (TextView) view.findViewById(R.id.edit_event_name);
 		tempoEdit = (TextView) view.findViewById(R.id.tempo_input);
 
 		testText = (TextView) view.findViewById(R.id.test_text);
-		beatPicker = new CustomNumberPicker((Context)parentActivity, 1, 6, 1); //(CustomNumberPicker) view.findViewById(R.id.beat_picker);
+		beatPicker = new CustomNumberPicker((Context)parentActivity, 1, 6, myEvent.getBeat()); //(CustomNumberPicker) view.findViewById(R.id.beat_picker);
 		((FrameLayout)view.findViewById(R.id.beat_picker_container)).addView(beatPicker);
 		beatPicker.setCustomTag(beatPickerTag);
 		beatPicker.setOnValueChangeListener(this);
+		
 		
 		//TODO add other views here. 
 
@@ -99,29 +101,15 @@ class EditEventFragment extends SherlockFragment implements OnValueChangeListene
 			}
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {
-				
-
-			}
+					int after) {}
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
-					int count) {
-				 
-			}
+					int count) {}
 		});
 
 		return view;
 	}
 
-
-
-	/* (non-Javadoc)
-	 * @see com.actionbarsherlock.app.SherlockFragment#onAttach(android.app.Activity)
-	 */
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-	}
 
 	@Override
 	public void onDetach() {
