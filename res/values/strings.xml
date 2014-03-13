@@ -26,5 +26,10 @@
 	<string name="tempo_text">Tempo</string>
 	<string name="volume_edit_label">Volume</string>
 	<string name="pattern_text">Edit Pattern</string>
+	<string name="um_quarter">Quarter</string>
+	<string name="um_eighth">Eighth</string>
+	<string name="um_sixteenth">Sixteenth</string>
+	<string name="um_thirtysecond">Thirty seond</string>
+	<string name="um_half">Half</string>
 
 </resources>
